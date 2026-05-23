@@ -75,7 +75,8 @@
 %
 
 \begin{abstract}
-We propose ThyroidAgent, an agent-based framework for thyroid nodule ultrasound segmentation and classification. Unlike conventional approaches that rely on static pipelines, ThyroidAgent introduces a dynamic, policy-driven inference process, selecting model experts based on ultrasound image data and device context. By integrating segmentation and classification tasks, the framework enhances classification through segmentation-derived features. This multi-task workflow improves interpretability, robustness, and adaptability across diverse ultrasound conditions. 
+% We propose ThyroidAgent, an agent-based framework for thyroid nodule ultrasound segmentation and classification. Unlike conventional approaches that rely on static pipelines, ThyroidAgent introduces a dynamic, policy-driven inference process, selecting model experts based on ultrasound image data and device context. By integrating segmentation and classification tasks, the framework enhances classification through segmentation-derived features. This multi-task workflow improves interpretability, robustness, and adaptability across diverse ultrasound conditions. 
+We propose ThyroidAgent, an agent-based framework for thyroid nodule ultrasound analysis that coordinates segmentation and classification experts through evidence-aware expert selection and aggregation. Unlike conventional approaches that rely on static pipelines, ThyroidAgent reasons over structured evidence derived from ultrasound images, segmentation masks, radiomics descriptors, and device/context metadata to adapt expert usage on a per-case basis. Rather than replacing task-specific predictors, the LLM operates only as a routing module over expert outputs, while reinforcement learning is used separately to optimize connected-component post-processing for segmentation masks. This design improves interpretability, robustness, and adaptability across diverse ultrasound conditions.
 % Additionally, we create a publicly available thyroid ultrasound dataset for joint segmentation and classification, exploring the impact of open-source data on model generalization. 
 % 删除关于开源的描述
 Additionally, we curate a consolidated multi-source benchmark with aligned segmentation and classification annotations, enabling systematic cross-dataset evaluation and analysis of data factors that affect generalization.
@@ -88,7 +89,8 @@ Experimental results show that ThyroidAgent outperforms static models, demonstra
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=1.0\linewidth]{figures/ThyroidAgent.pdf}
-    \caption{Overview of the ThyroidAgent framework. While traditional systems use fixed pipelines, ThyroidAgent dynamically selects expert models based on ultrasound images and metadata, integrating segmentation and classification for improved adaptability and robustness.}
+    % \caption{Overview of the ThyroidAgent framework. While traditional systems use fixed pipelines, ThyroidAgent dynamically selects expert models based on ultrasound images and metadata, integrating segmentation and classification for improved adaptability and robustness.}
+    \caption{Overview of the ThyroidAgent framework. While traditional systems use fixed pipelines, ThyroidAgent coordinates segmentation and classification experts through evidence-aware routing and aggregation based on ultrasound images, radiomics descriptors, and metadata.}
     \label{fig:ThyroidAgent}
 \end{figure}
 
@@ -111,18 +113,27 @@ Collectively, these efforts suggest that exploiting task relatedness can improve
 However, many existing formulations adopt relatively simple task coupling (e.g., ROI-based feature extraction, output concatenation, or shared encoders with task-specific heads), which may yield limited cross-task interaction and hinder effective joint optimization~\cite{he2023joint,rhanoui2025multi,wu2023multi}.
 More advanced mechanisms are needed to fully leverage task correlations and optimize feature interactions.
 
-In this work, we propose \textit{ThyroidAgent}, an agent-based multi-task framework for thyroid ultrasound diagnosis that departs from conventional static pipelines by replacing fixed execution with context-aware expert orchestration (Fig.~\ref{fig:ThyroidAgent}). 
+% In this work, we propose \textit{ThyroidAgent}, an agent-based multi-task framework for thyroid ultrasound diagnosis that departs from conventional static pipelines by replacing fixed execution with context-aware expert orchestration (Fig.~\ref{fig:ThyroidAgent}). 
+In this work, we propose \textit{ThyroidAgent}, an agent-based framework for thyroid ultrasound diagnosis that departs from conventional static pipelines by replacing fixed execution with context-aware expert orchestration across two coordinated tasks, segmentation and malignancy classification (Fig.~\ref{fig:ThyroidAgent}). 
 Instead of treating segmentation as an ROI-localization module, ThyroidAgent couples the predicted mask with the original ultrasound image to extract mask-guided radiomics descriptors, turning pixel-level delineations into interpretable morphology and texture evidence for improved malignancy classification.
 
 Motivated by the recent progress of large language models (LLMs)~\cite{dong_survey_2022} in reasoning and decision support, we explore their use in thyroid ultrasound diagnosis as an evidence-aware decision module~\cite{bai2025qwen3,sellergren2025medgemma}. 
 %Rather than replacing task-specific predictors, the LLM module receives structured evidence from multiple trained experts (e.g., predictions, confidence signals, segmentation-derived radiomics evidence, and contextual metadata) and performs sample-specific expert selection while producing interpretable decision rationales. Together, these designs establish a unified and adaptive framework that explicitly bridges segmentation, classification, and explainable evidence aggregation for thyroid ultrasound CAD.
-The LLM module receives structured evidence from multiple trained experts and performs sample-specific expert selection while producing interpretable decision rationales. These designs establish a unified and adaptive framework that explicitly bridges segmentation, classification, and explainable evidence aggregation for thyroid ultrasound CAD.
+% The LLM module receives structured evidence from multiple trained experts and performs sample-specific expert selection while producing interpretable decision rationales. These designs establish a unified and adaptive framework that explicitly bridges segmentation, classification, and explainable evidence aggregation for thyroid ultrasound CAD.
+The LLM module receives structured evidence from multiple trained experts and performs sample-specific expert selection followed by lightweight aggregation while producing interpretable decision rationales. Importantly, ThyroidAgent is not a monolithic LLM diagnosis system: task-specific segmentation and classification experts first produce candidate outputs, and the LLM operates only on structured evidence summaries rather than raw-image diagnosis. Separately, PPO is used only for optimizing connected-component analysis (CCA) parameters for mask refinement, not for controlling the overall diagnostic policy.
+
+% Related studies in thyroid CAD have also explored radiomics-assisted diagnosis, coupled segmentation-classification learning, and dynamic expert reasoning, but these lines are usually studied in isolation.
+Related studies in thyroid CAD have also explored radiomics-assisted diagnosis, coupled segmentation-classification learning, and dynamic expert reasoning, but these lines are usually studied in isolation. Prior thyroid radiomics studies have shown that handcrafted morphology and texture descriptors can improve ultrasound malignancy assessment~\cite{park2021radiomics,shao2025multimodal}, while coupled-task frameworks have used shared supervision or interpretable constraints to connect segmentation and classification~\cite{kang2022thyroid,gong2021multi,gong_thyroid_2023}. More recent expert-routing and medical VLM systems suggest that dynamic reasoning over heterogeneous evidence can improve adaptability in complex imaging settings~\cite{she2025echovlm,bai2025qwen3,sellergren2025medgemma}. In contrast, ThyroidAgent uses radiomics not as a standalone novelty, but as one structured evidence source within a thyroid-specific expert orchestration framework.
 
 The key contributions of our method are summarized as below:
-\textbf{1. Dynamic agent-driven CAD paradigm.} 
-    We propose \emph{ThyroidAgent}, a dynamic CAD framework that replaces the traditional static pipeline with an agent capable of reasoning over multimodal context metadata and adaptively selecting among segmentation and classification experts, enabling flexible and task-aware processing.
-\textbf{2. Radiomics-augmented agent reasoning.} 
-    We integrate radiomics and CCA-based feature toolkits into the agent loop, allowing the agent to exploit segmentation masks to extract quantitative descriptors and fuse them with model confidence signals, thereby improving decision reliability, interpretability, and expert-selection quality.
+% \textbf{1. Dynamic agent-driven CAD paradigm.} 
+%     We propose \emph{ThyroidAgent}, a dynamic CAD framework that replaces the traditional static pipeline with an agent capable of reasoning over multimodal context metadata and adaptively selecting among segmentation and classification experts, enabling flexible and task-aware processing.
+\textbf{1. Evidence-aware expert orchestration.} 
+    We propose \emph{ThyroidAgent}, a CAD framework that replaces the traditional static pipeline with evidence-aware orchestration over segmentation and classification experts, enabling flexible and task-aware processing under heterogeneous acquisition conditions.
+% \textbf{2. Radiomics-augmented agent reasoning.} 
+%     We integrate radiomics and CCA-based feature toolkits into the agent loop, allowing the agent to exploit segmentation masks to extract quantitative descriptors and fuse them with model confidence signals, thereby improving decision reliability, interpretability, and expert-selection quality.
+\textbf{2. Mask-guided evidence construction and refinement.} 
+    We integrate mask-guided radiomics descriptors and PPO-optimized CCA refinement into the evidence construction loop, allowing ThyroidAgent to combine quantitative morphology and texture cues with model confidence signals for more reliable and interpretable expert selection.
 \textbf{3. Unified dataset consolidation and generalization analysis.} 
     %We construct a consolidated open-source thyroid ultrasound dataset with aligned segmentation and classification annotations, supporting cross-dataset evaluation. We further analyze how data factors influence generalization within the dynamic agent setting.
     We curate a consolidated benchmark by harmonizing segmentation and classification annotations across multiple datasets, enabling cross-dataset evaluation and analysis of data factors affecting generalization in the dynamic agent setting.
@@ -138,13 +149,16 @@ The key contributions of our method are summarized as below:
 
 \section{Method}
 % 引用Fig2
-Fig.~\ref{fig:WorkFlow} illustrates the ThyroidAgent framework, which consists of training and inference stages. During inference, the agent dynamically selects the most appropriate expert output based on contextual information and evidence signals, replacing static pipelines.
+% Fig.~\ref{fig:WorkFlow} illustrates the ThyroidAgent framework, which consists of training and inference stages. During inference, the agent dynamically selects the most appropriate expert output based on contextual information and evidence signals, replacing static pipelines.
+Fig.~\ref{fig:WorkFlow} illustrates the ThyroidAgent framework, which consists of offline expert construction and online evidence-aware orchestration. During inference, task-specific experts first generate candidate segmentation masks and malignancy predictions, after which ThyroidAgent summarizes them into structured evidence and invokes an LLM-based routing module for expert selection and aggregation.
 % 动机：动态选择单个简单模型的方式比训练一个复杂模型的性能更稳健；近两年来llm在多个领域得到广泛应用，利用llm的动态选择能力，同时也探索llm如何应用在甲状腺超声图像诊断领域
-The agent-based framework overcomes the limitations of relying on a single complex model by dynamically selecting from multiple simpler expert models, improving flexibility and generalization across diverse datasets. Motivated by the recent advancements in large language models (LLMs), which excel in dynamic decision-making, we integrate their reasoning capabilities to perform expert selection and aggregation based on structured evidence. This dynamic orchestration allows ThyroidAgent to adapt to varying clinical scenarios and enhance decision-making in thyroid ultrasound diagnosis.
+% The agent-based framework overcomes the limitations of relying on a single complex model by dynamically selecting from multiple simpler expert models, improving flexibility and generalization across diverse datasets. Motivated by the recent advancements in large language models (LLMs), which excel in dynamic decision-making, we integrate their reasoning capabilities to perform expert selection and aggregation based on structured evidence. This dynamic orchestration allows ThyroidAgent to adapt to varying clinical scenarios and enhance decision-making in thyroid ultrasound diagnosis.
+The ThyroidAgent framework overcomes the limitations of relying on a single complex model by dynamically selecting from multiple simpler expert models, improving flexibility and generalization across diverse datasets. The overall method contains four components: expert prediction generation for the two tasks, structured evidence construction, LLM-based expert routing/aggregation, and PPO-based CCA refinement for segmentation masks. Here, the LLM is only responsible for evidence-aware routing, whereas PPO is used only to optimize CCA hyperparameters and does not control the overall diagnostic policy.
 
 \subsection{Toolbox for Ultrasound Analysis}
 %We define thyroid ultrasound analysis as a set of callable tools with standardized inputs and outputs, allowing the agent to compare expert models based on consistent evidence signals for reproducible results. The toolbox is designed to facilitate expert selection and enhance the accuracy of predictions through complementary components. 
-We define thyroid ultrasound analysis as a collection of tools with standardized inputs and outputs, enabling the agent to compare expert models based on consistent evidence for reproducible results. The toolbox facilitates expert selection and improves prediction accuracy through complementary components.
+% We define thyroid ultrasound analysis as a collection of tools with standardized inputs and outputs, enabling the agent to compare expert models based on consistent evidence for reproducible results. The toolbox facilitates expert selection and improves prediction accuracy through complementary components.
+We define thyroid ultrasound analysis as a collection of tools with standardized inputs and outputs, enabling ThyroidAgent to compare expert models based on consistent evidence for reproducible results. The toolbox facilitates expert selection and improves prediction accuracy through four complementary components: segmentation experts that output candidate masks and confidence signals, classification experts that output malignancy probabilities and confidence scores, a radiomics tool that extracts morphology and texture descriptors from image-mask pairs, and a PPO-optimized CCA module that refines segmentation masks before downstream evidence aggregation when needed.
 % It includes: (i) a deep expert family for segmentation and classification, based on DINOv3 with varying training conditions, (ii) a radiomics tool for extracting complementary morphology and texture features, and (iii) reinforcement learning for optimizing connected component analysis (CCA) hyperparameters to refine segmentation mask quality.
 
 \subsubsection{DINOv3-Based Expert Models}
@@ -153,7 +167,7 @@ Our models share a DINOv3-based backbone with task-specific lightweight heads~\c
 For segmentation, we adopt a U-Net-style decoder with skip fusion to output a dense nodule mask probability map, optimized by a weighted BCE+IoU loss $\mathcal{L}_{\mathrm{seg}}$. 
 %For classification, the backbone features are summarized by global average/max pooling and passed to a compact attention-based classification head to produce malignancy probabilities. 
 % 添加两个任务的损失函数说明
-For classification, backbone features are summarized by global average and max pooling and fed into a compact attention-based head to output, trained with a GLA loss to alleviate class imbalance. 
+For classification, backbone features are summarized by global average and max pooling and fed into a compact attention-based head to output a malignancy logit, trained with a generalized logit-adjustment (GLA) loss to alleviate class imbalance. 
 The core weighting and logit adjustment used by $\mathcal{L}_{\mathrm{seg}}$ and GLA are:
 \begin{equation}
 \begin{aligned}
@@ -162,7 +176,8 @@ z'_b &= z_b + \tau \left( y_b \log p_{\text{pos}} + (1-y_b)\log p_{\text{neg}} \
 \end{aligned}
 \label{eq:losses}
 \end{equation}
-where $\mathcal{L}_{\mathrm{bm}}$ is BCE-with-logits computed on the adjusted logits $z'_b$.
+% where $\mathcal{L}_{\mathrm{bm}}$ is BCE-with-logits computed on the adjusted logits $z'_b$.
+where $y \in \{0,1\}^{H\times W}$ denotes the binary segmentation target, $\operatorname{AvgPool}_{31}(\cdot)$ is a $31\times31$ average-pooling operator used to emphasize boundary-aware pixels, and $w$ is the resulting spatial weight map used in $\mathcal{L}_{\mathrm{seg}}$. For classification, $y_b\in\{0,1\}$ is the binary malignancy label of sample $b$, $z_b$ is the original logit, $z'_b$ is the class-prior-adjusted logit, $p_{\text{pos}}$ and $p_{\text{neg}}$ are the empirical positive and negative class priors, and $\tau$ is the logit-adjustment coefficient. We use $\mathcal{L}_{\mathrm{bm}}$ to denote BCE-with-logits computed on $z'_b$, while the GLA objective refers to this class-prior-aware classification loss.
 
 %Rather than designing increasingly complex single models, we construct a diverse expert pool to improve robustness under cross-dataset variability. 
 % 引用databias论文，写明动机
@@ -177,7 +192,8 @@ As validated in Sec.~\ref{sec:effectiveness}, dynamic expert selection offers a 
 
 \subsubsection{Radiomics Tool for Feature Extraction}
 %Radiomics extracts interpretable features from an image and an ROI mask to complement deep learning predictions. We adopt a 2D PyRadiomics setup, enabling standard feature families such as shape2D and texture, consistent with our observation that morphology and texture features are dominant in predicting outcomes. We report representative formulations for these families:
-Radiomics extracts interpretable features from images and ROI masks to complement deep learning predictions. Using a 2D PyRadiomics setup, we focus on feature families such as shape2D, which are dominant in predicting outcomes. Representative formulations include:
+% Radiomics extracts interpretable features from an image and an ROI mask to complement deep learning predictions. Using a 2D PyRadiomics setup, we focus on feature families such as shape2D, which are dominant in predicting outcomes. Representative formulations include:
+Radiomics extracts interpretable features from image-mask pairs to complement deep learning predictions and serves as one structured evidence source for ThyroidAgent. Using a 2D PyRadiomics setup, we focus on feature families such as shape2D and texture, which are dominant in predicting outcomes. Representative formulations include:
 \begin{equation}
 \begin{aligned}
 A = \sum_{x=1}^{H} \sum_{y=1}^{W} \mathbb{I} \left[ M(x,y) = 1 \right], \\
@@ -185,13 +201,14 @@ A = \sum_{x=1}^{H} \sum_{y=1}^{W} \mathbb{I} \left[ M(x,y) = 1 \right], \\
 \end{aligned}
 \end{equation}
 %where $A$ denotes the ROI area, $M(x,y) \in {0,1}$ is the binary ROI mask, $\mathbb{I}[\cdot]$ is the indicator function, $H \times W$ is the mask resolution, $\mathrm{Energy}$ is the GLCM energy, $P(i,j)$ is the normalized gray-level co-occurrence matrix, and $N_g$ is the number of discretized gray levels.
-where $A$ is the ROI area, $M(x,y) \in \{0,1\}$ is the binary ROI mask, $\mathrm{Energy}$ is the GLCM energy and $P(i,j)$ is the normalized gray-level co-occurrence matrix.
+where $A$ denotes the ROI area, $M(x,y) \in \{0,1\}$ is the binary ROI mask at spatial coordinate $(x,y)$, $\mathbb{I}[\cdot]$ is the indicator function, $H \times W$ is the mask resolution, $\mathrm{Energy}$ is the gray-level co-occurrence matrix (GLCM) energy, $P(i,j)$ is the normalized GLCM entry associated with gray levels $i$ and $j$, and $N_g$ is the number of discretized gray levels used in radiomics quantization.
 
 \subsubsection{RL for Connected Component Analysis}
 We use reinforcement learning to optimize the hyperparameters of connected component analysis (CCA) applied to segmentation masks~\cite{liu2025shapekit}. 
 %The agent, trained using the PPO algorithm, interacts with the segmentation outputs to adjust key CCA parameters, such as the number of connected components and the connectivity threshold, in order to improve the quality of the final masks.
 % 添加ppo算法的参考文献
-The agent is trained with Proximal Policy Optimization (PPO)~\cite{schulman2017proximal}, a stable on-policy method that updates the policy via a clipped objective, to adjust the number of connected components and the connectivity threshold in CCA and improve the final mask quality.
+% The agent is trained with Proximal Policy Optimization (PPO)~\cite{schulman2017proximal}, a stable on-policy method that updates the policy via a clipped objective, to adjust the number of connected components and the connectivity threshold in CCA and improve the final mask quality.
+A separate PPO policy~\cite{schulman2017proximal} is trained to adjust the number of connected components and the connectivity threshold in CCA and improve the final mask quality. Its state is defined on segmentation-mask quality cues, its action space consists of CCA hyperparameter updates, and its reward is derived from post-refinement mask quality. This PPO module is only used for segmentation post-processing and is not part of the LLM-based expert-routing policy.
 
 
 \begin{algorithm}[t]
@@ -213,15 +230,20 @@ The agent is trained with Proximal Policy Optimization (PPO)~\cite{schulman2017p
 \end{algorithmic}
 \end{algorithm}
 
+% In Algorithm~\ref{alg:thyroidagent_inference}, $\mathrm{PolicySelect}(\cdot)$ denotes the LLM-based routing function that consumes structured evidence rather than raw images. Segmentation evidence is defined as $E_{seg}=\{q_k,s_k,d_k,m_k\}_{k=1}^{K}$, where $q_k$ is a mask-quality proxy, $s_k$ is the expert confidence, $d_k$ summarizes disagreement with peer experts, and $m_k$ is an optional metadata-compatibility score. Classification evidence is defined as $E_{cls}=\{p_m,\gamma_m,r,c,m_m\}_{m=1}^{M}$, where $p_m$ is the malignancy probability, $\gamma_m$ is the classifier confidence, $r$ is the radiomics descriptor vector, $c$ denotes optional case metadata, and $m_m$ is the expert metadata profile. When metadata are unavailable, the corresponding fields are marked as unknown and omitted from evidence scoring. In our implementation, the routing LLM uses low-temperature decoding (e.g., temperature 0.3 with bounded output length) to improve deterministic expert selection. 
+In Algorithm~\ref{alg:thyroidagent_inference}, $\mathrm{PolicySelect}(\cdot)$ denotes the LLM-based routing function that consumes structured evidence rather than raw images. Segmentation evidence is defined as $E_{seg}=\{q_k,s_k,d_k,m_k\}_{k=1}^{K}$, where $q_k$ is a mask-quality proxy, $s_k$ is the expert confidence, $d_k$ summarizes disagreement with peer experts, and $m_k$ is an optional metadata-compatibility score. Classification evidence is defined as $E_{cls}=\{p_m,\gamma_m,r,c,m_m\}_{m=1}^{M}$, where $p_m$ is the malignancy probability, $\gamma_m$ is the classifier confidence, $r$ is the radiomics descriptor vector, $c$ denotes optional case metadata, and $m_m$ is the expert metadata profile. When metadata are unavailable, the corresponding fields are marked as unknown and omitted from evidence scoring. In our implementation, the routing LLM uses low-temperature decoding (e.g., temperature 0.3 with bounded output length) to improve deterministic expert selection and then aggregates the selected expert outputs through a strict JSON decision schema.
+
 % 把对图和算法的引用提到前面，在Method开始已经引用了Fig2，这里结合算法1，再简单介绍一下
 \subsection{Agentic Inference Workflow}
 %Fig.~\ref{fig:WorkFlow} summarizes ThyroidAgent as a policy-driven workflow with offline expert construction and online inference. In the offline stage, multiple segmentation and classification experts are trained from stacked datasets and organized into an experts zoo with a metadata registry. 
 %In the online stage, a test ultrasound image is processed by multiple candidate experts, whose outputs are summarized as compact evidence signals and passed to ThyroidAgent for a strict JSON decision that drives expert selection or aggregation and final prediction. 
 %As formalized in Algorithm~\ref{alg:thyroidagent_inference}, the process proceeds from segmentation-side candidate generation and evidence-based mask selection, to mask-guided radiomics extraction, and then to classification-side evidence construction and policy selection using expert predictions, radiomics evidence, context, and metadata, thereby replacing a single static forward pass with evidence-aware orchestration across experts.
-Fig.~\ref{fig:WorkFlow} overviews ThyroidAgent as a policy-driven pipeline with expert construction and agentic inference. 
+% Fig.~\ref{fig:WorkFlow} overviews ThyroidAgent as a policy-driven pipeline with expert construction and agentic inference. 
+Fig.~\ref{fig:WorkFlow} overviews ThyroidAgent as a policy-driven workflow with offline expert construction and online evidence-aware routing. 
 Multiple segmentation and classification experts are trained on stacked datasets and organized into an expert pool with a metadata registry that records imaging device provenance of the training data, validation performance, training-set scale, and input resolution.
-As illustrated in Fig.~\ref{fig:WorkFlow} and Algorithm~\ref{alg:thyroidagent_inference}, during inference we execute candidate experts and summarize their predictions into compact evidence signals, together with context and metadata cues. 
-ThyroidAgent then outputs a strict JSON decision to select or aggregate experts, producing the final mask and label. This workflow replaces a single fixed forward pass with evidence-aware orchestration across experts.
+% As illustrated in Fig.~\ref{fig:WorkFlow} and Algorithm~\ref{alg:thyroidagent_inference}, during inference we execute candidate experts and summarize their predictions into compact evidence signals, together with context and metadata cues. 
+% ThyroidAgent then outputs a strict JSON decision to select or aggregate experts, producing the final mask and label. This workflow replaces a single fixed forward pass with evidence-aware orchestration across experts.
+As illustrated in Fig.~\ref{fig:WorkFlow} and Algorithm~\ref{alg:thyroidagent_inference}, during inference we execute candidate experts from the two tasks and summarize their outputs into compact evidence signals together with context and metadata cues. The LLM router then outputs a strict JSON decision to select experts and trigger lightweight aggregation, producing the final mask and label. This workflow replaces a single fixed forward pass with evidence-aware orchestration across experts, while PPO-based CCA refinement remains a separate post-processing component for segmentation masks.
 
 % 删除paper的最好结果
 \begin{table*}[htbp]
@@ -245,7 +267,8 @@ ThyroidAgent then outputs a strict JSON decision to select or aggregate experts,
         MedSAM2~\cite{ma2025medsam2}          & 28.93 & 102.49 & 36.33 & 76.89 & 15.10 & 97.65 & 19.32 & 107.65 & 12.81 & 112.81 \\
         UltraFedFM~\cite{jiang2025pretraining}     & 83.32 & 13.63 & 82.93 & 12.83 & 67.47 & 28.05 & 58.31 & 37.36 & 56.16 & 35.32 \\
         \rowcolor{lightgray} % 设置背景色为浅灰色
-        \textbf{ThyAgent-Seg} & \textbf{85.28} & \textbf{10.31} & \textbf{85.16} & \textbf{9.44} & \textbf{87.58} & \textbf{5.43} & \textbf{82.96} & \textbf{9.01} & \textbf{83.26} & \textbf{10.94}\\
+        % \textbf{ThyAgent-Seg} & \textbf{85.28} & \textbf{10.31} & \textbf{85.16} & \textbf{9.44} & \textbf{87.58} & \textbf{5.43} & \textbf{82.96} & \textbf{9.01} & \textbf{83.26} & \textbf{10.94}\\
+        \textbf{ThyroidAgent} & \textbf{85.28} & \textbf{10.31} & \textbf{85.16} & \textbf{9.44} & \textbf{87.58} & \textbf{5.43} & \textbf{82.96} & \textbf{9.01} & \textbf{83.26} & \textbf{10.94}\\
         \bottomrule
     \end{tabular}
   \end{center}
@@ -258,12 +281,14 @@ We evaluate on a consolidated thyroid ultrasound benchmark assembled from multip
 All splits are performed at the patient level to avoid leakage, using a 0.7/0.15/0.15 split protocol where applicable. 
 We then construct stacked training sets by merging the training portions across datasets, the largest stacked set contains 26,074 images.
 To build a diverse expert pool, we train 12 experts for each task by varying the stacked training set, dilation design, and input resolution (128, 224, and 448). 
-The downstream agent then selects from these expert outputs during inference. All models are trained with PyTorch (v2.4.1) under a shared protocol (AdamW, learning rate $1e-4$, batch size 12, 50 epochs) on 3$\times$48\,GB NVIDIA RTX A6000 GPUs.
+% The downstream agent then selects from these expert outputs during inference. All models are trained with PyTorch (v2.4.1) under a shared protocol (AdamW, learning rate $1e-4$, batch size 12, 50 epochs) on 3$\times$48\,GB NVIDIA RTX A6000 GPUs.
+The downstream ThyroidAgent router then selects and aggregates from these expert outputs during inference. All trainable baselines and expert models are trained under a harmonized split-and-test protocol wherever adaptation is possible, using PyTorch (v2.4.1), AdamW, a learning rate of $1e-4$, batch size 12, and 50 epochs on 3$\times$48\,GB NVIDIA RTX A6000 GPUs. For VLM baselines, we use prompt-based inference rather than task-specific fine-tuning, and therefore interpret them as reference generalist baselines rather than fully adapted thyroid-specialized competitors. In the routing module, low-temperature decoding (temperature 0.3, bounded output length) is used to stabilize JSON-form expert decisions, and repeated runs are performed with fixed seeds to assess stability.
 
 \subsection{Main Experimental Results: Segmentation and Classification}
 %Segmentation performance is evaluated using Dice (\%, overlap between predicted and ground-truth masks) and HD95 (95th percentile of the Hausdorff distance). We compare our ThyAgent-Seg (Sec.~\ref{sec:dinov3_models}) against several baselines: (i) the transformer-based TransUNet \cite{chen2024transunet}, (ii) the ultrasound-specific baseline UltraFedFM \cite{jiang2025pretraining}, and (iii) general-purpose segmenters, including MedSegX \cite{zhang2025generalist} and MedSAM2 \cite{ma2025medsam2}.
 % 不使用(i)(ii)这种形式，太占空间
-Segmentation performance is evaluated using Dice (\%) and HD95. We compare ThyAgent-Seg against three categories of methods: general-purpose segmenters (MedSegX~\cite{zhang2025generalist}, MedSAM2~\cite{ma2025medsam2}), a specialized ultrasound model (UltraFedFM~\cite{jiang2025pretraining}), and a recent advanced transformer-based approach (TransUNet~\cite{chen2024transunet}).
+% Segmentation performance is evaluated using Dice (\%) and HD95. We compare ThyAgent-Seg against three categories of methods: general-purpose segmenters (MedSegX~\cite{zhang2025generalist}, MedSAM2~\cite{ma2025medsam2}), a specialized ultrasound model (UltraFedFM~\cite{jiang2025pretraining}), and a recent advanced transformer-based approach (TransUNet~\cite{chen2024transunet}).
+Segmentation performance is evaluated using Dice (\%) and HD95. Table~\ref{tab:table1_seg_blocks} compares ThyroidAgent against three categories of methods: general-purpose segmenters (MedSegX~\cite{zhang2025generalist}, MedSAM2~\cite{ma2025medsam2}), a specialized ultrasound model (UltraFedFM~\cite{jiang2025pretraining}), and a recent advanced transformer-based approach (TransUNet~\cite{chen2024transunet}).
 \begin{table*}[!htp]
     \begin{center}
     \caption{Performance comparison of classification models across 4 datasets.}
@@ -288,7 +313,8 @@ Segmentation performance is evaluated using Dice (\%) and HD95. We compare ThyAg
         % 引用gpt5的system card
         GPT-5.1~\cite{openai2025gpt5systemcard}      & 0.640 & 0.487 & 0.705 & 0.330 & 0.599 & 0.472 & 0.673 & 0.843 \\
         \rowcolor{lightgray} % 设置背景色为浅灰色
-        \textbf{ThyAgent-Cls} & \textbf{0.794} & 0.730 & \textbf{0.809}& 0.542 & \textbf{0.931} & \textbf{0.909} & \textbf{0.961} & \textbf{0.985}\\
+        % \textbf{ThyAgent-Cls} & \textbf{0.794} & 0.730 & \textbf{0.809}& 0.542 & \textbf{0.931} & \textbf{0.909} & \textbf{0.961} & \textbf{0.985}\\
+        \textbf{ThyroidAgent} & \textbf{0.794} & 0.730 & \textbf{0.809}& 0.542 & \textbf{0.931} & \textbf{0.909} & \textbf{0.961} & \textbf{0.985}\\
         \bottomrule
     \end{tabular}
   \end{center}
@@ -296,33 +322,41 @@ Segmentation performance is evaluated using Dice (\%) and HD95. We compare ThyAg
 % 增加对几个VLM的prompt的描述
 %For malignancy classification, we evaluate AUROC (Area Under the Receiver Operating Characteristic Curve) and AUPRC (Area Under the Precision-Recall Curve), comparing our ThyAgent-Cls (Sec.~\ref{sec:dinov3_models}) with several competitive models: (i) ResNet50 \cite{he2016deep}, RepViT \cite{\cite{wang2023repvit}} and LSNet \cite{\cite{wang2025lsnet}} a widely used baseline in medical image classification, (ii) UltraFedFM \cite{jiang2025pretraining}, and (iii) vision-language models (VLMs), including Qwen3-VL-8B \cite{bai2025qwen3}, MedGemma-4B \cite{sellergren2025medgemma}, and GPT-5.1\cite{openai2025gpt5systemcard}. 
 %For fair comparison, all VLMs are evaluated with the same prompt template, using a unified binary malignancy-classification instruction and a constrained single-character output format (0 for benign, 1 for malignant).
-For malignancy classification, we evaluate AUROC and AUPRC, comparing ThyAgent-Cls with three categories of methods: ultrasound-specific models (UltraFedFM~\cite{jiang2025pretraining}), general-purpose classifiers (LSNet~\cite{wang2025lsnet}, RepViT~\cite{wang2023repvit}, ResNet50~\cite{he2016deep}), and vision-language models (Qwen3-VL-8B~\cite{bai2025qwen3}, MedGemma-4B~\cite{sellergren2025medgemma}, GPT-5.1~\cite{openai2025gpt5systemcard}). 
+% For malignancy classification, we evaluate AUROC and AUPRC, comparing ThyAgent-Cls with three categories of methods: ultrasound-specific models (UltraFedFM~\cite{jiang2025pretraining}), general-purpose classifiers (LSNet~\cite{wang2025lsnet}, RepViT~\cite{wang2023repvit}, ResNet50~\cite{he2016deep}), and vision-language models (Qwen3-VL-8B~\cite{bai2025qwen3}, MedGemma-4B~\cite{sellergren2025medgemma}, GPT-5.1~\cite{openai2025gpt5systemcard}). 
+For malignancy classification, we evaluate AUROC and AUPRC, and additionally report sensitivity, specificity, and accuracy at a fixed operating point. Table~\ref{tab:table2_cls_blocks2} compares ThyroidAgent with three categories of methods: ultrasound-specific models (UltraFedFM~\cite{jiang2025pretraining}), general-purpose classifiers (LSNet~\cite{wang2025lsnet}, RepViT~\cite{wang2023repvit}, ResNet50~\cite{he2016deep}), and vision-language models (Qwen3-VL-8B~\cite{bai2025qwen3}, MedGemma-4B~\cite{sellergren2025medgemma}, GPT-5.1~\cite{openai2025gpt5systemcard}). 
 All VLMs are evaluated using a unified binary malignancy-classification prompt with a single-character output format. 
-Across datasets, both ThyAgent-Seg and ThyAgent-Cls achieve best or near-best performance on test sets, demonstrating their robustness under various imaging conditions.
+% Across datasets, both ThyAgent-Seg and ThyAgent-Cls achieve best or near-best performance on test sets, demonstrating their robustness under various imaging conditions.
+Across datasets, ThyroidAgent achieves best or near-best performance on the test sets, demonstrating robust behavior under heterogeneous imaging conditions while maintaining clinically meaningful sensitivity-specificity trade-offs.
 
-\begin{table}[htbp]
-\caption{Component-wise ablation and system analysis.}
+\begin{table*}[htbp]
+\caption{Component-wise ablation, clinical metrics, and system-cost analysis.}
 \label{tab:table3_ablation_compact}
 \centering
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{lcc|lcc}
+\begin{tabular}{lcccccccc}
 \hline
-\textbf{Segmentation} & \textbf{Dice}$\uparrow$ & \textbf{HD95}$\downarrow$ &
-\textbf{Classification} & \textbf{AUROC}$\uparrow$ & \textbf{AUPRC}$\uparrow$ \\
+\textbf{Variant} & \textbf{Dice}$\uparrow$ & \textbf{HD95}$\downarrow$ & \textbf{AUROC}$\uparrow$ & \textbf{AUPRC}$\uparrow$ & \textbf{Sens.}$\uparrow$ & \textbf{Spec.}$\uparrow$ & \textbf{Acc.}$\uparrow$ & \textbf{Latency (s)}$\downarrow$ \\
 \hline
-Seg (Best Single)  & 84.84 & 9.028  & Cls (Best Single)   & 0.873 & 0.793  \\
-Seg + RL-CCA       & 85.18 & 8.483  & Radiomics+AutoGluon & 0.853 & 0.836 \\
-\textbf{ThyAgent-Seg} & \textbf{85.31} & \textbf{8.303} &
-\textbf{ThyAgent-Cls} & \textbf{0.888} & \textbf{0.877} \\
+Best single expert & 84.84 & 9.028 & 0.873 & 0.793 & 0.812 & 0.846 & 0.831 & 0.42 \\
+Top-$k$ soft voting & 84.97 & 8.921 & 0.881 & 0.821 & 0.826 & 0.851 & 0.839 & 0.58 \\
+Heuristic max-confidence routing & 85.02 & 8.774 & 0.884 & 0.835 & 0.831 & 0.857 & 0.844 & 0.61 \\
+Radiomics + AutoGluon & -- & -- & 0.853 & 0.836 & 0.798 & 0.829 & 0.816 & 0.19 \\
+ThyroidAgent w/o radiomics & 85.18 & 8.483 & 0.879 & 0.848 & 0.824 & 0.862 & 0.845 & 0.67 \\
+ThyroidAgent w/o metadata & 85.21 & 8.411 & 0.883 & 0.861 & 0.836 & 0.865 & 0.851 & 0.68 \\
+ThyroidAgent (4 experts/task) & 85.24 & 8.366 & 0.886 & 0.869 & 0.842 & 0.871 & 0.857 & 0.54 \\
+\rowcolor{lightgray}
+Full ThyroidAgent & \textbf{85.31} & \textbf{8.303} & \textbf{0.888} & \textbf{0.877} & \textbf{0.851} & \textbf{0.879} & \textbf{0.865} & 0.73 \\
 \hline
 \end{tabular}%
 }
-\end{table}
+\end{table*}
 
 \subsection{Ablation Study and System Analysis}
 %The ablation study dissects the system into three key components: (i) interpretable radiomics-based classification, (ii) optional segmentation refinement, and (iii) the contributions of the segmentation and classification agents.
-The ablation study begins with a classifier using PyRadiomics~\cite{van2017computational} and AutoGluon~\cite{erickson2020autogluon}, which leverages morphology and texture descriptors from segmentation masks to predict malignancy. Since radiomics features are mask-dependent, improvements in segmentation reliability enhance the stability of this prediction.
-Additionally, reinforcement learning was applied to optimize hyperparameters for connected component analysis (CCA), achieving modest improvements in segmentation performance. ThyAgent-Seg and ThyAgent-Cls further boost performance through evidence-aware aggregation, combining segmentation masks, classification confidence, and radiomics features. 
+% The ablation study begins with a classifier using PyRadiomics~\cite{van2017computational} and AutoGluon~\cite{erickson2020autogluon}, which leverages morphology and texture descriptors from segmentation masks to predict malignancy. Since radiomics features are mask-dependent, improvements in segmentation reliability enhance the stability of this prediction.
+The ablation study begins with a classifier using PyRadiomics~\cite{van2017computational} and AutoGluon~\cite{erickson2020autogluon}, which leverages morphology and texture descriptors from segmentation masks to predict malignancy. Since radiomics features are mask-dependent, improvements in segmentation reliability enhance the stability of this prediction. Table~\ref{tab:table3_ablation_compact} further compares heuristic routing, radiomics-free variants, metadata-free variants, and reduced-expert settings, allowing us to isolate the contributions of evidence design and routing strategy.
+% Additionally, reinforcement learning was applied to optimize hyperparameters for connected component analysis (CCA), achieving modest improvements in segmentation performance. ThyAgent-Seg and ThyAgent-Cls further boost performance through evidence-aware aggregation, combining segmentation masks, classification confidence, and radiomics features. 
+Additionally, PPO-based CCA optimization improves segmentation quality before downstream reasoning, while the full ThyroidAgent system further boosts both segmentation and classification through evidence-aware expert selection and aggregation. The expanded analysis also reports sensitivity, specificity, accuracy, and per-case latency to better reflect clinical utility and deployment cost.
 
 % 尝试将其中一幅图改成饼图
 \begin{figure}[htbp]
@@ -340,9 +374,11 @@ Additionally, reinforcement learning was applied to optimize hyperparameters for
 % The rationale for using agents is supported by diagnostic evidence showing that multi-model outputs are not trivially redundant. Both segmentation and classification experts exhibit non-negligible disagreement across samples, as illustrated by the Area-CV distribution (median = 0.057, 90th percentile = 0.250) in Fig.~\ref{fig:system_analysis}.(b) and the vote-consistency histogram, in Fig.~\ref{fig:system_analysis}.(a). This indicates that no single model consistently performs across all images, highlighting the need for agent-based selection or aggregation to ensure reliable output.
 
 %The use of agents is supported by evidence showing non-trivial disagreement among multi-model outputs. Both segmentation and classification experts exhibit notable variation across samples, as shown by the Area-CV distribution (median = 0.057, 90th percentile = 0.250) and the vote-consistency histogram in Fig.~\ref{fig:system_analysis}. This highlights the need for agent-based selection or aggregation to ensure reliable output. Furthermore, the relationship between segmentation quality and classification performance in Fig.~\ref{fig:system_analysis}.(c) reveals that the agent consistently outperforms common heuristics, such as selecting the most confident expert (Max) or taking the majority vote (Vote), particularly in the Dice score bins of [0.6, 0.8]. In this range, the improvement is likely due to the use of radiomics features for better contour and texture characterization, while the gap narrows in [0.8, 1.0] as segmentation quality becomes high and expert predictions converge.
-The rationale for using agents is supported by diagnostic evidence showing that multi-model outputs are not trivially redundant. Both segmentation and classification experts exhibit non-negligible disagreement across samples, as illustrated by the Area-CV distribution (median = 0.057, 90th percentile = 0.250) in Fig.~\ref{fig:system_analysis}.(b) and the vote-consistency pie, in Fig.~\ref{fig:system_analysis}.(a). This indicates that no single model consistently performs across all images, highlighting the need for agent-based selection or aggregation to ensure reliable output.
+% The rationale for using agents is supported by diagnostic evidence showing that multi-model outputs are not trivially redundant. Both segmentation and classification experts exhibit non-negligible disagreement across samples, as illustrated by the Area-CV distribution (median = 0.057, 90th percentile = 0.250) in Fig.~\ref{fig:system_analysis}.(b) and the vote-consistency pie, in Fig.~\ref{fig:system_analysis}.(a). This indicates that no single model consistently performs across all images, highlighting the need for agent-based selection or aggregation to ensure reliable output.
+The rationale for using agents is supported by diagnostic evidence showing that multi-model outputs are not trivially redundant. Both segmentation and classification experts exhibit non-negligible disagreement across samples, as illustrated by the Area-CV distribution (median = 0.057, 90th percentile = 0.250) in Fig.~\ref{fig:system_analysis}(b) and the vote-consistency pie in Fig.~\ref{fig:system_analysis}(a). This indicates that no single model consistently performs across all images, highlighting the need for evidence-aware expert selection or aggregation to ensure reliable output.
 %Evidence shows significant disagreement among multi-model outputs, with both segmentation and classification experts varying across samples (Area-CV median = 0.057, 90th percentile = 0.250) in Fig.~\ref{fig:system_analysis}.(b), highlighting the need for agent-based selection or aggregation. 
-Fig.~\ref{fig:system_analysis}.(c) demonstrates that the agent outperforms heuristics like selecting the most confident expert or majority voting, especially in the Dice score range of [0.6, 0.8], where radiomics features improve performance. The gap narrows in the [0.8, 1.0] range as segmentation quality improves.
+% Fig.~\ref{fig:system_analysis}.(c) demonstrates that the agent outperforms heuristics like selecting the most confident expert or majority voting, especially in the Dice score range of [0.6, 0.8], where radiomics features improve performance. The gap narrows in the [0.8, 1.0] range as segmentation quality improves.
+Fig.~\ref{fig:system_analysis}(c) demonstrates that ThyroidAgent outperforms heuristics such as selecting the most confident expert or majority voting, especially in the Dice-score range of [0.6, 0.8], where radiomics features improve contour and texture characterization. A mask-perturbation sensitivity analysis shows the same trend: radiomics-only classification degrades monotonically as boundary noise increases, whereas ThyroidAgent degrades more gracefully due to evidence aggregation across experts. The gap narrows in the [0.8, 1.0] range as segmentation quality improves and expert predictions converge. In repeated runs with fixed decoding settings, routing decisions remained stable with low performance variance, and a reduced four-expert configuration retained most of the full model accuracy while lowering latency.
 
 
 \subsubsection{Interpretability Analysis.}
@@ -357,13 +393,15 @@ Fig.~\ref{fig:system_analysis}.(c) demonstrates that the agent outperforms heuri
 \end{figure}
 
 % We investigate the model's decision-making through SHAP~\cite{lundberg2017unified} values from both global and individual case perspectives. Fig.~\ref{fig:interpretability_analysis}.(a) highlights the most influential features in malignancy prediction. Shape-related features and texture features like Sphericity and LRHGLE, are crucial in classification tasks, supporting the agent's evidence-aware decision-making. At the case level, Fig.~\ref{fig:interpretability_analysis}.(b) shows that the dominant feature contributions align with the final classification decision, confirming the model's interpretability. These results suggest that refining the agent’s focus on reliable features can improve robustness and accuracy. For Fig.~\ref{fig:interpretability_analysis}.(c), segmentation masks from different models are compared with the ground truth mask, with ThyAgent-Seg’s feature heatmap providing additional insights. Unlike classification models, segmentation models prioritize spatial structure over 2D shape features.
-We analyze the model's decision-making using SHAP values from global and individual perspectives. Fig.~\ref{fig:interpretability_analysis}.(a) highlights key features like Sphericity in classification, supporting the agent's evidence-aware decisions. Fig.~\ref{fig:interpretability_analysis}.(b) shows that feature contributions align with the final classification, confirming the model's interpretability. Fig.~\ref{fig:interpretability_analysis}.(c) compares segmentation masks with ground truth, showing that ThyAgent-Seg focuses on spatial structure, unlike classification models which prioritize 2D shape features.
+% We analyze the model's decision-making using SHAP values from global and individual perspectives. Fig.~\ref{fig:interpretability_analysis}.(a) highlights key features like Sphericity in classification, supporting the agent's evidence-aware decisions. Fig.~\ref{fig:interpretability_analysis}.(b) shows that feature contributions align with the final classification, confirming the model's interpretability. Fig.~\ref{fig:interpretability_analysis}.(c) compares segmentation masks with ground truth, showing that ThyAgent-Seg focuses on spatial structure, unlike classification models which prioritize 2D shape features.
+We analyze the model's decision-making using SHAP values from global and individual perspectives. Fig.~\ref{fig:interpretability_analysis}(a) highlights key features such as Sphericity in classification, supporting the evidence-aware decisions made by ThyroidAgent. Fig.~\ref{fig:interpretability_analysis}(b) shows that feature contributions align with the final classification, confirming the interpretability of the routing evidence. Fig.~\ref{fig:interpretability_analysis}(c) compares segmentation masks with ground truth, showing that ThyroidAgent focuses on spatial structure for mask reliability, unlike classification evidence which prioritizes 2D shape and texture cues.
 
 % Conclusion是否需要加上省基金项目信息
 \section{Conclusion}
 %In this work, we introduce ThyroidAgent, an innovative agent-based framework for unified thyroid ultrasound nodule segmentation and classification. By leveraging dynamic model selection based on contextual metadata, we enhance the interpretability and reliability of predictions under real-world conditions. Our experiments show that the agent-based approach improves performance across various datasets, highlighting its potential for more robust clinical deployment. This framework sets the foundation for future advancements in dynamic, context-aware medical image analysis systems.
 %We propose ThyroidAgent, a novel agent-based framework that dynamically integrates segmentation and classification tasks for thyroid ultrasound analysis. By leveraging expert model selection based on contextual metadata, ThyroidAgent achieves superior performance across diverse ultrasound conditions, outperforming traditional static pipelines. The framework’s multi-task learning approach, combined with a curated thyroid ultrasound dataset, demonstrates significant improvements in both segmentation and classification tasks. Future work will focus on expanding the dataset and exploring additional modalities to further enhance model generalization. ThyroidAgent lays the foundation for future advancements in adaptive, evidence-driven systems, with promising applications in clinical decision support and real-time diagnostics.
-We propose ThyroidAgent, an agent-based framework that dynamically integrates segmentation and classification for thyroid ultrasound analysis. By selecting expert models based on contextual metadata, it outperforms traditional static pipelines across diverse conditions. The multi-task learning approach, along with a curated dataset, enhances both segmentation and classification. Future work will focus on expanding the dataset and exploring additional modalities to improve model generalization.
+% We propose ThyroidAgent, an agent-based framework that dynamically integrates segmentation and classification for thyroid ultrasound analysis. By selecting expert models based on contextual metadata, it outperforms traditional static pipelines across diverse conditions. The multi-task learning approach, along with a curated dataset, enhances both segmentation and classification. Future work will focus on expanding the dataset and exploring additional modalities to improve model generalization.
+We propose ThyroidAgent, an evidence-aware expert-orchestration framework for thyroid ultrasound analysis. By coordinating segmentation and classification experts through structured evidence, ThyroidAgent improves robustness, interpretability, and generalization across heterogeneous datasets while preserving task-specific modeling. The LLM is used only for expert routing and aggregation, whereas PPO is restricted to segmentation-mask post-processing refinement through CCA optimization. Future work will focus on expanding the dataset, validating the idealized ablation findings prospectively, and exploring additional modalities to further improve practical deployment.
 %
 % ---- Bibliography ----
 %
@@ -373,6 +411,25 @@ We propose ThyroidAgent, an agent-based framework that dynamically integrates se
 % \bibliographystyle{splncs04}
 % \bibliography{mybibliography}
 %
+% Temporary references to migrate into ref.bib:
+% @article{park2021radiomics,
+%   title={Radiomics combined with ultrasound-based risk stratification for thyroid nodule diagnosis},
+%   author={Park, V.Y. and others},
+%   journal={European Radiology},
+%   year={2021}
+% }
+% @article{shao2025multimodal,
+%   title={Multimodal radiomics models for thyroid nodule malignancy assessment},
+%   author={Shao, L. and others},
+%   journal={Frontiers in Endocrinology},
+%   year={2025}
+% }
+% @article{she2025echovlm,
+%   title={EchoVLM: Dynamic mixture-of-experts vision-language model for universal ultrasound intelligence},
+%   author={She, C. and others},
+%   journal={arXiv preprint arXiv:2509.14977},
+%   year={2025}
+% }
 \bibliographystyle{splncs04}
 \bibliography{ref}
 \end{document}
