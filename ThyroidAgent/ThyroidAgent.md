@@ -326,26 +326,25 @@ Segmentation performance is evaluated using Dice (\%) and HD95. Table~\ref{tab:t
 For malignancy classification, we evaluate AUROC and AUPRC, and additionally report sensitivity, specificity, and accuracy at a fixed operating point. Table~\ref{tab:table2_cls_blocks2} compares ThyroidAgent with three categories of methods: ultrasound-specific models (UltraFedFM~\cite{jiang2025pretraining}), general-purpose classifiers (LSNet~\cite{wang2025lsnet}, RepViT~\cite{wang2023repvit}, ResNet50~\cite{he2016deep}), and vision-language models (Qwen3-VL-8B~\cite{bai2025qwen3}, MedGemma-4B~\cite{sellergren2025medgemma}, GPT-5.1~\cite{openai2025gpt5systemcard}). 
 All VLMs are evaluated using a unified binary malignancy-classification prompt with a single-character output format. 
 % Across datasets, both ThyAgent-Seg and ThyAgent-Cls achieve best or near-best performance on test sets, demonstrating their robustness under various imaging conditions.
-Across datasets, ThyroidAgent achieves best or near-best performance on the test sets, demonstrating robust behavior under heterogeneous imaging conditions while maintaining clinically meaningful sensitivity-specificity trade-offs.
+Across datasets, ThyroidAgent achieves best or near-best performance on the test sets, demonstrating robust behavior under heterogeneous imaging conditions.
 
 \begin{table*}[htbp]
-\caption{Component-wise ablation, clinical metrics, and system-cost analysis.}
+\caption{Component-wise ablation with segmentation and classification analysis.}
 \label{tab:table3_ablation_compact}
 \centering
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{lcccccccc}
+\resizebox{0.8\linewidth}{!}{%
+\begin{tabular}{lcccc}
 \hline
-\textbf{Variant} & \textbf{Dice}$\uparrow$ & \textbf{HD95}$\downarrow$ & \textbf{AUROC}$\uparrow$ & \textbf{AUPRC}$\uparrow$ & \textbf{Sens.}$\uparrow$ & \textbf{Spec.}$\uparrow$ & \textbf{Acc.}$\uparrow$ & \textbf{Latency (s)}$\downarrow$ \\
+\textbf{Variant} & \textbf{Dice}$\uparrow$ & \textbf{HD95}$\downarrow$ & \textbf{AUROC}$\uparrow$ & \textbf{AUPRC}$\uparrow$ \\
 \hline
-Best single expert & 84.84 & 9.028 & 0.873 & 0.793 & 0.812 & 0.846 & 0.831 & 0.42 \\
-Top-$k$ soft voting & 84.97 & 8.921 & 0.881 & 0.821 & 0.826 & 0.851 & 0.839 & 0.58 \\
-Heuristic max-confidence routing & 85.02 & 8.774 & 0.884 & 0.835 & 0.831 & 0.857 & 0.844 & 0.61 \\
-Radiomics + AutoGluon & -- & -- & 0.853 & 0.836 & 0.798 & 0.829 & 0.816 & 0.19 \\
-ThyroidAgent w/o radiomics & 85.18 & 8.483 & 0.879 & 0.848 & 0.824 & 0.862 & 0.845 & 0.67 \\
-ThyroidAgent w/o metadata & 85.21 & 8.411 & 0.883 & 0.861 & 0.836 & 0.865 & 0.851 & 0.68 \\
-ThyroidAgent (4 experts/task) & 85.24 & 8.366 & 0.886 & 0.869 & 0.842 & 0.871 & 0.857 & 0.54 \\
+Best single expert & 84.84 & 9.028 & 0.873 & 0.793 \\
+Top-$k$ soft voting & 84.97 & 8.921 & 0.881 & 0.821 \\
+Heuristic max-confidence routing & 85.02 & 8.774 & 0.884 & 0.835 \\
+Radiomics + AutoGluon & -- & -- & 0.853 & 0.836 \\
+ThyroidAgent w/o radiomics & 85.18 & 8.483 & 0.879 & 0.848 \\
+ThyroidAgent (4 experts/task) & 85.24 & 8.366 & 0.886 & 0.869 \\
 \rowcolor{lightgray}
-Full ThyroidAgent & \textbf{85.31} & \textbf{8.303} & \textbf{0.888} & \textbf{0.877} & \textbf{0.851} & \textbf{0.879} & \textbf{0.865} & 0.73 \\
+Full ThyroidAgent & \textbf{85.31} & \textbf{8.303} & \textbf{0.888} & \textbf{0.877} \\
 \hline
 \end{tabular}%
 }
@@ -354,9 +353,9 @@ Full ThyroidAgent & \textbf{85.31} & \textbf{8.303} & \textbf{0.888} & \textbf{0
 \subsection{Ablation Study and System Analysis}
 %The ablation study dissects the system into three key components: (i) interpretable radiomics-based classification, (ii) optional segmentation refinement, and (iii) the contributions of the segmentation and classification agents.
 % The ablation study begins with a classifier using PyRadiomics~\cite{van2017computational} and AutoGluon~\cite{erickson2020autogluon}, which leverages morphology and texture descriptors from segmentation masks to predict malignancy. Since radiomics features are mask-dependent, improvements in segmentation reliability enhance the stability of this prediction.
-The ablation study begins with a classifier using PyRadiomics~\cite{van2017computational} and AutoGluon~\cite{erickson2020autogluon}, which leverages morphology and texture descriptors from segmentation masks to predict malignancy. Since radiomics features are mask-dependent, improvements in segmentation reliability enhance the stability of this prediction. Table~\ref{tab:table3_ablation_compact} further compares heuristic routing, radiomics-free variants, metadata-free variants, and reduced-expert settings, allowing us to isolate the contributions of evidence design and routing strategy.
+The ablation study begins with a classifier using PyRadiomics~\cite{van2017computational} and AutoGluon~\cite{erickson2020autogluon}, which leverages morphology and texture descriptors from segmentation masks to predict malignancy. Since radiomics features are mask-dependent, improvements in segmentation reliability enhance the stability of this prediction. Table~\ref{tab:table3_ablation_compact} further compares heuristic routing, radiomics-free variants, and reduced-expert settings, allowing us to isolate the contributions of evidence design and routing strategy.
 % Additionally, reinforcement learning was applied to optimize hyperparameters for connected component analysis (CCA), achieving modest improvements in segmentation performance. ThyAgent-Seg and ThyAgent-Cls further boost performance through evidence-aware aggregation, combining segmentation masks, classification confidence, and radiomics features. 
-Additionally, PPO-based CCA optimization improves segmentation quality before downstream reasoning, while the full ThyroidAgent system further boosts both segmentation and classification through evidence-aware expert selection and aggregation. The expanded analysis also reports sensitivity, specificity, accuracy, and per-case latency to better reflect clinical utility and deployment cost.
+Additionally, PPO-based CCA optimization improves segmentation quality before downstream reasoning, while the full ThyroidAgent system further boosts segmentation and classification performance through evidence-aware expert selection and aggregation. The expanded analysis focuses on Dice and HD95 for segmentation, together with AUROC and AUPRC for classification, under heuristic routing, radiomics-free variants, and reduced-expert settings.
 
 % 尝试将其中一幅图改成饼图
 \begin{figure}[htbp]

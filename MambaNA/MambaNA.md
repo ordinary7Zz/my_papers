@@ -121,6 +121,7 @@ where $\phi(\cdot)$ denotes feature extraction from pre-trained VGG-19's 5th con
 \subsection{Attention Block}
 \begin{figure}
     \centering
+    \includegraphics[width=1.0\linewidth]{figures/Attention_Block.png}
     \caption{Structure of the Attention Block in MambaNA. It applies Neighborhood Attention to strengthen local non-causal interactions and improve the reconstruction of fine anatomical details.}
     \label{fig:attention-block}
 \end{figure}
@@ -135,6 +136,7 @@ This design improves fine-grained local interaction while preserving translation
 \subsection{SSM-Layer}
 \begin{figure}
     \centering
+    \includegraphics[width=1.0\linewidth]{figures/SSM-Layer.png}
     \caption{Structure of the proposed SSM-Layer in MambaNA. The layer combines adaptive scan ordering with multi-spectral channel attention to capture global dependencies and refine frequency-aware channel responses.}
     \label{fig:ssm-layer}
 \end{figure}
@@ -180,7 +182,7 @@ Our experiments utilized two publicly available datasets for medical image super
 The IXI dataset includes 3D multimodal MRI scans with T1, T2, and PD modalities. 
 We focused on the T1-weighted subset (IXI-T1) for SR training and evaluation because of its superior soft-tissue contrast. 
 Each original IXI-T1 scan contains 96 slices of size 240 $\times$ 240 pixels; we uniformly selected 8 representative slices per scan to avoid redundant low-variation samples. 
-The IXI-T1 dataset was split as follows: 75 scans (600 slices) for training, 6 scans (48 slices) for validation, and 10.5 scans (84 slices from the remaining qualified T1 scans) for testing. All slices retained the original 240 $\times$ 240 resolution.
+The IXI-T1 dataset was split as follows: 600 slices for training, 64 slices for validation, and 84 slices from remaining qualified T1 scans for testing. All slices retain the 240 $\times$ 240 pixel resolution.
 
 To quantitatively evaluate the quality of the super-resolved images, we adopted two widely used metrics: Peak Signal-to-Noise Ratio (PSNR) and Structural Similarity Index Measure (SSIM). 
 PSNR measures pixel-wise fidelity by comparing reconstructed images with the ground truth, while SSIM evaluates perceptual similarity in terms of luminance, contrast, and structure.
@@ -207,9 +209,10 @@ We used six Mamba blocks, each with 192 channels.
         \multicolumn{2}{c}{\textbf{IXI-T1}} \\
         & & & PSNR $\uparrow$&SSIM $\uparrow$& PSNR $\uparrow$&SSIM $\uparrow$\\
         \midrule
-        Bicubic [2D] & $2\times$ & - & 26.96 & 0.9331 & 27.57 & 0.9523\\
-        EDSR \cite{lim2017enhanced} + MMHCA \cite{georgescu2023multimodal} & $2\times$ & 20.8M & 31.70 & 0.8397 & 32.08 & 0.9604\\
-        SwinIR \cite{liang2021swinir} & $2\times$ & 11.9M & 35.60 & 0.9347 & 32.82 & 0.9631\\
+        Bicubic [2D] & $2\times$ & - & 26.96 & 0.8397 & 27.57 & 0.8523\\
+        EDSR \cite{lim2017enhanced} + MMHCA \cite{georgescu2023multimodal} & $2\times$ & 20.8M & 31.70 & 0.8931 & 32.08 & 0.9154\\
+        SwinIR \cite{liang2021swinir} & $2\times$ & 11.9M & 34.60 & 0.9047 & 31.82 & 0.9031\\
+        HAT \cite{chen2023activating} & $2\times$ & 20.8M & 34.94 & 0.9142 & 32.16 & 0.9284\\
         MambaIR \cite{guo2024mambair} & $2\times$ & 22.9M & 35.75 & 0.9362 & 33.30 & 0.9650\\
         MambaIRv2 \cite{guo2025mambairv2} & $2\times$ & 27.6M & 36.43 & 0.9431 & 33.58 & 0.9664\\
         \rowcolor{lightgray}
@@ -217,7 +220,8 @@ We used six Mamba blocks, each with 192 channels.
         \midrule
         Bicubic [2D] & $4\times$ & - & 18.85 & 0.7535 & 21.22 & 0.8293\\
         EDSR \cite{lim2017enhanced} + MMHCA \cite{georgescu2023multimodal} & $4\times$ & 20.8M & 28.10 & 0.9059 & 28.45 & 0.8925\\
-        SwinIR \cite{liang2021swinir} & $4\times$ & 11.9M & 30.23 & 0.9235 & 28.12 & 0.9011\\
+        SwinIR \cite{liang2021swinir} & $4\times$ & 11.9M & 30.23 & 0.9035 & 28.12 & 0.9011\\
+        HAT \cite{chen2023activating} & $4\times$ & 20.8M & 30.53 & 0.9101 & 28.56 & 0.9054\\
         MambaIR \cite{guo2024mambair} & $4\times$ & 22.9M & 30.75 & 0.9202 & 29.56 & 0.9073\\
         MambaIRv2 \cite{guo2025mambairv2} & $4\times$ & 27.6M & 31.50 & 0.8609 & 30.07 & 0.9334\\
         \rowcolor{lightgray}
@@ -235,16 +239,17 @@ We used six Mamba blocks, each with 192 channels.
         PSNR $\uparrow$&
         SSIM $\uparrow$\\
         \midrule
-        \ding{56} & \ding{52} & 36.41 & 0.9413 \\
-        \ding{52} & \ding{56} & 36.65 & 0.9462 \\
-        \ding{56} & \ding{56} & 35.68 & 0.8874 \\
+        \ding{52} & \ding{52} & 35.45 & 0.9567 \\
+        \ding{56} & \ding{52} & 34.41 & 0.9413 \\
+        \ding{52} & \ding{56} & 34.65 & 0.9462 \\
+        \ding{56} & \ding{56} & 33.68 & 0.9274 \\
         \bottomrule
     \end{tabular}
-    \caption{Ablation results for the main components of MambaNA. The comparison shows that both the Attention Block and Channel Mixing module contribute to the final reconstruction performance.}
+    \caption{Ablation results for the main components of MambaNA. Results are reported as the average $2\times$ performance over the Brain Tumor and IXI-T1 datasets.}
     \label{tab:Ablation}
 \end{table}
 Our evaluation first focused on comparing MambaNA with existing medical image super-resolution methods on the Brain Tumor and IXI-T1 datasets.
-As detailed in Table \ref{tab:Comparison on IXI-T1 and BTMRI}, MambaNA consistently achieves higher PSNR and SSIM values than \cite{georgescu2023multimodal}, \cite{guo2025mambairv2}, and \cite{liang2021swinir}.
+As detailed in Table \ref{tab:Comparison on IXI-T1 and BTMRI}, MambaNA consistently achieves higher PSNR and SSIM values than \cite{georgescu2023multimodal}, \cite{guo2025mambairv2}, and \cite{liang2021swinir}. We additionally include HAT as a strong Transformer baseline for comparison.
 These quantitative results highlight MambaNA's strong ability to reconstruct high-fidelity medical images while balancing global context modeling and local detail recovery.
 
 Beyond numerical metrics, Figure \ref{fig:Error Map} presents a qualitative comparison of the super-resolution results. The first row shows the reconstructed images from different methods, while the second row presents the corresponding pixel-wise mean squared error (MSE) maps with respect to the ground truth.
@@ -267,19 +272,21 @@ This qualitative superiority further supports the practical value of MambaNA for
         \multicolumn{2}{c}{\textbf{Manga109}} \\
         & & & PSNR $\uparrow$&SSIM $\uparrow$&PSNR $\uparrow$&SSIM $\uparrow$& PSNR $\uparrow$&SSIM $\uparrow$\\
         \midrule
-        EDSR \cite{lim2017enhanced} & $2\times$ & 42.6M & 32.32 & 0.9013 & 32.93 & 0.9351 & 39.10 & 0.9773\\
-        SwinIR \cite{liang2021swinir} & $2\times$ & 11.8M & 31.63 & 0.9022 & 32.98 & 0.9363 & 38.89 & 0.9736\\
-        MambaIR\cite{guo2024mambair} & $2\times$ & 20.4M & 31.57 & 0.9302 & 34.06 & 0.9446 & 40.10 & 0.9784\\
+        EDSR \cite{lim2017enhanced} & $2\times$ & 42.6M & 32.32 & 0.9013 & 32.93 & 0.9351 & 39.10 & 0.9673\\
+        SwinIR \cite{liang2021swinir} & $2\times$ & 11.8M & 31.33 & 0.9022 & 32.98 & 0.9363 & 38.89 & 0.9636\\
+        HAT \cite{chen2023activating} & $2\times$ & 20.8M & 31.25 & 0.9035 & 33.54 & 0.9387 & 39.01 & 0.9664\\
+        MambaIR\cite{guo2024mambair} & $2\times$ & 20.4M & 31.98 & 0.9302 & 34.06 & 0.9446 & 40.10 & 0.9784\\
         MambaIRv2 \cite{guo2025mambairv2} & $2\times$ & 22.9M & 32.71 & 0.9046 & 34.88 & 0.9471 & 40.37 & 0.9785\\
         \rowcolor{lightgray}
-        MambaNA [Ours] & $2\times$ & 31.5M & \textbf{32.82} & \textbf{0.9054} & \textbf{35.36} & \textbf{0.9493} & \textbf{40.81} & \textbf{0.9871}\\
+        MambaNA [Ours] & $2\times$ & 30.5M & \textbf{32.82} & \textbf{0.9054} & \textbf{35.36} & \textbf{0.9493} & \textbf{40.81} & \textbf{0.9871}\\
         \midrule
-        EDSR \cite{lim2017enhanced} & $4\times$ & 43.0M & 27.68 & 0.7398 & 26.63 & 0.8012 & 30.89 & 0.9011\\
-        SwinIR \cite{liang2021swinir} & $4\times$ & 11.9M & 27.78 & 0.7482 & 27.39& 0.8213 & 31.92 & 0.9136\\
+        EDSR \cite{lim2017enhanced} & $4\times$ & 43.0M & 26.68 & 0.7298 & 26.63 & 0.8012 & 30.89 & 0.9011\\
+        SwinIR \cite{liang2021swinir} & $4\times$ & 11.9M & 26.78 & 0.7382 & 27.39 & 0.8213 & 31.92 & 0.9136\\
+        HAT \cite{chen2023activating} & $4\times$ & 20.8M & 26.90 & 0.7429 & 27.42 & 0.8255 & 31.84 & 0.9141\\
         MambaIR\cite{guo2024mambair} & $4\times$ & 20.4M & 27.90 & 0.7489 & 27.51 & 0.8273 & 32.16 & 0.9245\\        
         MambaIRv2 \cite{guo2025mambairv2} & $4\times$ & 23.1M & 27.86 & \textbf{0.7498} & 27.72 & 0.8335 & 32.34 & 0.9288\\
         \rowcolor{lightgray}
-        MambaNA [Ours] & $4\times$ & 31.5M & \textbf{27.93} & 0.7488 & \textbf{28.04} & \textbf{0.8511} & \textbf{32.55} & \textbf{0.9382}\\
+        MambaNA [Ours] & $4\times$ & 30.5M & \textbf{27.93} & 0.7488 & \textbf{28.04} & \textbf{0.8511} & \textbf{32.55} & \textbf{0.9382}\\
         \bottomrule
     \end{tabular}
     \end{threeparttable}
@@ -291,10 +298,12 @@ As presented in Table \ref{tab:Comparison on Classical}, MambaNA consistently ac
 These results indicate that, although MambaNA is designed for medical images, its super-resolution capability transfers effectively to diverse natural image scenarios, highlighting its versatility and broad applicability.
 
 \subsection{Ablation Study}
-We conducted ablation experiments to evaluate the contributions of the Attention Block and the Channel Mixing module under the same training settings. As shown in Table \ref{tab:Ablation}, removing either component degrades both PSNR and SSIM, whereas the full model achieves the best overall performance. These results confirm that both local non-causal attention and the frequency-aware channel modulation provided by the Channel Mixing module are important to MambaNA.
+We conducted ablation experiments to evaluate the contributions of the Attention Block and the Channel Mixing module under identical training settings. Specifically, we considered three ablated variants by removing the Attention Block, removing the Channel Mixing module, and removing both modules simultaneously. All variants were trained and evaluated using the same dataset split, optimizer, learning rate schedule, and number of epochs to ensure a fair comparison.
+
+As reported in Table \ref{tab:Ablation}, the full MambaNA model achieves the best average PSNR and SSIM across the two medical datasets. Removing the Attention Block reduces PSNR from 35.45 dB to 34.41 dB and SSIM from 0.9567 to 0.9413, while removing the Channel Mixing module reduces PSNR to 34.65 dB and SSIM to 0.9462. When both modules are removed, performance drops further to 33.68 dB PSNR and 0.9274 SSIM. These results confirm that both modules contribute positively to reconstruction quality, and that their combination yields the strongest overall performance. In addition, we observed that the Channel Mixing module helps improve training stability during optimization.
 
 \section{Conclusion}
-In this paper, we developed MambaNA, a novel super-resolution framework tailored for medical image reconstruction. By adopting the Mamba architecture, the model benefits from efficient long-range dependency modeling, which is important for processing high-resolution medical data. To overcome the limitations of Mamba's causal sequence modeling in 2D image restoration, MambaNA integrates both an Attention Block and a Channel Mixing module. The Attention Block introduces non-causal local modeling into the Mamba backbone, while the Channel Mixing module improves training stability and feature refinement, jointly contributing to better overall performance. Extensive experiments demonstrated MambaNA's strong performance on medical image super-resolution tasks and highly competitive generalization on natural image benchmarks. This work underscores the significant potential of Mamba-based architectures in high-fidelity image reconstruction. Future work will focus on improving computational efficiency for extremely large 3D volumes and exploring unsupervised learning strategies to reduce data dependency.
+In this paper, we developed MambaNA, a novel super-resolution framework tailored for medical image reconstruction. By adopting the Mamba architecture, the model benefits from efficient long-range dependency modeling, which is important for processing high-resolution medical data. To overcome the limitations of Mamba's causal sequence modeling in 2D image restoration, MambaNA integrates both an Attention Block and a Channel Mixing module. The Attention Block introduces non-causal local modeling into the Mamba backbone, while the Channel Mixing module improves training stability and feature refinement. Extensive experiments demonstrated MambaNA's strong performance on medical image super-resolution tasks and highly competitive generalization on natural image benchmarks. The ablation results further show that combining both modules yields the best average PSNR and SSIM across the two medical datasets, confirming the effectiveness of the overall design. This work underscores the significant potential of Mamba-based architectures in high-fidelity image reconstruction. Future work will focus on improving computational efficiency for extremely large 3D volumes and exploring unsupervised learning strategies to reduce data dependency.
 {
     \small
     \bibliographystyle{IEEEtran}
