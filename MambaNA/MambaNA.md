@@ -125,7 +125,7 @@ where $\phi(\cdot)$ denotes feature extraction from pre-trained VGG-19's 5th con
     \caption{Structure of the Attention Block in MambaNA. It applies Neighborhood Attention to strengthen local non-causal interactions and improve the reconstruction of fine anatomical details.}
     \label{fig:attention-block}
 \end{figure}
-MambaNA adopts Neighborhood Attention (NA) \cite{hassani2023neighborhood} to introduce non-causal local modeling. Unlike global or window-based attention, NA restricts each query to a local neighborhood, making it well suited to preserving subtle anatomical structures. Given an input $X \in \mathbb{R}^{N \times d}$, the attention at position $i$ is computed as
+As illustrated in Figure \ref{fig:attention-block}, MambaNA adopts Neighborhood Attention (NA) \cite{hassani2023neighborhood} to introduce non-causal local modeling. Unlike global or window-based attention, NA restricts each query to a local neighborhood, making it well suited to preserving subtle anatomical structures. Given an input $X \in \mathbb{R}^{N \times d}$, the attention at position $i$ is computed as
 \begin{equation}
 \begin{aligned}
     A_i^k &= Q_iK_{\mathcal{N}(i)}^T + B_i, \\
@@ -140,7 +140,7 @@ This design improves fine-grained local interaction while preserving translation
     \caption{Structure of the proposed SSM-Layer in MambaNA. The layer combines adaptive scan ordering with multi-spectral channel attention to capture global dependencies and refine frequency-aware channel responses.}
     \label{fig:ssm-layer}
 \end{figure}
-The SSM-Layer captures long-range dependencies through adaptive pixel reordering. Given a feature map $X \in \mathbb{R}^{C \times H \times W}$, a semantic relevance score is estimated for each pixel:
+As shown in Figure \ref{fig:ssm-layer}, the SSM-Layer captures long-range dependencies through adaptive pixel reordering. Given a feature map $X \in \mathbb{R}^{C \times H \times W}$, a semantic relevance score is estimated for each pixel:
 \begin{equation}
     s(i) = MLP(GAP(X_i)),
 \end{equation}
@@ -223,9 +223,9 @@ We used six Mamba blocks, each with 192 channels.
         SwinIR \cite{liang2021swinir} & $4\times$ & 11.9M & 30.23 & 0.9035 & 28.12 & 0.9011\\
         HAT \cite{chen2023activating} & $4\times$ & 20.8M & 30.53 & 0.9101 & 28.56 & 0.9054\\
         MambaIR \cite{guo2024mambair} & $4\times$ & 22.9M & 30.75 & 0.9202 & 29.56 & 0.9073\\
-        MambaIRv2 \cite{guo2025mambairv2} & $4\times$ & 27.6M & 31.50 & 0.8609 & 30.07 & 0.9334\\
+        MambaIRv2 \cite{guo2025mambairv2} & $4\times$ & 27.6M & 31.50 & 0.9320 & 30.07 & 0.9234\\
         \rowcolor{lightgray}
-        MambaNA [Ours] & $4\times$ & 30.5M & \textbf{32.28} & \textbf{0.9386} & \textbf{30.64} & \textbf{0.9379}\\
+        MambaNA [Ours] & $4\times$ & 30.5M & \textbf{32.28} & \textbf{0.9386} & \textbf{30.64} & \textbf{0.9279}\\
         \bottomrule
     \end{tabular}
   \end{center}
@@ -275,7 +275,7 @@ This qualitative superiority further supports the practical value of MambaNA for
         EDSR \cite{lim2017enhanced} & $2\times$ & 42.6M & 32.32 & 0.9013 & 32.93 & 0.9351 & 39.10 & 0.9673\\
         SwinIR \cite{liang2021swinir} & $2\times$ & 11.8M & 31.33 & 0.9022 & 32.98 & 0.9363 & 38.89 & 0.9636\\
         HAT \cite{chen2023activating} & $2\times$ & 20.8M & 31.25 & 0.9035 & 33.54 & 0.9387 & 39.01 & 0.9664\\
-        MambaIR\cite{guo2024mambair} & $2\times$ & 20.4M & 31.98 & 0.9302 & 34.06 & 0.9446 & 40.10 & 0.9784\\
+        MambaIR\cite{guo2024mambair} & $2\times$ & 20.4M & 31.98 & 0.9042 & 34.06 & 0.9446 & 40.10 & 0.9784\\
         MambaIRv2 \cite{guo2025mambairv2} & $2\times$ & 22.9M & 32.71 & 0.9046 & 34.88 & 0.9471 & 40.37 & 0.9785\\
         \rowcolor{lightgray}
         MambaNA [Ours] & $2\times$ & 30.5M & \textbf{32.82} & \textbf{0.9054} & \textbf{35.36} & \textbf{0.9493} & \textbf{40.81} & \textbf{0.9871}\\
