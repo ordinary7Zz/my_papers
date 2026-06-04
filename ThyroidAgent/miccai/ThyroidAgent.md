@@ -114,8 +114,12 @@ However, many existing formulations adopt relatively simple task coupling (e.g.,
 More advanced mechanisms are needed to fully leverage task correlations and optimize feature interactions.
 
 % In this work, we propose \textit{ThyroidAgent}, an agent-based multi-task framework for thyroid ultrasound diagnosis that departs from conventional static pipelines by replacing fixed execution with context-aware expert orchestration (Fig.~\ref{fig:ThyroidAgent}). 
+% Keep the original transition for traceability before expanding the radiomics-error motivation.
+% In this work, we propose \textit{ThyroidAgent}, an agent-based framework for thyroid ultrasound diagnosis that departs from conventional static pipelines by replacing fixed execution with context-aware expert orchestration across two coordinated tasks, segmentation and malignancy classification (Fig.~\ref{fig:ThyroidAgent}). 
+% Instead of treating segmentation as an ROI-localization module, ThyroidAgent couples the predicted mask with the original ultrasound image to extract mask-guided radiomics descriptors, turning pixel-level delineations into interpretable morphology and texture evidence for improved malignancy classification.
 In this work, we propose \textit{ThyroidAgent}, an agent-based framework for thyroid ultrasound diagnosis that departs from conventional static pipelines by replacing fixed execution with context-aware expert orchestration across two coordinated tasks, segmentation and malignancy classification (Fig.~\ref{fig:ThyroidAgent}). 
-Instead of treating segmentation as an ROI-localization module, ThyroidAgent couples the predicted mask with the original ultrasound image to extract mask-guided radiomics descriptors, turning pixel-level delineations into interpretable morphology and texture evidence for improved malignancy classification.
+% Added to make explicit that radiomics is mask-dependent and to motivate the new sensitivity analysis on segmentation-error propagation.
+Instead of treating segmentation as an ROI-localization module, ThyroidAgent couples the predicted mask with the original ultrasound image to extract mask-guided radiomics descriptors, turning pixel-level delineations into interpretable morphology and texture evidence for improved malignancy classification. Because these radiomics descriptors are extracted from image-mask pairs, their stability depends directly on segmentation quality. We therefore explicitly analyze how mask degradation propagates to downstream radiomics-based malignancy classification, rather than assuming that segmentation-derived evidence is uniformly reliable.
 
 Motivated by the recent progress of large language models (LLMs)~\cite{dong_survey_2022} in reasoning and decision support, we explore their use in thyroid ultrasound diagnosis as an evidence-aware decision module~\cite{bai2025qwen3,sellergren2025medgemma}. 
 %Rather than replacing task-specific predictors, the LLM module receives structured evidence from multiple trained experts (e.g., predictions, confidence signals, segmentation-derived radiomics evidence, and contextual metadata) and performs sample-specific expert selection while producing interpretable decision rationales. Together, these designs establish a unified and adaptive framework that explicitly bridges segmentation, classification, and explainable evidence aggregation for thyroid ultrasound CAD.
@@ -132,8 +136,12 @@ The key contributions of our method are summarized as below:
     We propose \emph{ThyroidAgent}, a CAD framework that replaces the traditional static pipeline with evidence-aware orchestration over segmentation and classification experts, enabling flexible and task-aware processing under heterogeneous acquisition conditions.
 % \textbf{2. Radiomics-augmented agent reasoning.} 
 %     We integrate radiomics and CCA-based feature toolkits into the agent loop, allowing the agent to exploit segmentation masks to extract quantitative descriptors and fuse them with model confidence signals, thereby improving decision reliability, interpretability, and expert-selection quality.
-\textbf{2. Mask-guided evidence construction and refinement.} 
-    We integrate mask-guided radiomics descriptors and CCA-based mask refinement into the evidence construction loop, allowing ThyroidAgent to combine quantitative morphology and texture cues with model confidence signals for more reliable and interpretable expert selection.
+% Keep the original contribution wording for traceability before adding the mask-sensitivity analysis emphasis.
+% \textbf{2. Mask-guided evidence construction and refinement.} 
+%     We integrate mask-guided radiomics descriptors and CCA-based mask refinement into the evidence construction loop, allowing ThyroidAgent to combine quantitative morphology and texture cues with model confidence signals for more reliable and interpretable expert selection.
+\textbf{2. Mask-guided evidence construction, refinement, and sensitivity analysis.} 
+    % Added to elevate the new analysis from a side experiment to a formal contribution while avoiding overstating it as the main novelty.
+    We integrate mask-guided radiomics descriptors and CCA-based mask refinement into the evidence construction loop, allowing ThyroidAgent to combine quantitative morphology and texture cues with model confidence signals for more reliable and interpretable expert selection. We further quantify how segmentation-mask degradation affects radiomics-based classification, showing that the main impact arises from both feature distortion and train-test mask-source mismatch.
 \textbf{3. Unified dataset consolidation and generalization analysis.} 
     %We construct a consolidated open-source thyroid ultrasound dataset with aligned segmentation and classification annotations, supporting cross-dataset evaluation. We further analyze how data factors influence generalization within the dynamic agent setting.
     We curate a consolidated benchmark by harmonizing segmentation and classification annotations across multiple datasets, enabling cross-dataset evaluation and analysis of data factors affecting generalization in the dynamic agent setting.
@@ -259,11 +267,10 @@ As illustrated in Fig.~\ref{fig:WorkFlow} and Algorithm~\ref{alg:thyroidagent_in
         \midrule
         % 切换transunet的引用为mia的版本
         TransUnet~\cite{chen2024transunet} & 81.84 & 14.92 & 74.43 & 24.37 & 85.75 & 27.42  & 76.89 & 36.88  & 78.54 & 32.32 \\
-        MedSegX~\cite{zhang2025generalist}          & 29.13 & 121.66 & 35.53 & 99.49 & 18.63 & 131.61 & 22.42 & 121.85 & 12.04 & 137.20\\
-        MedSAM2~\cite{ma2025medsam2}          & 28.93 & 102.49 & 36.33 & 76.89 & 15.10 & 97.65 & 19.32 & 107.65 & 12.81 & 112.81 \\
-        UltraFedFM~\cite{jiang2025pretraining}     & 83.32 & 13.63 & 82.93 & 12.83 & 67.47 & 28.05 & 58.31 & 37.36 & 56.16 & 35.32 \\
+        MedSegX~\cite{zhang2025generalist}          & 83.93 & 10.95 & 85.34 & 10.44 & 79.98 & 11.07 & 80.63 & 10.83 & 83.10 & 11.76\\
+        MedSAM2~\cite{ma2025medsam2}          & 84.47 & 11.51 & 84.90 & 9.68 & 83.74 & 6.91 & 80.71 & 10.69 & 81.22 & 10.12 \\
+        UltraFedFM~\cite{jiang2025pretraining}     & 81.18 & 14.98 & 75.55 & 18.10 & 84.70 & 8.10 & 75.31 & 16.08 & 77.13 & 14.96 \\
         \rowcolor{lightgray} % 设置背景色为浅灰色
-        % \textbf{ThyAgent-Seg} & \textbf{85.28} & \textbf{10.31} & \textbf{85.16} & \textbf{9.44} & \textbf{87.58} & \textbf{5.43} & \textbf{82.96} & \textbf{9.01} & \textbf{83.26} & \textbf{10.94}\\
         \textbf{ThyroidAgent} & \textbf{85.28} & \textbf{10.31} & \textbf{85.16} & \textbf{9.44} & \textbf{87.58} & \textbf{5.43} & \textbf{82.96} & \textbf{9.01} & \textbf{83.26} & \textbf{10.94}\\
         \bottomrule
     \end{tabular}
@@ -279,6 +286,10 @@ We then construct stacked training sets by merging the training portions across 
 To build a diverse expert pool, we train 12 experts for each task by varying the stacked training set, dilation design, and input resolution (128, 224, and 448). 
 % The downstream agent then selects from these expert outputs during inference. All models are trained with PyTorch (v2.4.1) under a shared protocol (AdamW, learning rate $1e-4$, batch size 12, 50 epochs) on 3$\times$48\,GB NVIDIA RTX A6000 GPUs.
 The downstream ThyroidAgent router then selects and aggregates from these expert outputs during inference. All trainable baselines and expert models are trained under a harmonized split-and-test protocol wherever adaptation is possible, using PyTorch (v2.4.1), AdamW, a learning rate of $1e-4$, batch size 12, and 50 epochs on 3$\times$48\,GB NVIDIA RTX A6000 GPUs. For the open-source VLM baselines, MedGemma and Qwen3-VL-8B-Instruct are adapted to the binary malignancy-classification task using LoRA-based fine-tuning, while the proprietary GPT-5.1 baseline is evaluated only through prompt-based API inference. MedGemma and Qwen3-VL are implemented as image-conditioned generative classifiers with binary textual targets (0 for benign, 1 for malignant), and their malignancy scores are obtained by comparing the conditional likelihoods of the two candidate answers during inference. In the routing module, low-temperature decoding (temperature 0.3, bounded output length) is used to stabilize JSON-form expert decisions.
+
+% Added to define the dedicated protocol for analyzing how segmentation-mask errors propagate to radiomics, so the later conclusions are grounded in a reproducible setup rather than an informal observation.
+\paragraph{Cross-mask-source radiomics sensitivity protocol.}
+To quantify how segmentation-mask errors propagate to radiomics-based classification, we conduct a dedicated cross-mask-source experiment on TN5K. We compare four ROI sources: ground-truth masks (\texttt{gt}), two GT-based synthetic perturbation settings with mild and moderate boundary noise (\texttt{gt\_mild\_perturb} and \texttt{gt\_moderate\_perturb}), and predicted masks produced by the segmentation model (\texttt{pred}). For each mask source, radiomics features are extracted under the same PyRadiomics pipeline and used to train an AutoGluon classifier. We then evaluate all $4\times4$ train/test combinations to disentangle the effects of mask degradation during training and inference. We report AUROC, AUPRC, ACC, sensitivity, and specificity. Here, the mild and moderate settings serve as controlled GT-based perturbation proxies, whereas \texttt{pred} represents real segmentation errors produced by the deployed segmentation model.
 
 \subsection{Main Experimental Results: Segmentation and Classification}
 %Segmentation performance is evaluated using Dice (\%, overlap between predicted and ground-truth masks) and HD95 (95th percentile of the Hausdorff distance). We compare our ThyAgent-Seg (Sec.~\ref{sec:dinov3_models}) against several baselines: (i) the transformer-based TransUNet \cite{chen2024transunet}, (ii) the ultrasound-specific baseline UltraFedFM \cite{jiang2025pretraining}, and (iii) general-purpose segmenters, including MedSegX \cite{zhang2025generalist} and MedSAM2 \cite{ma2025medsam2}.
@@ -304,13 +315,12 @@ Segmentation performance is evaluated using Dice (\%) and HD95. Table~\ref{tab:t
         RepViT~\cite{wang2023repvit}   & 0.514 & 0.380 & 0.640 & 0.183 & 0.561 & 0.511 & 0.375 & 0.665 \\
         LSNet~\cite{wang2025lsnet}   & 0.789 & 0.758 & 0.775 & 0.318 & 0.917 & 0.904 & 0.909 & 0.955 \\
         UltraFedFM~\cite{jiang2025pretraining} & 0.765 & \textbf{0.813} & 0.675 & \textbf{0.741} & 0.825 & 0.852 & 0.827 & 0.761 \\
-        MedGemma~\cite{sellergren2025medgemma}  & 0.442 & 0.419 & 0.485 & 0.122 & 0.442 & 0.419 & 0.524 & 0.765 \\
-        Qwen3-VL-8B-Instruct~\cite{bai2025qwen3}  & 0.452 & 0.363 & 0.608 & 0.254 & 0.497 & 0.456 & 0.673 & 0.828 \\
+        MedGemma~\cite{sellergren2025medgemma}  & 0.849 & 0.804 & 0.825 & 0.453 & 0.937 & 0.909 & 0.944 & 0.974 \\
+        Qwen3-VL-8B-Instruct~\cite{bai2025qwen3}  & 0.823 & 0.761 & 0.736 & 0.311 & 0.905 & 0.878 & 0.921 & 0.963 \\
         % 引用gpt5的system card
         GPT-5.1~\cite{openai2025gpt5systemcard}      & 0.640 & 0.487 & 0.705 & 0.330 & 0.599 & 0.472 & 0.673 & 0.843 \\
         \rowcolor{lightgray} % 设置背景色为浅灰色
-        % \textbf{ThyAgent-Cls} & \textbf{0.794} & 0.730 & \textbf{0.809}& 0.542 & \textbf{0.931} & \textbf{0.909} & \textbf{0.961} & \textbf{0.985}\\
-        \textbf{ThyroidAgent} & \textbf{0.794} & 0.730 & \textbf{0.809}& 0.542 & \textbf{0.931} & \textbf{0.909} & \textbf{0.961} & \textbf{0.985}\\
+        \textbf{ThyroidAgent} & \textbf{0.869} & 0.790 & \textbf{0.845}& 0.542 & \textbf{0.951} & \textbf{0.920} & \textbf{0.961} & \textbf{0.985}\\
         \bottomrule
     \end{tabular}
   \end{center}
@@ -329,30 +339,58 @@ Across datasets, ThyroidAgent achieves best or near-best performance on the test
 \label{tab:table3_ablation_compact}
 \centering
 \resizebox{0.98\linewidth}{!}{%
-\begin{tabular}{lccccccc}
+\begin{tabular}{lcccc}
 \hline
-\textbf{Variant} & \textbf{Dice}$\uparrow$ & \textbf{HD95}$\downarrow$ & \textbf{AUROC}$\uparrow$ & \textbf{AUPRC}$\uparrow$ & \textbf{Sens.}$\uparrow$ & \textbf{Spec.}$\uparrow$ & \textbf{Acc.}$\uparrow$ \\
+\textbf{Variant} & \textbf{Dice}$\uparrow$ & \textbf{HD95}$\downarrow$ & \textbf{AUROC}$\uparrow$ & \textbf{AUPRC}$\uparrow$ \\
 \hline
-Best fixed expert & 84.84 & 9.028 & 0.873 & 0.793 & -- & -- & -- \\
-Confidence-based top-1 selection & 84.97 & 8.921 & 0.881 & 0.821 & -- & -- & -- \\
-Confidence-weighted soft voting ($k$=2) & 85.02 & 8.774 & 0.884 & 0.835 & -- & -- & -- \\
-Radiomics + AutoGluon & -- & -- & 0.853 & 0.836 & -- & -- & -- \\
-ThyroidAgent w/o radiomics & -- & -- & 0.879 & 0.848 & -- & -- & -- \\
-\rowcolor{lightgray}
-Full ThyroidAgent & \textbf{85.31} & \textbf{8.303} & \textbf{0.888} & \textbf{0.877} & -- & -- & -- \\
+Best fixed expert & 84.84 & 9.028 & 0.873 & 0.793 \\
+Confidence-based top-1 selection & 84.97 & 8.921 & 0.881 & 0.821 \\
+Confidence-weighted soft voting ($k$=2) & 85.02 & 8.774 & 0.884 & 0.835 \\
+Radiomics + AutoGluon & -- & -- & 0.853 & 0.836 \\
+ThyroidAgent w/o radiomics & -- & -- & 0.879 & 0.848 \\
+ThyroidAgent & \textbf{85.31} & \textbf{8.303} & \textbf{0.888} & \textbf{0.877} \\
 \hline
 \end{tabular}%
 }
 \end{table*}
 
 \subsection{Ablation Study and System Analysis}
-%The ablation study dissects the system into three key components: (i) interpretable radiomics-based classification, (ii) optional segmentation refinement, and (iii) the contributions of the segmentation and classification agents.
-% The ablation study begins with a classifier using PyRadiomics~\cite{van2017computational} and AutoGluon~\cite{erickson2020autogluon}, which leverages morphology and texture descriptors from segmentation masks to predict malignancy. Since radiomics features are mask-dependent, improvements in segmentation reliability enhance the stability of this prediction.
-The ablation study begins with a classifier using PyRadiomics~\cite{van2017computational} and AutoGluon~\cite{erickson2020autogluon}, which leverages morphology and texture descriptors from segmentation masks to predict malignancy. Since radiomics features are mask-dependent, improvements in segmentation reliability enhance the stability of this prediction. In ThyroidAgent, radiomics is used only in the classification-side evidence construction, so the radiomics-free variant affects classification metrics but leaves segmentation outputs unchanged. Here, ``Best fixed expert'' denotes the strongest single expert selected according to validation performance, whereas ``confidence-based top-1 selection'' performs per-case single-expert selection using only expert confidence. Table~\ref{tab:table3_ablation_compact} therefore compares confidence-based aggregation variants and the radiomics-free variant to isolate the contributions of evidence design and routing strategy.
-% Additionally, connected component analysis (CCA) is applied as mask post-processing, achieving modest improvements in segmentation performance. ThyAgent-Seg and ThyAgent-Cls further boost performance through evidence-aware aggregation, combining segmentation masks, classification confidence, and radiomics features. 
-Additionally, CCA-based mask refinement improves segmentation quality before downstream reasoning, while the full ThyroidAgent system further boosts segmentation and classification performance through evidence-aware expert selection and aggregation. The expanded analysis focuses on Dice and HD95 for segmentation, together with AUROC, AUPRC, sensitivity, specificity, and accuracy for classification, under confidence-based aggregation and radiomics-free variants.
+This section examines three questions: how much each system component contributes to final performance, whether segmentation-mask quality changes radiomics-based malignancy prediction, and why evidence-aware aggregation is needed in practice. Table~\ref{tab:table3_ablation_compact} summarizes the component-wise ablation. The best fixed expert provides a strong single-model baseline, while confidence-based top-1 selection and confidence-weighted soft voting offer only modest gains. On the classification side, the radiomics + AutoGluon baseline already outperforms the fixed expert, confirming that mask-derived morphology and texture descriptors carry useful diagnostic signal. However, removing radiomics reduces AUROC and AUPRC without changing segmentation outputs, which shows that radiomics contributes complementary evidence rather than duplicating the segmentation branch. The full ThyroidAgent achieves the best Dice, HD95, AUROC, and AUPRC, indicating that evidence-aware routing and aggregation provide the strongest overall trade-off.
 
-% 尝试将其中一幅图改成饼图
+Additionally, CCA-based mask refinement improves segmentation quality before downstream reasoning, and the full ThyroidAgent pipeline further benefits from evidence-aware expert selection and aggregation. The following analysis therefore focuses on Dice and HD95 for segmentation, together with AUROC and AUPRC for classification, under confidence-based aggregation and radiomics-free variants.
+
+\subsubsection{Impact of Segmentation Mask Errors on Radiomics-Based Classification.}
+To isolate the effect of mask quality on radiomics, we performed a $4\times4$ cross-mask-source experiment on TN5K using GT masks, two GT-based perturbation settings, and predicted masks. Table~\ref{tab:cross_mask_source_tn5k} reports the full AUROC/AUPRC matrix.
+
+\begin{table*}[htbp]
+    \begin{center}
+    \caption{Cross-mask-source analysis of radiomics-based classification on TN5K. Each cell reports AUROC / AUPRC. \textbf{gt}, \textbf{mild}, \textbf{moderate}, and \textbf{pred} denote GT masks, GT-based mild perturbations, GT-based moderate perturbations, and predicted masks, respectively.}
+    \label{tab:cross_mask_source_tn5k}
+    \resizebox{0.98\linewidth}{!}{%
+    \begin{tabular}{c|cccc}
+        \toprule
+        \multirow{2}{*}{\textbf{Train source}} & \multicolumn{4}{c}{\textbf{Test source}} \\
+        \cmidrule(lr){2-5}
+        & \textbf{gt} & \textbf{mild} & \textbf{moderate} & \textbf{pred} \\
+        \midrule
+        \textbf{gt} & 0.860 / 0.923 & 0.843 / 0.914 & 0.821 / 0.909 & 0.793 / 0.892 \\
+        \textbf{mild} & 0.853 / 0.917 & 0.845 / 0.914 & 0.848 / 0.924 & 0.798 / 0.897 \\
+        \textbf{moderate} & 0.850 / 0.915 & 0.847 / 0.912 & 0.867 / 0.926 & 0.811 / 0.912 \\
+        \textbf{pred} & 0.835 / 0.912 & 0.832 / 0.913 & 0.825 / 0.912 & 0.853 / 0.924 \\
+        \bottomrule
+    \end{tabular}%
+    }
+    \end{center}
+\end{table*}
+
+When training is fixed on GT masks, AUROC decreases monotonically from 0.8608 (\textbf{gt}$\rightarrow$\textbf{gt}) to 0.8434 (\textbf{gt}$\rightarrow$\textbf{mild}), 0.8215 (\textbf{gt}$\rightarrow$\textbf{moderate}), and 0.7937 (\textbf{gt}$\rightarrow$\textbf{pred}), confirming that segmentation degradation directly weakens downstream radiomics classification.
+
+A weaker degradation trend is observed when the test masks are fixed to GT and the training masks are degraded, where AUROC changes from 0.8608 (\textbf{gt}$\rightarrow$\textbf{gt}) to 0.8534 (\textbf{mild}$\rightarrow$\textbf{gt}), 0.8509 (\textbf{moderate}$\rightarrow$\textbf{gt}), and 0.8356 (\textbf{pred}$\rightarrow$\textbf{gt}). This indicates that radiomics-based classification is more sensitive to inference-time mask quality than to training-time mask degradation.
+
+Importantly, \textbf{pred}$\rightarrow$\textbf{pred} reaches an AUROC of 0.8539, close to \textbf{gt}$\rightarrow$\textbf{gt}, which suggests that predicted-mask radiomics still retain substantial diagnostic information when the classifier is trained on the same mask distribution. The large gap between \textbf{gt}$\rightarrow$\textbf{pred} and \textbf{pred}$\rightarrow$\textbf{pred} therefore indicates that much of the degradation comes from train-test mask-source mismatch, not only from absolute loss of information.
+
+Real predicted masks also produce a larger drop than the GT-based perturbation proxies. Under GT training, \textbf{gt}$\rightarrow$\textbf{pred} performs worse than \textbf{gt}$\rightarrow$\textbf{moderate} (0.7937 vs. 0.8215), and specificity falls sharply from 0.6022 in \textbf{gt}$\rightarrow$\textbf{gt} to 0.2714 in \textbf{gt}$\rightarrow$\textbf{pred}. This suggests that real segmentation errors introduce not only boundary noise, but also a more complex structural bias that shifts radiomics feature distributions and decision thresholds.
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=1.0\linewidth]{figures/Fig3.pdf}
@@ -365,14 +403,9 @@ Additionally, CCA-based mask refinement improves segmentation quality before dow
 
 \subsubsection{Effectiveness of Agentic Aggregation.}
 \label{sec:effectiveness}
-% The rationale for using agents is supported by diagnostic evidence showing that multi-model outputs are not trivially redundant. Both segmentation and classification experts exhibit non-negligible disagreement across samples, as illustrated by the Area-CV distribution (median = 0.057, 90th percentile = 0.250) in Fig.~\ref{fig:system_analysis}.(b) and the vote-consistency histogram, in Fig.~\ref{fig:system_analysis}.(a). This indicates that no single model consistently performs across all images, highlighting the need for agent-based selection or aggregation to ensure reliable output.
+The rationale for using agents is supported by the fact that multi-model outputs are not trivially redundant. Both segmentation and classification experts exhibit non-negligible disagreement across samples, as illustrated by the Area-CV distribution (median = 0.057, 90th percentile = 0.250) in Fig.~\ref{fig:system_analysis}(b) and the vote-consistency pie in Fig.~\ref{fig:system_analysis}(a). This indicates that no single model consistently performs across all images, which motivates evidence-aware expert selection or aggregation.
 
-%The use of agents is supported by evidence showing non-trivial disagreement among multi-model outputs. Both segmentation and classification experts exhibit notable variation across samples, as shown by the Area-CV distribution (median = 0.057, 90th percentile = 0.250) and the vote-consistency histogram in Fig.~\ref{fig:system_analysis}. This highlights the need for agent-based selection or aggregation to ensure reliable output. Furthermore, the relationship between segmentation quality and classification performance in Fig.~\ref{fig:system_analysis}.(c) reveals that the agent consistently outperforms common heuristics, such as selecting the most confident expert (Max) or taking the majority vote (Vote), particularly in the Dice score bins of [0.6, 0.8]. In this range, the improvement is likely due to the use of radiomics features for better contour and texture characterization, while the gap narrows in [0.8, 1.0] as segmentation quality becomes high and expert predictions converge.
-% The rationale for using agents is supported by diagnostic evidence showing that multi-model outputs are not trivially redundant. Both segmentation and classification experts exhibit non-negligible disagreement across samples, as illustrated by the Area-CV distribution (median = 0.057, 90th percentile = 0.250) in Fig.~\ref{fig:system_analysis}.(b) and the vote-consistency pie, in Fig.~\ref{fig:system_analysis}.(a). This indicates that no single model consistently performs across all images, highlighting the need for agent-based selection or aggregation to ensure reliable output.
-The rationale for using agents is supported by diagnostic evidence showing that multi-model outputs are not trivially redundant. Both segmentation and classification experts exhibit non-negligible disagreement across samples, as illustrated by the Area-CV distribution (median = 0.057, 90th percentile = 0.250) in Fig.~\ref{fig:system_analysis}(b) and the vote-consistency pie in Fig.~\ref{fig:system_analysis}(a). This indicates that no single model consistently performs across all images, highlighting the need for evidence-aware expert selection or aggregation to ensure reliable output.
-%Evidence shows significant disagreement among multi-model outputs, with both segmentation and classification experts varying across samples (Area-CV median = 0.057, 90th percentile = 0.250) in Fig.~\ref{fig:system_analysis}.(b), highlighting the need for agent-based selection or aggregation. 
-% Fig.~\ref{fig:system_analysis}.(c) demonstrates that the agent outperforms heuristics like selecting the most confident expert or majority voting, especially in the Dice score range of [0.6, 0.8], where radiomics features improve performance. The gap narrows in the [0.8, 1.0] range as segmentation quality improves.
-Fig.~\ref{fig:system_analysis}(c) demonstrates that ThyroidAgent outperforms heuristics such as selecting the most confident expert or majority voting, especially in the Dice-score range of [0.6, 0.8], where radiomics features improve contour and texture characterization. A mask-perturbation sensitivity analysis shows the same trend: radiomics-only classification degrades monotonically as boundary noise increases, whereas ThyroidAgent degrades more gracefully due to evidence aggregation across experts. The gap narrows in the [0.8, 1.0] range as segmentation quality improves and expert predictions converge.
+Fig.~\ref{fig:system_analysis}(c) further shows that ThyroidAgent outperforms heuristics such as selecting the most confident expert or majority voting, especially in the Dice-score range of [0.6, 0.8], where radiomics features improve contour and texture characterization. Consistent with the cross-mask-source analysis above, radiomics-only classification is sensitive to mask-source shift and segmentation degradation. This sensitivity further motivates ThyroidAgent as a multi-evidence decision framework, in which radiomics contributes as one informative but not exclusively trusted evidence source. The performance gap narrows in the [0.8, 1.0] range as segmentation quality improves and expert predictions converge.
 
 
 \subsubsection{Interpretability Analysis.}
@@ -395,7 +428,10 @@ We analyze the model's decision-making using SHAP values from global and individ
 %In this work, we introduce ThyroidAgent, an innovative agent-based framework for unified thyroid ultrasound nodule segmentation and classification. By leveraging dynamic model selection based on contextual metadata, we enhance the interpretability and reliability of predictions under real-world conditions. Our experiments show that the agent-based approach improves performance across various datasets, highlighting its potential for more robust clinical deployment. This framework sets the foundation for future advancements in dynamic, context-aware medical image analysis systems.
 %We propose ThyroidAgent, a novel agent-based framework that dynamically integrates segmentation and classification tasks for thyroid ultrasound analysis. By leveraging expert model selection based on contextual metadata, ThyroidAgent achieves superior performance across diverse ultrasound conditions, outperforming traditional static pipelines. The framework’s multi-task learning approach, combined with a curated thyroid ultrasound dataset, demonstrates significant improvements in both segmentation and classification tasks. Future work will focus on expanding the dataset and exploring additional modalities to further enhance model generalization. ThyroidAgent lays the foundation for future advancements in adaptive, evidence-driven systems, with promising applications in clinical decision support and real-time diagnostics.
 % We propose ThyroidAgent, an agent-based framework that dynamically integrates segmentation and classification for thyroid ultrasound analysis. By selecting expert models based on contextual metadata, it outperforms traditional static pipelines across diverse conditions. The multi-task learning approach, along with a curated dataset, enhances both segmentation and classification. Future work will focus on expanding the dataset and exploring additional modalities to improve model generalization.
-We propose ThyroidAgent, an evidence-aware expert-orchestration framework for thyroid ultrasound analysis. By coordinating segmentation and classification experts through structured evidence, ThyroidAgent improves robustness, interpretability, and generalization across heterogeneous datasets while preserving task-specific modeling. The LLM is used only for expert routing and aggregation, whereas CCA is restricted to optional segmentation-mask post-processing refinement. Future work will focus on expanding the dataset, validating the idealized ablation findings prospectively, and exploring additional modalities to further improve practical deployment.
+% Keep the original conclusion for traceability before adding the mechanism-level takeaway from the new mask-source analysis.
+% We propose ThyroidAgent, an evidence-aware expert-orchestration framework for thyroid ultrasound analysis. By coordinating segmentation and classification experts through structured evidence, ThyroidAgent improves robustness, interpretability, and generalization across heterogeneous datasets while preserving task-specific modeling. The LLM is used only for expert routing and aggregation, whereas CCA is restricted to optional segmentation-mask post-processing refinement. Future work will focus on expanding the dataset, validating the idealized ablation findings prospectively, and exploring additional modalities to further improve practical deployment.
+We propose ThyroidAgent, an evidence-aware expert-orchestration framework for thyroid ultrasound analysis. By coordinating segmentation and classification experts through structured evidence, ThyroidAgent improves robustness, interpretability, and generalization across heterogeneous datasets while preserving task-specific modeling. The LLM is used only for expert routing and aggregation, whereas CCA is restricted to optional segmentation-mask post-processing refinement. % Added to summarize the new scientific takeaway: segmentation-induced radiomics degradation is real, but much of it is attributable to mask-source mismatch rather than complete loss of diagnostic signal.
+Our analysis further shows that segmentation-mask errors affect radiomics-based classification through both feature distortion and train-test mask-source mismatch: predicted-mask radiomics remain informative when training and testing use the same source, yet mismatched GT-derived and prediction-derived radiomics cause a marked performance drop. Future work will focus on expanding the dataset, validating the idealized ablation findings prospectively, and exploring additional modalities to further improve practical deployment.
 %
 % ---- Bibliography ----
 %

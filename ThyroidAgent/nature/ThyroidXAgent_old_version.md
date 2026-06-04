@@ -1,0 +1,16 @@
+\subsection{ThyroidXAgent for Segmentation and Classification}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/ThyroidXAgent_for_seg_and_cls.png}
+    \caption{ThyroidXAgent for Segmentation and Classification.}
+    \label{fig:ThyroidXAgent_for_seg_and_cls}
+\end{figure}
+
+\noindent\textit{Dataset and task definition.} We built the benchmark from TN3K~\cite{gong2021multi}, TN5K~\cite{zhang2025tn5000}, DDTI~\cite{pedraza2015open}, ThyroidXL~\cite{duong2025thyroidxl} and PKTN~\cite{sun2025clip}. The segmentation task predicts a binary nodule mask and the classification task predicts benign versus malignant labels. All splits are patient level (0.7/0.15/0.15 where applicable) to avoid leakage. To construct the expert pool, we merged training portions across datasets to form stacked training sets, with the largest containing 26,074 images. We trained 12 experts per task by varying the stacked training composition, dilation design and input resolution (128, 224 and 448). For the adapted VLM baselines, MedGemma and Qwen3-VL-8B-Instruct were fine-tuned with LoRA, whereas GPT-5.1 was evaluated through prompt-based API inference; malignancy scores for the VLMs were obtained by comparing the conditional likelihoods of benign and malignant textual outputs.
+
+\noindent\textit{DINOv3-based expert models.} All experts share a DINOv3 backbone~\cite{simeoni2025dinov3} with task-specific lightweight heads. Segmentation uses a U-Net-style decoder with skip fusion to output dense mask probabilities and is optimized with a weighted BCE+IoU loss. Classification pools backbone features with global average and max pooling, then applies a compact attention head to predict malignancy with generalized logit adjustment. This expert pool is designed to reduce sensitivity to dataset bias and improve robustness across heterogeneous acquisition conditions~\cite{torralba2011unbiased,liu2024decade}.
+
+\noindent\textit{Radiomics tool and CCA-based mask refinement.} We extract 2D PyRadiomics descriptors from image-mask pairs to provide structured evidence for malignancy classification, focusing on shape and texture families such as area and GLCM energy. Connected component analysis is used as an optional deterministic refinement step to suppress isolated noisy regions and preserve connected anatomical structures before radiomics extraction~\cite{liu2025shapekit}. Both components are independent of the LLM router.
+
+\noindent\textit{Agentic inference workflow and evidence-aware routing.} During inference, segmentation experts first produce candidate masks and confidence scores, and classification experts produce malignancy probabilities and confidence scores. The router summarizes these outputs as structured evidence, using segmentation evidence built from mask-quality proxies, expert confidence and inter-expert disagreement, and classification evidence built from malignancy probability, classifier confidence and radiomics descriptors. The LLM operates only on these summaries rather than on raw images, uses low-temperature decoding (temperature 0.3) and emits a strict JSON decision to select or aggregate experts for the final prediction.
