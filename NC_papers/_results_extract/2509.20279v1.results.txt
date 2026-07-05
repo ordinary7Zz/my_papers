@@ -1,0 +1,949 @@
+2.1 Creatingaco-evolvingagenticAIsystemformedicalimaging
+WedevelopedTissueLab, thefirstco-evolvingagenticAIecosystemformedicalimageanalysis. Inspired
+by the Factory Method design pattern [17], TissueLab abstracts diverse imaging problems into a small
+setoffundamentaloperationssuchastissuesegmentation,classification,andlocalcodeanalysis,thereby
+enablingclinicianstoaccessadvancedAIanalysiswithoutrequiringAIresearchorcodingexpertise.
+TheTissueLabagenticAIsystemstartswithusers’query,e.g.,“Calculatetheratiooftumorcellsvs. lym-
+phocytes in this breast cancer tissue.” Based on the user query, our entrance agent will ask workflow agent
+toinitiateaworkflow(Figure1a). Theavailablelocaltoolfactories,alongwiththecapabilityofintegrating
+newtools(Figure1b)withoutmodifyingthecurrentcodebase,aswellasstoringtheintermediateresults
+intoalocaldatacontainer(Figure1c), offersapracticalsolutionforLLMasanorchestratortoinvokeap-
+propriate AI tools and avoid token overload1. When selecting AI tools, our agentic AI system will check
+model denpendencies according to the model card, and perform topolocial sorting to enable distributed
+inference2 (Figure1d). Oncetheworkflowhasbeengenerated(SupplementaryFigure1a),TissueLabwill
+directlyanalyzetheresultsstoredatthelocaldatacontainer,andthesummaryagentwillproduceadirect
+answerinnaturallanguage(Figure1e).
+WithTissueLabplatform,usercanfurtherprovideadditionalfeedbackthroughchatboxthereforead-
+just/improve the analysis module (Supplementary Figure 1b). During the workflow generation and ex-
+ecution in Figure 1d, all intermediate results can be visualized and assessed by human experts through
+oursoftwareplatform(SupplementaryFigure1c). Thisinteractivecomponentisthekeytoenablethe“co-
+evloving”function,whichallowshumanexpertsto(i)provideexpertannotations(SupplementaryFigure
+1c); (ii)improveAItoolsinreal-timethroughiterativefeedback(SupplementaryFigure2); (iii)adjusting
+or reselecting appropriate models; and (iv) contribute new knowledge or reuse others knowledge in our
+TissueLabecosystem.
+Building on top of the fixed foundation models, TissueLab AI system enables users to contribute an-
+1Tokenoverloadisavoidedbystoringallintermediatemodelresults(e.g.,NumPyarrays,CSVfiles)inanHDF5file,allowingthe
+analysiscodetoaccessandreusethemlater.
+2DitributedinferenceallowsTissueLabagenticAIsystemtohandlehigh-throughputrequestswhileefficientlyorganizingtasks.
+3
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+a b
+Help me to calculate the ratio TissueLab tool factories Example tool format
+of tumor vs. lymphocytes in
+this breast cancer tissue. Tissue Patch embedding H&E image patch embedding
+segmentation and classification
+User’s query: a paragraph
+Factory: Patch embedding
+describes the needs. Nuclei Nuclei embedding Tissue type: Pathology (H&E)
+segmentation and classification Description: This node is used to encode the ...
+Entrance Agent
+Gene expression Spatial omics Input: Image, text prompt
+profile prediction analysis Output: N patches x 1D vector
+Entrance Agent decides
+whether to initiate a workflow.
+> Code analysis Other online tools
+Workflow Agent
+Look up tool factories
+Workflow Agent looks up tool factories Step 1 Step 2 c Local data container (the Memory)
+and start planning experiments.
+Annotations Embeddings
+Search online guideline Step 3 Classification Model parameters
+Data container will be established or Object contours Metadata
+updated based on the existing data.
+Class definitions
+TissueLab Co-evolving with human
+Exchange
+ecosystem knowledge
+Continuous learning via TissueLab ecosystem Re-selecting models and active learning
+d Step 4 Step 5 Search online guideline Step 6
+Planning ...
+1 Selecting AI models/tools 4 Generate final workflow
+Tissue Segmentation Nuclei Classification Tissue segmentation
+Nuclei Segmentation 5 Start
+2 Checking model dependencies Nuclei segmentation Nuclei classification Analysis
+Prerequisite
+Nuclei Segmentation Nuclei Classification e
+There are 52,312 tumor cells and 34,191
+Summary Agent lymphocytes. The ratio of tumor to lymphocytes
+3 Topological sorting
+within the cancerous region is 1.53.
+f Previous g Now
+Query Knowledge update
+Query Co-evolving
+Expert
+Update knowledge agentic AI system LLM planning
+Use local or online tools
+Spend 3-6 Spend 1-60 mins (initial)
+Results generation
+months or <10 seconds (update)
+Update online guideline
+Feedback
+Results Results
+h
+Diagnostic
+criteria:
+1 AJCC
+2 3 w·
+S
+d·h>T A A
+···
+A C
+···
+S R LD Annotate
+Relational analysis Diagnosis with High dimensional Co-evolving by Multi-modal fusion &
+with reasoning medical knowledge analysis human-in-the-loop analysis
+Figure1: OverviewoftheTissueLabagenticAIecosystemforacceleratingbiomedicalresearchandclinicaldeci-
+sionsupport. a. Orchestrationphaseinwhichthelargelanguagemodelplansworkflows. b. Modularpluginarchi-
+tectureenablingseamlessintegrationofnewmodelswithoutmaintainingafixedtoolbox. c. Editablememorylayer
+thatsupportsco-evolution,allowingclinicianfeedbacktoalignoutputswithexpertexpectationsandmitigateattention
+dilution. d. Executionphasewheremodulartasknodes(e.g.,segmentation,classification,spatialanalysis)aresched-
+uledviatopologicalsorting, supportingbothserialandparallelexecution. e. Naturallanguagesummaryagentfor
+user-facinginterpretationofresults. f. Traditionalclinicalworkflow,inwhichqueriesoftenrequired3-6monthsfrom
+initialquestiontoexpert-derivedresults.g.TissueLabworkflow,wherethesamequeriescanbeaddressedwithin1-60
+minutesforinitialsetupandupdatedinlessthan10secondsafterfeedback. h. Representativeapplications,including
+relational analysis with reasoning, diagnosis with medical knowledge, high dimensional analysis, and multi-modal
+fusionandanalysis.
+4
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+notationstobuildlightweightclassifiersthatcanbesharedwithinthecommunityandbereusedimmedi-
+atelythroughactivelearning[18]. ComparedwithpreviousandtraditionalAIresearchworkflow, where
+cliniciansasksexpertAIscientisttodesignandimplementacomputationalpipeline,whichisoftenatime-
+consumingprocess(Figure1f),TissueLabcannowautonomouslygenerateandexecuteexpert-levelwork-
+flowswithin60minutes(Figure1g). Moreover,theprocesscanbeiterativelyrefinedwithexpertfeedback
+in just 10 seconds per iteration. By incorporating human feedback, clinicians can actively participate in
+workflowdesignratherthanremainpassiveuserswithintheecosystem,enablingtheagenticAIsystemto
+continuouslyimproveandbecomesmarterovertime.
+Throughcomprehensiveexperimentalevaluationsinpathology,radiology,andspatialomics,wedemon-
+strated the advancements of the TissueLab system, as detailed in later sections: (i) performing relational
+analysiswithreasoning,(ii)enablingtrustworthydiagnosisinformedbymedicalknowledge,(iii)address-
+ing high-dimensional data challenges, (iv) co-evolving with human experts, and (v) understanding and
+solvingmulti-modalanalysistasks(Figure1h).
+2.2 Co-evolvingagenticAIacceleratesexpert-levelassessmentoftissuemeasurement
+Many clinically important measurements in pathology remain labor-intensive and lack suitable founda-
+tion models that can generalize across disease contexts. Tasks such as quantifying tumor invasion depth
+typically require expert pathologists to manually delineate tumor boundaries on whole-slide images, a
+process that is both time-consuming and difficult to scale (Figure 2a). No current foundation model is
+specifically trained to address these fine-grained measurements. Moreover, training a dedicated vision-
+language model for each fine-grained measurement task would demand substantial data and computa-
+tionalresources,makingitimpracticalinreal-worldclinicalsettings.UsingTissueLabtoautomaticallygen-
+eratesfunctionalworkflowsandincorporatesclinicianannotationsinaco-evolvingloop(Supplementary
+Figure 2), lightweight modules can be rapidly updated and refined, sometimes within minutes, thereby
+ensuringthatthesystemcontinuouslyalignswithclinicalrequirements. ThisadaptivestrategyallowsTis-
+sueLab to transform tasks traditionally dependent on extensive human labor into efficient, reproducible,
+andexpert-levelanalyses.
+WefirstevaluatedTissueLabonpredictingtumorinvasiondepthfromwhole-slidepathologyimages.
+Depth of invasion (DoI) is a critical histopathological feature that informs tumor staging and prognosis,
+andaccurateandinterpretablequantificationisessentialforclinicaldecision-making. AutomaticDoIeval-
+uationenablesmanualtaskstobecompletedautonomouslyandcansupportawiderangeofclinicaland
+research applications, such as Breslow thickness assessment in skin cancer. In this work, we study the
+DoIinregionallymphnodemetastasisincolonadenocarcinoma(LNCO2)dataset[19]across105primary
+tumorresectionsfrom49patients.
+As illustrated in Figure 2b, TissueLab agent (TLAgent) designs a structured workflow for measuring
+DoIincolorectalcancer. Aftertheuserquery,theLLMorchestratorwilllookupagenttoolfactories,check-
+ingavailabledataoutputs,andcomeupwithaworkflowbyinvokingexpertAItools.Aftertheprocesshas
+finished,TLAgentwillthenperformautomaticcodeanalysisbyinspectingdata,generatingandexecuting
+Pythonsourcecode,andsummarizetheoutputinnaturallanguage.
+Asaresult,thepredictedinvasiondepthswerestronglycorrelatedwithpathologistannotatedground
+truth(Pearsonρ =0.843),demonstratingrobustconsistencyandsuperiorperformanceacrossthefullrange
+ofinvasionseveritiescomparedtothesecondbestmodelGPT-4o-agent(Pearsonρ =0.376)(Figure2c). To
+ensure fair comparisons, we provided large thumbnail inputs for baseline models that could not process
+high-resolutionwhole-slideimagesandrepeatedeachexperimentfivetimes. Nevertheless,somebaseline
+models, such as Quilt-LLaVA, still failed under these conditions, either producing outputs unrelated to
+thequeryorexplicitlyreturningnovalidresponse. TLAgentconsistentlydeliveredtheanswerwith100%
+in task completion (success) rate (Figure 2d). In terms of numerical accuracy, TLAgent achieved a mean
+absolute error (MAE) of 2.047 mm and a root mean square error (RMSE) of 3.091 mm relative to expert
+annotations,reflectingexpert-levelaccuracy(Figure2e). WhileGPT-4o-visionreportedcompetitiveMAE
+values, its correlations with ground truth were poor (Pearson ρ = 0.37), indicating that the predictions
+lackeddirectionalconsistencyandoftenfailedtoreflectthetrueprogressionofinvasiondepth. Forother
+5
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+a Relational analysis Distance measurement in pathology image
+with reasoning Input query Result
+b
+Calculate the depth of The depth of invasion in this
+invasion for this colon WSI. colon section is 1.3 cm.
+1
+Patch classification: Epithelium
+2
+3 Start Analysis Output
+Patch classification: Tumor
+Workflow planned by agent > Code generated by agent
+1. Look up agent tool factories... 1. Inspecting data container... Found Epithelium and Tumor patches.
+2. Look up data container... No existing data associated with this image. 2. Thinking how to generate analysis code...
+3. Planning... 3. Generating analysis code. The code will first measure the distance from
+4. To calculate the depth of invasion measurable from the visible plane in every single Tumor patches to the nearest border, then, find the maximum
+this section, I will need to measure the distance from the muscularis value among all these distance measurements. The code will then read
+mucosae (MM) to the deepest tumor region. To achieve this, I will use MUSK metadata from the data container to convert pixel distance to centimeter.
+model to embed patches, and classify it to Epithelium, Tumor, and Others. 4. Summarize the results and return in the chat.
+c d e f
+Ground truth 1.0 Our prediction
+0.8
+0.6 0.4
+0.2 0.0
+LLaVA M - M ed e G d e Q m u m ilt a G -L P L T a - V 4 A G o- P a T ge -4 n o t - G v P is T io - n 5-visio T n LAgent
+Object counting in pathology image k
+g Input query Result
+Help me count the number The number of positive
+of positive lymph node. lymph node is 2.
+Patch classification: Lymph Node
+Start Analysis Output
+Patch classification: Tumor
+h i j l
+Other area Lymph node
+Tumor metastasis
+etaR
+sseccuS
+Model successful rate
+1.00
+0.9811.0 1.0 1.0
+0.75
+0.50
+0.25 0.326
+0.00
+−0.25 0.000 0.095
+LLaVA M - M ed e G d e Q m u m ilt a G -L P L T a - V 4 A G o- P a T ge -4 n o t - G v P is T io - n 5-visio T n LAgent
+noitalerroC
+nosraeP
+Correlation with ground truth
+Error comparison
+0.843 GPT-5-vision 3634.7204671.918 10
+Quilt-LLaVA 78.183 559.282 8
+0.376 0.370 GPT-4o-agent 8.535 10.363
+0.209 0.258 MedGemma 8.732 9.381 6 N/A 4
+GPT-4o-vision 3.852 5.631
+2 TLAgent 2.074 3.091 -0.252 LLaVA-Med N/A N/A 0
+MAERMSE
+)mm(
+rorrE
+Accuracy F1 score (weighted) Model successful rate
+1.0 0.919 1.0 0.926 1.0 0.9220.968 0.9981.0 1.0
+0.8 0.8 0.8 0.755
+0.653
+0.6 0.563 0.6 0.526 0.6
+0.408
+0.4 0.4 0.4
+0.240
+0.2 0.184 0.2 0.2
+N/A0.010 0.016 N/A 0.00.006 0.000 0.0 0.0 0.0
+LLaVA M - M e e d d Ge m Q m uil a t- G LL P a T V -4 A o G -a P g T e - n 4 t o- G vi P si T o - n 5-visio T n LAgent LLaVA M - M e e d d Ge m Q m uil a t- G LL P a T V -4 A o G -a P g T e - n 4 t o- G vi P si T o - n 5-visio T n LAgent LLaVA M - M e e d d Ge m Q m uil a t- G LL P a T V -4 A o G -a P g T e - n 4 t o- G vi P si T o - n 5-visio T n LAgent
+Figure2:AgenticAIperformsrelationalanalysiswithreasoning.a,Conceptualschematicofrelationalanalysiswith
+reasoning.b,WorkflowgeneratedbyTLAgentformeasuringdepthofinvasion(DoI)incolorectalcancer.c,Correlation
+with ground truth across methods for DoI. d, Task-completion (success) rate for DoI among baseline VLM agents
+versusTLAgent. e, ErrormetricsforDoI(MAEandRMSE,mm). f, AnexampleofWSIshowingexpertannotation
+andTissueLabpredictionoverlaid,illustratingexplainablealignment.g,WorkflowgeneratedbyTLAgentforpositive
+lymph-nodecountinginH&Epathology. h,Accuracybymethodforlymph-nodecounting. i,WeightedF1-score(to
+accountforclassimbalance)forlymph-nodecounting. j,Task-completion(success)rateforlymph-nodecounting. k,
+OriginalWSIforthelymph-nodetask,servingasthegroundtruthreference.l,TissueLabsegmentationoverlaidonthe
+wholeslideimages,providingexplainablecorrespondencebetweenpredictedmetastasisregionsandexpertlabels.
+6
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+approaches, MedGemma and GPT-4o-agent showed higher errors, with MAEs in the range of 8-9 mm;
+MedGemma also displayed a negative correlation with ground truth (Pearson ρ = −0.22). Both Quilt-
+LLaVA (MAE = 78.183 mm, RMSE > 550 mm) and GPT-5-vision (MAE = 3634 mm, RMSE = 4671 mm)
+exhibited excessively large errors, indicating that these predictions were highly unreliable, and LLaVA-
+Medoftendidnotgeneratevalidoutputs. Noteforallbaselinemodels,experimentswererepeated5times
+andtheaverageperformancewasreported.
+By taking a closer inspection on other approaches’ result through TissueLab software, we found that
+theseoutputswereeitherrandomorlackingconsistentpatternbetweenpredictedandtrueinvasiondepth.
+Incontrast,TissueLabautonomouslyconstructedavalidcomputationalworkflow:segmentingtherelevant
+tumortissueusingdomain-specificmodels,extractingthecontours,andcomputinginvasiondepthasthe
+maximumoftheshortestdistancesbetweeneachtumorboundarypointandtheepithelialsurfacecontour
+as detailed in Algorithm 1 [20]. Figure 2f shows that this approach reflects the clinical definition of the
+measurementandyieldsresultsthatarenotonlynumericallyaccuratebutalsodirectionallyconsistentwith
+groundtruth. ThesefindingshighlighttherobustnessofTissueLabâA˘Z´sco-evolvingrelationalreasoning
+designincapturingclinicallyrelevantspatialrelationships.
+Algorithm1PseudocodeforDOImeasurementgeneratedbyTissueLab
+1: Input: TumorboundaryverticesC tumor = {p i } i N =1 ,EpithelialcontourverticesC epi = {e j } j M =1 ,Pixelsize
+pixel_size
+µm
+2: Initialize: D max =0, p⋆ =None, q⋆ =None
+3: #Build spatial index (e.g., KD-tree) for Cepi
+4: foreach p ∈C tumor do
+5: q ←NearestPoint(C epi ,p)
+6: d ← ∥p−q∥#Euclidean distance in pixels
+7: ifd > D max then
+8: D max ← d
+9: p⋆ ← p
+10: q⋆ ← q
+11: endif
+12: endfor
+13: DOI µm ← D max ×pixel_size µm
+14: Output: DOI µm , p⋆, q⋆
+15: #If epithelium has multiple contours, take Cepi as the union of all vertices
+WenextevaluatedtheTissueLabagenticAIsystemonpredictingthenumberofmetastaticlymphnodes
+perslideintheregionallymphnodemetastasisincolonadenocarcinoma(LNCO2)datasetacross321ad-
+jacent lymph node slides from 22 patients. This task is clinically significant for staging as the number of
+metastaticlymphnodesdirectlyinfluencestreatmentdecisionsandtheleveloftherapeuticaggressiveness
+[21–23]. Since many slides do not contain metastatic lymph nodes, the dataset is imbalanced across cate-
+gories. Therefore,theweightedF1-scoreisreportedalongsideoverallaccuracy.
+AsillustratedinFigure2g,TLAgentaccomplishesthistaskbyfirstsegmentinglymphnodesandtumor
+regions, then determining nodal positivity through code-based computation of spatial overlap between
+the two. This structured pipeline underlies the performance gains shown in Figure 2h–i. To be specific,
+TLAgentachievedaccuracy=0.919andweightedF1=0.926,substantiallyoutperformingbaselinemodels
+Quilt-LLaVA(accuracy=0.016,F1=0.006),MedGemma(accuracy=0.010,F1=0.000),GPT-4o-vision(ac-
+curacy=0.184,F1=0.240),GPT-5-vision(accuracy=0.563,F1=0.653),andGPT-4o-agent(accuracy=0.408,
+F1 = 0.526). On another note, LLaVA-Med frequently failed to complete the task. Compared to the best-
+performingbaseline(GPT-5-vision),TLAgentimprovedaccuracyby+0.356absolutepoints(≈63%relative
+gain)andweightedF1by+0.273(≈ 41%relativegain). Inadditiontoitssuperiorperformance,TLAgent
+consistentlyachieveda100%tasksuccessrate(Figure2j). Noteforallbaselinemodels,experimentswere
+repeated5timesandtheaverageperformancewasreported.
+These comparisons underscore a key distinction between TLAgent and existing agent-based or VLM-
+7
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+based models. Whereas single-model prompting often yields arbitrary or clinically meaningless outputs,
+TissueLab relies on co-evolving agentic orchestration to assemble domain-appropriate workflows. By in-
+tegratingsegmentationmodels,contourextraction,andgeometriccomputationintoastructuredpipeline,
+the system ensures that its reasoning is clinically grounded and can be validated through visual inspec-
+tion through the software. This design explains why TLAgent not only achieves lower error metrics but
+also produces results that align directionally with ground truth, highlighting the necessity of agentic or-
+chestrationforclinicallymeaningfulrelationalreasoning. Figure2k–lfurtherillustratesboththeoriginal
+whole-slideimageandintermediateresultsgeneratedbyTLAgentthatcanbevisualizedfromTissueLab,
+showing that the system not only correctly counts positive lymph nodes but also identifies tissue types
+withineachregionandpresentsthemthroughaninterpretablevisualization. Suchexplainableoutputspo-
+sition TissueLab as a clinically trustworthy assistant, fostering greater safety and confidence in the use of
+AIbypathologists.
+2.3 TissueLab enables guideline-aligned diagnosis using an effectively infinite med-
+icalknowledgedatabase
+Leveraging online searching for diagnosis aligned with up-to-date clinical guidelines and expansive
+knowledgedatabase
+Through the Model Context Protocol (MCP) [24], TissueLab agents can access authoritative medical re-
+sources, such as AJCC [20], CAP [25], WHO [26], or AASLD [27] and other guidelines in real time. By
+incorporatingthesecontinuouslyupdatedknowledgesourcesandleveragingretrieval-augmentedgener-
+ation [28] in diagnostic reasoning, the system ensures that outputs remain aligned with current clinical
+standards. In contrast to models that rely on static internal knowledge, TissueLab dynamically incorpo-
+ratesexternalcriteria,enablingguideline-consistentdecisionsfortaskssuchasmetastasisclassificationor
+disease staging. In this way, the ecosystem effectively functions as an infinite and continuously updated
+knowledgebasewithoutanymaintenance,whileremaininganchoredtoauthoritativeclinicalsources.This
+approach ensures that diagnostic outputs are not only accurate but also clinically safe, reproducible, and
+alignedwithmedicalpractice[29].
+Assessmentoflymphnodemetastasisusingonlinediagnosticcriteria
+Toevaluatethiscapability,wefurtherevaluatedlymphnodemetastasisclassificationontheLNCO2dataset
+across 321 lymph node slides, a staging-critical task that requires distinguishing macrometastasis (> 2.0
+mm), micrometastasis (≥ 0.2 mm), and isolated tumor cells (< 0.2 mm) [20]. These categories determine
+whether a lymph node is considered positive and thereby directly influence N stage assignment in the
+AJCC system and are clinically decisive for prognosis and the use of adjuvant therapy in colorectal and
+othercancers. Forconsistencyacrossmethods, baselinemodelsthatcouldnothandlefullwhole-slidein-
+putswereevaluatedusinglargethumbnailrepresentations,andeachexperimentwasrepeatedfivetimes.
+AsillustratedinFigure3a,TLAgentretrievedtherelevantthresholdsdirectlyfromtheselatestauthorita-
+tive guidelines and applied them consistently to case measurements. Based on such criteria, the system
+achieved a weighted F1-score of 0.939 and an accuracy of 0.931, closely matching expert-level diagnosis
+(Figure3b–c). Finally,Figure3dsummarizesrecall,precision,F1-score,accuracy,andcorrelationinaradar
+plot,highlightingthatTissueLabagenticAIsystemoutperformsallbaselines. Completenumericalresults
+areprovidedinTable1.
+8
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+Table1: Comparisonofmetastasisclassificationperformanceacrossmodels. Bestperformedmodelresults
+arehighlightedwithboldfont.
+Method Accuracy F1-score Precision Recall Correlation
+TLAgent(ours) 0.931±0.000 0.939±0.000 0.951±0.000 0.931±0.000 0.849±0.000
+GPT-5-vision 0.388±0.012 0.468±0.013 0.802±0.021 0.388±0.012 0.070±0.018
+Quilt-LLaVA 0.162±0.023 0.173±0.036 0.780±0.042 0.162±0.023 −0.013±0.012
+GPT-4o-vision 0.117±0.006 0.063±0.011 0.783±0.025 0.117±0.006 −0.001±0.001
+LLaVA-Med 0.104±0.010 0.036±0.011 0.733±0.178 0.104±0.010 0.015±0.006
+GPT-4o-agent 0.096±0.006 0.028±0.010 0.710±0.442 0.096±0.006 0.048±0.004
+MedGemma 0.090±0.000 0.033±0.000 0.887±0.000 0.090±0.000 0.125±0.000
+Note:WereportCohen’sκasthecorrelationmetricbecauseitmeasuresagreementoncategoricallabelswhilecorrecting
+forchance.Pearsontargetscontinuousvariables;MCCisvalidbutlesscommonlyinterpretedinmulti-classcontexts.
+Incontrast, baselineVLMslackaccessandinterpretationtoexternal, up-to-datecriteriathereforeper-
+formed poorly across all metrics. For example, GPT-5-vision reached only moderate performance (F1 =
+0.468, Accuracy = 0.388), while other widely used VLMs such as Quilt-LLaVA (F1 = 0.173, Accuracy =
+0.162), LLaVA-Med (F1 = 0.036, Accuracy = 0.104), MedGemma (F1 = 0.033, Accuracy = 0.090), GPT-4o-
+agent (F1 = 0.028, Accuracy = 0.096), and GPT-4o-vision (F1 = 0.063, Accuracy = 0.117). From a clinical
+standpoint, such misclassifications are critical. These results demonstrate that TissueLab, by leveraging
+online search restricted to authoritative medical guidelines, produces clinically valid, guideline-aligned
+diagnosticoutputs,insteadofunguidedsingle-modeloutput.
+AssessmentofchestX-raydiagnosisusingonlineguidelineandhumanfeedback
+Besides pathology image, TLAgent can also perform accurate and reliable chest X-ray diagnosis through
+onlineguidelineretrievalandhumanfeedback. ChestX-raydiagnosistaskisclinicallyimportantbutfaces
+uniquechallenges: latestvision-languagemedicalAImodelsarerapidlyevolving,oftensurpassingolder
+ones,yettheirperformancevariessubstantiallyacrossdatasetsanddiseasecategories. Tohandlethisvari-
+ability,TissueLabincorporatesaco-evolvingmechanismthatintegratesclinician-in-the-loopoversight. As
+illustratedinFigure3e,thesystemfirstgeneratesacandidatepoolofmodelsforeachqueryandselectsthe
+onewiththebestscore. Whencliniciansprovidenegativefeedback,TLAgentreselectsfromthesamepool
+andupdatesmodelscores,allowingfuturerankingstobetterreflectclinicalneeds. Inthisway,thesystem
+continuouslyimprovesitsclinicalintelligencewhileensuringinterpretability.
+We evaluated TLAgent on chest X-ray classification using the NIH Chest X-ray Dataset [30], which
+comprises 112,120 frontal-view radiographs from 30,805 unique patients. Disease labels were derived by
+text-miningtheoriginalradiologyreportsusingnaturallanguageprocessing.
+While the dataset suitable for our experiment, accuracy alone can be misleading given severe class
+imbalance. Manythoracicconditionshavelowprevalence,sobaselineVLMsappeartoachievehighaccu-
+racy simply by defaulting to the negative class, without capturing true disease signals. As shown in the
+per-disease accuracy summary (Table 2) and the accuracy radar plot (Figure 3f), this will inflate overall
+accuracybutfailtocaptureclinicallymeaningfulpredictions.
+9
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+Tissue assessment using online diagnostic criteria
+a Input query Result
+What is the diagnosis of this lymph node?
+Is it macrometastasis, micrometastasis, The diagnosis of this lymph
+or isolated tumor cells? node is micrometastasis.
+Patch classification: Lymph Node
+Start Workflow Agent Analysis Output
+Patch classification: Tumor
+Search external
+criteria via MCP
+> Code generated by agent
+Criteria: 1. Calculate the diameter of the tumoral region, defined as the longest line
+if diameter_mm > 2.0: category = 'macrometastasis'
+elif diameter_mm >= 0.2: category = 'micrometastasis' segment that passes through the tumor centroid and extends to its boundary.
+elif diameter_mm > 0: category = 'isolated tumor cells' 2. Converting the pixels to millimeters in order to compare with the diagnositc
+criteria. Compare the measured diameters (mm) with the diagnostic criteria
+and identify the maximum value.
+b F1 score (weighted) c Accuracy
+Precision
+d
+1.0 0.939 1.0 0.931
+Recall
+0.8 0.8 1.0
+0.8
+0.6
+0.6 0.6 0.4
+0.468 0.2
+0.4 0.4 0.388 Accuracy
+0.2
+0.0360.033
+0.173
+0.0280.063
+0.2 0.1040.090 0.162 0.0960.117 L M
+Q
+L
+u
+e a
+i
+d
+l
+V
+t
+G
+-
+A
+L
+e -
+L
+M m
+aV
+e m d
+A
+a
+L 0 La .0 VA- M M e e d d Ge m Q m u a ilt-L G La P V T A -4o-a G g P e T n - t 4o-vi G si P on T-5-vision TLAgent L 0 La .0 VA- M M e e d d Ge m Q m u a ilt-L G La P V T A -4o-a G g P e T n - t 4o-vi G si P on T-5-vision TLAgent F1 Score Correlation G G G TL P P P A T T T g - - - 4 4 5 e o o - n v - - t i v a s i g i s o e io n n n t
+Evaluating X-ray using online scoring system
+e Candidates pool (ranked)
+Does this X-ray suggest any
+Nodule/Mass//infiltration....?
+X-ray prediction model A
+Start Workflow Agent Mass: 0.861
+X-ray prediction model B Analysis
+Output
+Search external
+criteria via MCP Result
+preferences
+X-ray domain knowledge and scoring Yes, this X-ray
+suggests ...
+f g
+Accuarcy comparison AUC (before / after co-evolving)
+Effusion Edema Hernia (+0.201) 0.682 0.883
+Emphysema Consolidation Pleural thickening (+0.116) 0.689 0.805
+Fibrosis (+0.286) 0.564 0.850
+Fibrosis C 0. a 8 rd 1. i 0 omegaly Emph E y d se e m m a a ( ( + + 0 0 . . 3 0 6 1 0 8 ) ) 0.568 0.08.28139 0.928
+0.4 0.6 Consolidation (+0.058) 0.6970.755
+0.2 Pneumothorax (+0.147) 0.764 0.911
+Hernia Atelectasis Pneumonia (+0.064) 0.6860.750
+Nodule (+0.201) 0.613 0.814
+Mass (+0.226) 0.626 0.852
+Infiltration Pneumothorax LLaVA-Med Infiltration (+0.018) 0.06.97514
+GPT-4o-agent Effusion (+0.053) 0.7920.845 Before Mean AUC: 0.6959
+GPT-4o-vision Cardiomegaly (+0.027) 0.803.8764 After Mean AUC: 0.8284
+Pleural_Thickening Pneumonia GPT-5-vision Atelectasis (+0.080) 0.7100.789 Before Co-evolving
+Nodule Mass TLAgent After Co-evolving
+0.4 0.6 0.8 1.0
+Figure 3: Guideline-aligned diagnosis using agentic AI. a, Workflow for lymph-node metastasis classification in
+pathology. b, Weighted F1-score comparison across models. c, Accuracy comparison across models. d, Radar plot
+summarizingrecall,precision,F1-score,accuracy,andcorrelationformetastasisclassification.e,WorkflowforchestX-
+raydiagnosisbyclinicians-in-the-loopco-evolution.f,Per-diseaseaccuracyradaracross14conditionsforeachmodel.
+g,AUCbeforeandafterco-evolutionwithclinicianfeedback,showingsystematicimprovement.
+10
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+Table 2: Comparison of disease classification performance across different agentic AI systems. Given the
+largesizeoftheevaluationdataset,eachexperimentwasconductedonce,andmeanorstandarddeviation
+valueswerenotreported. Bestperformedmodelresultsarehighlightedwithboldfont.
+Disease LLaVA-Med GPT-4o-agent GPT-4o-vision TLAgent(ours)
+Atelectasis 0.133 0.850 0.839 0.876
+Cardiomegaly 0.047 0.831 0.416 0.960
+Consolidation 0.674 0.862 0.697 0.929
+Edema 0.685 0.901 0.779 0.964
+Effusion 0.186 0.783 0.500 0.840
+Emphysema 0.681 0.947 0.954 0.959
+Fibrosis 0.691 0.896 0.978 0.983
+Hernia 0.697 0.909 0.951 0.997
+Infiltration 0.272 0.701 0.729 0.764
+Mass 0.674 0.862 0.932 0.934
+Nodule 0.677 0.889 0.931 0.937
+PleuralThickening 0.685 0.890 0.951 0.955
+Pneumonia 0.690 0.903 0.977 0.978
+Pneumothorax 0.658 0.872 0.893 0.912
+Forthisreason,theareaundertheROCcurve(AUC)providesamorereliableevaluationmetric(Figure3g).
+Unlike other VLM baselines which return categorical outputs without calibrated scores, our agentic AI
+frameworkgeneratesstep-wisepredictionscoresthroughadaptiveorchestration(candidatepooling,best-
+score selection, and clinician-gated reselection3 with preference updates). Such calibrated scores provide
+clinicianswithinterpretableconfidencelevelsthatcanbedirectlyreferencedindecision-making,improv-
+ingdiagnosticsafetyandtransparency. Inturn,cliniciansusethesescorestoprovidefeedbackthatguides
+the system’s preference updates. This bidirectional loop establishes a genuine form of co-evolution: clin-
+icians benefit from interpretable outputs, while their feedback continuously improves the agent’s intelli-
+gence. With this design, TLAgent raised the mean AUC from 0.6959 [31] to 0.8284 [32] across 14 thoracic
+conditions,leveragingacandidatepoolmechanismtodynamicallyadaptandevolvewithclinician’sfeed-
+back. Otherbaselinemodelsdonotproducewell-definedconfidencescores,andthereforeAUCcannotbe
+computed.
+2.4 TissueLabenableshigh-dimensionalradiologyimageanalysis
+TLAgentpredictfattyliverin3DchestCT
+TheTissueLabplatformandTLAgentoperatenotonlyon2Dmedicalimagesbutalsoonhigh-dimensional
+radiological data, such as volumetric and time-resolved imaging like CT and MRI scans. One example is
+fatty liver in 3D chet CT. Fatty liver disease is a prevalent and clinically important condition associated
+with metabolic syndrome, cardiovascular risk, and long-term liver outcomes. In radiology practice, non-
+invasive diagnosis is based on guideline-defined Hounsfield unit (HU) values [27]. Here we evaluated
+TLAgent on the fatty liver diagnosis across 38 chest CT patients from held-out test set of the UNIFESP
+ChestCTFattyLiverCompetitionDataset[33]. AsshowninFigure4a,TLAgentautonomouslyretrieved
+thediagnosticcriteriafromAASLDandconstructedaworkflowthatfirstsegmentedtheliverandspleen
+volumes(Figure4b). HUvalueswerethencomputedfromthesegmentedregionsandevaluatedagainst
+theguidelinethresholdstodeterminethepresenceorabsenceofsteatosis.
+TLAgent demonstrated consistently high performance, with accuracy of 0.848 and F1-score of 0.870,
+3Effectiveclinician-gatedreselectionrequiresanonline,openaccessecosystemthatcanbothretainuserpreferencesandenable
+community-widesharing. Achievingthiswasnontrivial,andatpresentthiscapabilityisuniquelyimplementedbyTissueLabplat-
+form(tissuelab.org).
+11
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+3D medical image analysis given medical knowledge
+a b
+Does this CT scan
+suggest fatty liver?
+Tissue segmentation: Liver
+Start Workflow Agent Analysis Output
+Tissue segmentation: Spleen
+Search external
+criteria via MCP
+Criteria:
+fatty_liver = (liver_spleen_ratio is not None) Spleen
+and (liver_spleen_ratio < 1.0)
+o o r r ( ( m m e e a a n n _ _ l l i i v v e e r r _ _ h h u u < - m 40 e ) an_spleen_hu <= -10) Liver
+c d e f
+Accuracy F1 score Matthews Correlation Coefficient Cohen's Kappa score
+1.00 1.0
+1.0 1.0
+0.8 0.848 0.8 0.7360.702 0.7880.7880.788 0.870 0.75 0.714 0.8 0.690
+0.6 0.6040.583 0.6500.6580.650 0.6 0.50 0.6
+0.25
+0.4 0.428 0.4 0.364 0.00 0.010 0.0200.0 0.106 0.0 0.4
+0.2 0.2 -0.018 0.2
+0.0 0.0
+−0.25
+0.0
+0.007-0.016 0.0200.0 0.052 0.0
+LLaVA M - M e e d d G G e P m T m -4 a o G -a P g T e -4 n o t - G vi P si T o - n 5-vision M3D TLAgent LLaVA M - M e e d d G G e P m T m -4 a o G -a P g T e -4 n o t - G vi P si T o - n 5-vision M3D TLAgent LLaVA M - M e e d d G G e P m T m -4 a o G -a P g T e -4 n o t - G vi P si T o - n 5-vision M3D TLAgent LLaVA M - M e e d d G G e P m T m -4 a o G -a P g T e -4 n o t - G vi P si T o - n 5-vision M3D TLAgent
+4D medical image analysis given medical knowledge
+g i Accuracy
+Input query 1.0
+Does this time-series 3D > Code generated by agent 0.842
+cardiac scan indicate 1 2 . . I I t t e e r r a a t t e e t t h h r r o o u u g g h h t s im lic e e s fr : a A m n e a s ly : z A e n e a a ly c z h e s e li a c c e h ( z ti - m ax e i s fr ) a .. m . e (0-19)... 0.8 0.679
+myocardial hypertrophy? 0.6 0.576 0.571
+0.429 0.429
+Tissue segmentation: left ventricular myocardium 0.4
+Start Workflow Agent 0.2
+Tissue segmentation: left ventricular blood pool Analysis 0.0 N/A
+Tissue segmentation: right ventricular blood pool LLaVA M - M ed e G d G e P m T m -4 a G o- P a T ge -4 n o t - G v P is T io - n 5-vision M3 T D LAgent
+Output
+Search external j F1 score
+criteria via MCP C m ri a te x_ ri t a h : ickness >= 13mm 1.0
+0.880
+0.809
+h 0.8 0.673 0.727
+0.6
+0.455
+Raw input 0.4
+0.2
+N/A0.0
+0.0
+Segmen o t u a t t p io u n t LLaVA M - M ed e G d G e P m T m -4 a G o- P a T ge -4 n o t - G v P is T io - n 5-vision M3 T D LAgent
+from
+k Matthews Correlation
+TissueLab
+Coefficient
+1.0
+0.701
+0.5
+3D
+visualization 0.089 0.0 0.0 N/A0.0
+0.0
+-0.138
+t= L 0 V myocardiu t m =5 LV t= b 1 lo 0 od pool t=15 RV blo t o = d 1 p 9 ool LLaVA M - M ed e G d G e P m T m -4 a G o- P a T ge -4 n o t - G v P is T io - n 5-vision M3 T D LAgent
+12
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+Figure4:High-dimensionalradiologicalanalysisanddiagnosiswithmedicalknowledge.a,Workflowdiagramfor
+fattyliverdiagnosis. b,RepresentativeCTsliceshowingintermediatesegmentationdataduringtheTissueLabwork-
+flow. c, Accuracycomparisonacrossmethodsforfattyliverdiagnosis. d, BinaryF1-scorecomparisonforfattyliver
+diagnosis. e,Matthewscorrelationcoefficientforfattyliverdiagnosis. f,CohenâA˘Z´skappascoreforfattyliverdiag-
+nosis. g,Workflowdiagramformyocardialhypertrophyassessment. h,Representativesampleshowingintermediate
+segmentationoutputsfromtime-series3Dcardiacimage. i,Accuracycomparisonofhypertrophydiagnosis. j,Binary
+F1-scoreforhypertrophydiagnosis.k,Correlationbetweenpredictionsandgroundtruth.
+supported by strong agreement-based metrics (MCC4 = 0.714, Cohen’s kappa = 0.690) (Figure 4c–f). In
+contrast,mostbaselinemodelsapproachedfattyliverdiagnosisthrougheither2Dslice-basedrecognition
+or simplistic code-based analysis, rather than leveraging true 3D medical imaging as TLAgent did, with
+theexceptionofthelatestM3DagenticAImodel. Asaresult, theyshowedweakerandoftenmisleading
+performance. Toensurefaircomparison,wemanuallyprovided2Dslicesasinputstothesebaselinesand
+repeatedtheentireexperimentfivetimes. Accuracyvalueswere0.428(LLaVA-Med),0.604(MedGemma),
+0.583(GPT-4o-agent),0.650(GPT-4o-vision),0.658(GPT-5-vision),and0.650(M3D).Whilesomebaselines
+producedcomparableF1-scores(upto0.788forGPT-5-vision),theiragreement-basedmetricswerenearly
+zero(Figure4e–f). Inparticular,M3DandGPT-4o-visiondefaultedtoalwayspredictingthepositiveclass,
+whichinflatedrecallandF1-scoresbutyieldednodiscriminativepower(seeSupplementaryFigure3for
+confusionmatrices). Theseresultshighlighttheadvantageofagenticorchestrationinthehigh-dimensional
+imagingtaskswherethesebaselinesmayhallucinateplausible-seemingoutputsthatfailtoalignwithclin-
+icalreliability.
+TLAgentimprovesdetectionofintracranialhemorrhagefrom3DCTscans
+In addition, TLAgent can also perform 3D brain MRI analysis. Here we demostrate the use case of iden-
+tifying Intracranial hemorrhage (ICH). ICH is a life-critical neurological emergency in which rapid and
+accurate diagnosis is essential, as delays in detection can directly affect patient outcomes. However, reli-
+abledetectionrequiresexpertstoexaminehundredsofslicesperscan,makingtheprocesstime-consuming
+and prone to oversight. Automated systems capable of accurate and interpretable hemorrhage detection
+thereforehavehighclinicalvalue. Forbenchmarking,weusedthePhysioNetICHdataset[34–36], which
+provides 82 3D CT scans with voxel-level annotations, enabling quantitative evaluation of hemorrhage
+segmentationandclassification.
+We ensured fair comparisons by evaluating baseline models on appropriate inputs and repeated each
+experiment five times. As illustrated in Supplementary Figure 4a, TLAgent searched authoritative diag-
+nosticcriteriaforICHandassembledaworkflowthatappliedTotalSegmentatorforvolumetrichemorrhage
+segmentationandanatomicalbrainstructuredelineation,followedbycode-basedspatialoverlapanalysis
+todeterminethepresenceofbleeding. Thisdecompositionreflectsthetypicalradiologicalreasoningpro-
+cess, beginning with hemorrhage localization and subsequently contextualizing the findings within neu-
+roanatomical structures. Representative outputs of volumetric segmentation and slice-wise overlays are
+showninSupplementaryFigure4bthroughTissueLabplatform,providingtransparentevidenceforeach
+diagnosticdecision.
+AsquantifiedinSupplementaryFigure4c–d,TLAgentachievedanaccuracyof78.7%withanF1-score
+of0.750,closelymatchingexpert-levelperformance. Incontrast,general-purposevision-languagemodels
+struggledtoprovideclinicallyreliableoutputs. LLaVA-Medeffectivelyfailed(F1=0.000)despitesuperfi-
+cial accuracy of 52%, while MedGemma (Acc = 45.3%, F1 = 0.226) and GPT-4o-vision (Acc = 57.3%, F1 =
+0.273)producedunstableandanatomicallyimplausiblepredictionsacrossslices. GPT-4o-agentperformed
+somewhat better (Acc = 51.0%, F1 = 0.645) but still lagged behind TLAgent, reflecting frequent mislocal-
+izations. GPT-5-vision and M3D were unable to complete the task. These comparisons emphasize that
+TLAgent was the only system able to combine high numerical accuracy with clinically coherent predic-
+tions.
+For the more fine-grained sub-question of intraventricular hemorrhage detection in Supplementary
+4MCC:Matthewscorrelationcoefficient.
+13
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+Figure 4e–f, TLAgent maintained meaningful discriminative ability, achieving an F1-score of 0.500 and
+anaccuracyof0.947. However,LLaVA-MedandGPT-4o-visionbothfailedcompletely(F1=0.000),while
+MedGemma(F1=0.091,Acc=0.733)andGPT-4o-agent(F1=0.084,Acc=0.441)producedunstableornear-
+randompredictions. GPT-5-visionandM3Dwereunabletoprovideevaluableoutputs. Notably,although
+GPT-4o-vision appeared competitive in accuracy (0.896), its zero F1-score indicated predictions that were
+inconsistentandclinicallymeaningless.
+TLAgentenablesdynamicdetectionofmyocardialhypertrophyfrom4Dcardiacimaging
+Lastly, in addition to 3D image, TLAgent can also handle 4D imaging data, where volumetric data are
+captured across sequential time points. For example, myocardial hypertrophy is a clinically critical con-
+dition associated with heart failure, arrhythmia, and sudden cardiac death. Accurate diagnosis depends
+on precise measurement of left ventricular wall thickness across spatial slices and temporal frames of the
+cardiac cycle. In routine practice, this requires experts to manually delineate endocardial and epicardial
+boundaries frame by frame, a process that is prohibitively time-consuming and unsuitable for large-scale
+or real-time deployment. For benchmarking, we used the Sunnybrook Cardiac MRI dataset [37], which
+consistof45cine-MRIimagesfromamixedofpatientsandpathologies: healthy,hypertrophy,heartfailure
+withinfarctionandheartfailurewithoutinfarction.
+In our experiment, TLAgent searched the authoritative clinical definition of hypertrophy, specified as
+amaximalleftventricularwallthickness≥ 15mmatend-diastoleintheabsenceofsecondarycauses[38,
+39]. As illustrated in Figure 4g, the system assembled a workflow that segmented the left ventricular
+myocardium(LVMYO),leftventricularbloodpool(LVBP),andrightventricularbloodpool(RVBP).From
+thesesegmentations,endocardialcontourswerederivedfromtheLVBPboundary,epicardialcontoursfrom
+theouterboundaryofLVBPandLVMYOregions,andRVinsertionpointsfromRVBP-LVMYOjunctions.
+Slice-wisewallthicknesswasthencomputedin2Dbymeasuringthedistancefromeachendocardialpoint
+to its intersection with the epicardial contour along the outward normal direction. These measurements
+were aggregated across frames to reconstruct dynamic wall-thickness curves. Representative outputs are
+shown in Figure 4h, which display 3D segmentations across multiple time frames together with short-
+axis2DoverlaysonrawcineMRIslices,highlightingthepracticalutilityofTissueLabbyprovidingclini-
+cianswithtransparentanddirectlyinterpretablevisualresults. Thefullcomputationalprocedureforwall-
+thicknessmeasurementgeneratedbyTLAgentissummarizedinAlgorithm2.
+With TLAgent, the automatic design and implementation of this workflow reached an accuracy of
+84.2%, F1 = 0.880, and a strong correlation with ground truth thickness (MCC = 0.701). In contrast, base-
+line models lack direct 3D data support. To ensure fair comparisons, we manually slice volumetric data
+into2Dimages,specifyingthetemporalassignmentofeachslice,andrepeatingeachexperimentfivetimes
+toensureconsistency. Thebest-performingbaseline,GPT-4o-vision,achievedonly57.1%accuracyandF1
+= 0.727, with near-zero correlation to the ground truth, indicating predictions that failed to capture clin-
+ically defined patterns. GPT-4o-agent reached F1 = 0.809 but collapsed to predicting nearly all cases as
+positive,eliminatingspecificity. LLaVA-MedâA˘Z´sperformancewasessentiallyrandom(accuracy=57.6%,
+F1 = 67.3%, MCC = 0.089), and MedGemma also showed limited performance (accuracy = 42.9%, F1 =
+0.455). ThesecomparisonsemphasizethatonlyTLAgentwasexhibitedhighaccuracywithnon-trivialre-
+call,sustainingrobustperformanceinachallengingsub-taskwherevision-languagebaselinesdegradedto
+chance-levelbehavior.
+2.5 TissueLabinteractiveecosystemenablescustomizedtooldevelopment
+Among above experiments, it is worth noting that TLAgent performance is bottlenecked by underlying
+tools, such as segmentation model, rather than in the agent orchestration strategy itself. Although the
+systemcanseamlesslyintegrateimprovedsegmentationtoolsinthefuturetofurtherboostaccuracywhile
+preservinginterpretabilityandguidelinealignment,inrealitytherearelimitedtoolsavailableformedical
+imaginganalysis, andmanyresearchandclinicalquestionsfallintoedgecasesforwhichnoexistingtool
+14
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+Algorithm2PseudocodeforLVhypertrophydetectiongeneratedbyTLAgent
+1: Input: LVbloodpoolmask M LVBP ,LVmyocardiummask M LVMYO ,RVbloodpoolmask M RVBP ,Pixel
+spacing(∆x,∆y),Thresholdτ =15mm
+2: Initialize: WT m ED ax =0
+3: IdentifyEDframet ED #Frame with maximal LVBP area
+4: foreachslicezint ED do
+5: C endo ← ∂(M LVBP [t ED ,z])#Endocardial contour
+6: C epi ← ∂(M LVBP [t ED ,z]∪M LVMYO [t ED ,z])#Epicardial contour
+7: foreach p ∈C endo do
+8: n(p) ←outwardnormalat p
+9: q ←firstintersectionofray(p,n(p))withC epi
+10: d ← ∥p−q∥×PixelScale(∆x,∆y)#Local thickness (mm)
+11: ifd >WT m ED ax then
+12: WT m ED ax ← d
+13: endif
+14: endfor
+15: endfor
+16: ifWT m ED ax ≥ τthen
+17: Hypertrophy←Yes#Guideline-aligned diagnosis
+18: else
+19: Hypertrophy←No
+20: endif
+21: Output: Hypertrophylabel,WT m ED ax
+canprovidesolutions.
+To address this limitation, TLAgent is deeply integrated into our TissueLab software and ecosystem
+(tissuelab.org). TheTissueLabplatformenablesuserstocreatecustomizedtoolsby(i)developingPython
+pipelinesthatcanbeuploadedtotheecosystem;and(ii)fine-tuningexistingfoundationmodelsfordiverse
+downstream tasks. Once built, these models can be shared through the TissueLab ecosystem, fostering
+collaborationandreuse. ThiscapabilityallowstheTissueLabagenticAIsystemtosubstantiallyaccelerate
+medicalimagingresearchandscientificdiscovery(Figure5a). Weevaluatedthiscapabilityofcellidentifi-
+cationontwodifferentcancerpathologyslides(ColonandProstate)fromtheVisiumHDdataset[40,41],
+whichincludeshigh-resolutionspatialtranscriptomicstoserveasground-truthlabels.
+Inthisexperiment, theobjectivewastodeterminehowmanycellsaretumor. Despiteourbestefforts
+to ensure fair comparisons, baseline models consistently failed to produce valid outputs for this task, as
+they may not have had access to the same high-resolution data as TLAgent. However, guided by clini-
+cian’s active learning annotation, TissueLab was able to evolve from unseen cases toward refined clinical
+alignment. By allowing pathologist to finetune our in-house H&E cell classification foundation model
+“NuClass”, the system rapidly improved tumor cell identification performance from near-zero accuracy
+to82.1%withinfiveminutesofincrementaltraining,andultimatelyreached94.9%accuracyafter30min-
+utes(Figure5b–c). Atthesametime, Figure5d–eshowthatpredictionsnotonlymatchedoverallcounts
+butalsoreproducedthespatialdistributionofneoplasticversusnon-neoplasticcells,closelyaligningwith
+groundtruthlabels. Theintersection-over-union(IoU)betweenpredictedandground-truthtumorregions
+improved dramatically from 10.1% at the initial iteration to 88.9% in 30 minutes (Figure 5f), highlighting
+TissueLab’scapabilitytoenableuserstoefficientlybuildacell-countingmodelfromscratch.
+Wenextevaluatedtheratiooftumorcellstonormalductcellsinprostatetissue,ameasurewithclinical
+relevanceforquantifyingmalignanttransformation,informingprognosis,andsupportingcancerstaging.
+By repeating this experiment five times, GPT-4-vision reached 77.2% accuracy but with excessively wide
+predictiondistributions,reflectingrandomguessesratherthanconsistentreasoning;andallotherbaselines
+fellbelow12%accuracyorfailedoutright(Figure5g).Incontrast,theTissueLabplatformenablesclinicians
+to observe workflow results in real time, track how models learn from their annotations, and co-evolve
+15
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+100000
+75000
+50000
+25000
+0
+0m 5m 10m 15m 20m 25m 30m
+Time (minutes)
+tnuoC
+lleC
+romuT
+100,258103,582105,237103,452 92,25689,379
+75
+50
+PredictedTumor Cell Count 25
+0 GroundTruth: 85,014
+0
+0m 5m 10m 15m 20m 25m 30m
+Time (minutes)
+)%(
+ycaruccA
+a Building cell identification model with visual feedback
+b c 91.5% 94.9%
+Exchange 82.1% 78.2% 76.2% 78.3%
+TissueLab knowledge
+ecosystem
+Accuracy (%)
+0.0% 100%Accuracy
+d
+Raw image Initial iteration Iteration t=30 Ground truth
+(after 30 mins) (from ST)
+Tumor cells
+e Clinician-in-the-loop active learning f Performance compared with ground truth
+Initial iteration Iteration t=30
+Accuracy 5.3% 94.9%
+Results updated in <10 seconds / iteration
+IoU 10.12% 88.9%
+Co-evolving agentic AI enhances cell proportion estimation
+g Accuracy h i
+99.8
+1.0
+0.8 77.2
+0.6
+0.4
+0.2 13.8
+N/A N/A 6.2 3.3
+0.0 Ground truth Our prediction
+L L a V A M - M e e d d G e m Q m uil a t- G L L P a T V - 4 A o G - a P g T e - n 4 t o- G vi P si T o - n 5-visi o T n L A g e nt k Normal du T c u t m c o e r ll s vs Normal_ T d u u m c o t r R c a e ti l o ls Evolution Over Time
+24.571
+j 25 Tumor/Normal_duct Ratio
+Accuracy OverTime 20 GroundTruth: 2.147
+100 94.2% 93.4% 93 9 . 9 4 . % 8% 1 1 0 5 7.146 9.104 ±10% GT Range
+87.0% 5 2.000 2.151
+80 73.2%
+0
+0 3 6 9 12 15 18 21 24 27
+Time Points (Group Index)
+60 l
+42.2% Ratio Deviation from Ground Truth Over Time
+40 20 +10% GT
+-10% GT
+15
+20
+0.0%
+9.7% 9.7% 5.9% 4.8%3.9% A
+10
+c
+0
+cu
+%
+ra
+A
+c
+c
+y
+c
+(
+u
+%
+ra
+)
+cy
+10
+5
+0 0
+0m 2m 4m 6m 8m 10m12m14m16m18m20m22m24m
+Time (minutes) 0 3 6 9 12 15 18 21 24 27
+Time Points (Group Index)
+16
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+Figure5:Clinician-in-the-loopco-evolutionimprovestissueandcellquantificationincancerresearch.a,Schematic
+illustrationoftheclinician-in-the-loopmechanismwithintheTissueLabecosystem.b,Tumorcellcountsovertimecom-
+paredwithgroundtruth(GT).c,Tumorcelldetectionaccuracyasafunctionoffeedbackiterations. d,Representative
+rawimage. e,Imageseriesshowingprogressiveimprovementintumorcelldetectionafteriterativefeedback. f,Per-
+formanceofdetectioncomparedwithGT.g,Comparisonofmodelaccuracyinquantifyingtumor-to-normalductcell
+ratios across methods. h, Cell overlay from ground truth. i, Cell Overlay of TissueLab predictions. j, Accuracy of
+tumor-to-normalductcellratioestimationovertime.k,Evolutionofpredictedtumor-to-normalductcellratiosacross
+feedbackiterations.l,DeviationfromGTovertime.
+withthesystem. Throughthisprocess,lightweightclassifiersaretrainedontopofourin-house“NuClass”
+model and shared within the ecosystem. By applying the clinician-guided classifiers, TLAgent achieved
+99.8%accuracy,andasshowninFigure5h–i,thepredictedtumorandductdistributionscloselymatched
+thegroundtruthspatialpatterns.
+Additionally, improvementsinaccuracy, cellratio, andratiodeviationovertimearepresentedinFig-
+ure 5j–l, respectively. Because expert annotations involved labeling multiple cell types, the ratio initially
+showedlittleimprovement.However,oncetherelevantcellswereincorporated,TissueLabrapidlyadapted:
+accuracy rose from 3.9% to above 90% within two minutes of feedback, and continued to improve to-
+wardnear-perfectperformance,ultimatelyreaching99.8%. Atthesametime,thepredictedratiosevolved
+smoothlytowardthegroundtruthwithminimaldeviationacrossiterations.
+These findings confirm that co-evolving with human-in-the-loop component through TissueLab plat-
+formenablesusertoiterativelyrefineandcustomizeexistingmodelstoachieveexpert-levelperformances.
+Withhumanexpertsupervision,thesystemusesactivelearningtoadaptfromnovelcasestonear-perfect
+concordance within minutes, offering immediate research and clinical utility. Such capability requires an
+interactiveplatformthatenablestimely,bidirectionalfeedbackbetweenhumanexpertsandtheAIsystem,
+acapabilitynotattainablewithcurrentVLM-basedmodelsorotheragentsystems.
+2.6 TissueLab enables multi-modal integration of spatial omics and histology to im-
+proveaccuracyinpathologyanalysis
+Beyondachievingsuperiorperformancesoverbaselinemodelsonbothpathologyandradiologytasks,the
+TissueLab platform and TLAgent also demonstrate the ability to perform multi-modal integrative anal-
+ysis. Here we demostrate a use case where TLAgent can recognize the presense of both spatial omics
+and histopathology modalities thereby generating more precise and clinically meaningful tissue analysis
+workflow[42]. Specifically,weevaluatethiscapabilityinthecontextofglomerulusquantificationonakid-
+neywholeslideimagefromtheVisiumHDdataset,whichprovideshigh-resolutionspatialtranscriptomics
+data.Asacommonquantificationtask,accurateglomeruluscountingiscriticalfornephrologyresearchand
+clinicalcare,particularlyforadvancedmeasuressuchasthefractionofgloballyscleroticglomeruli. How-
+ever, these assessments have traditionally relied on labor-intensive manual evaluation by expert patholo-
+gists.
+TLAgent accomplished this task through a structured multi-modal workflow (Figure 6a). First, the
+system will check available data in the data container. If both the H&E and spatial transcriptomics data
+areavailable,itwillperformedcellsegmentationonH&Eimagesandextractedthecentroidsofindividual
+cells. Thesespatialcoordinateswerethenlinkedtogeneexpressionprofiles,andunsupervisedclustering
+was performed to assign each cell to a transcriptomic domain. Because clustering yields only numerical
+domainlabelswithoutinherentbiologicalmeaning,TLAgentestablishedmulti-modalcorrespondenceby
+mappingthesedomainsbacktoannotatedH&Eregions.Throughthisalignment,theclustercorresponding
+toglomerularcellswasidentified. Onceidentified,TLAgentcomputedthelocalproportionsofglomerular
+versus non-glomerular cells, aggregated glomerulus patches, and applied graph-based traversal (depth-
+first and breadth-first search, DFS/BFS) to obtain discrete glomerulus counts. This end-to-end workflow
+autonomouslygeneratedbyTLAgent,highlightsboththereasoningcapabilitiesofLLMsandthelocaldata
+accessfeaturesembeddedinourdesign.
+Withanappropriatedomainconfiguration,TLAgentachieved98.4%accuracy,nearlyindistinguishable
+17
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+a
+c d
+b
+125
+100
+75
+50 e f
+25
+0
+LLa VA- M M e e d d Ge m Q m u a ilt- G LL P a T V -4 A o G -a P g T e - n 4 t o-v G is P io T n -5-vision TL Agent
+eulaV
+noitciderP
+Multi-modal analysis improves object identification and counting
+Input query
+Result
+Please calculate the
+number of kidney The number of glomerulus
+glomerulus in this tissue. in this tissue is 126.
+Patch classification: Glomerular region
+Start Analysis Output
+ST clustering using CellChart
+> Code generated by agent
+Nuclei segmentation Nuclei classification: Glomerular cells
+1. Map the placeholder domain names
+Checking available data ... back to the real cell type name.
+Clinician-in-the-loop active learning 2. Mark the patches as “glomerular
+region” based on the glomerular cell
+proportion in each patch.
+3. Count the isolated island of
+glomerulus patches using BFS/DFS.
+H&E ST
+Model Predictions vs Ground Truth
+126.0
+GroundTruth (128)
+100.0
+Domain 1
+Domain 2
+Domain 3
+Domain 4
+Domain 5
+Domain 6
+18.6 Domain 7
+12.0 9.0 Domain 8
+N/A N/A
+Domain 9
+Other regions Glomerulus
+Figure 6: Multi-modal analysis integrating spatial omics and histopathology for glomerulus quantification. a,
+SchematicdiagramoftheTissueLabmulti-modalanalysisworkflow.b,Comparisonofmodel-predictedversusground-
+truth (GT) glomerulus counts. c, Representative kidney H&E image. d, Patch-level and cell-level result overlays.
+e, Spatial domain clustering result obtained by integrating spatial omics data with histology. f, Glomerulus region
+predictionresult.
+18
+
+tissuelab.org Aco-evolvingagenticAIsystemformedicalimaginganalysis
+from expert annotations (Figure 6b). In contrast (Figure 6b), although we have made every effort to en-
+surefaircomparisonswithotherbaselinemodelsandsystems,baselinevision-languagemodelswerestill
+unable to cope with the scale and complexity of spatial omics data, and consistently failed to complete
+the task, producing outputs that were either random or absent. Through TissueLab platform’s visualiza-
+tioninterface(Figure6c–f),clinicianscandirectlyinspectoverlaysofpredictionswithhistologicalimages,
+confirmingthattheidentifiedglomerulusregionsandcountsarehighlyconsistentwithexpertassessments.
+These results demonstrate that TissueLab can still deliver expert-level performance in a setting where
+multi-modal data are available. By integrating molecular andmorphological information, the system not
+only provides richer insights into kidney pathology but also establishes a scalable framework for multi-
+modalmedicalAIanalysis.

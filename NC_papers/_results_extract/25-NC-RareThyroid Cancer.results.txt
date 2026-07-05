@@ -1,0 +1,207 @@
+[RESULTS SECTION NOT FOUND]
+
+Article https://doi.org/10.1038/s41467-025-59478-8
+Improving AI models for rare thyroid cancer
+subtype by text guided diffusion models
+Received:6July2024 FangDai 1,2,3,17,SiqiongYao 2,17,18 ,MinWang4,YichengZhu5,XiangjunQiu6,
+PengSun1,ChengQiu7,JishengYin8,GuangtaiShen9,JingjingSun10,
+Accepted:24April2025
+MaofengWang11,YunWang12,ZheyuYang13,JianfengSang14,XiaoleiWang 1,
+FenyongSun 3,18 ,WeiCai 13,18 ,XingcaiZhang 15,18 &
+HuiLu 1,2,16,18
+Checkforupdates
+Artificialintelligenceapplicationsinoncologyimagingoftenstrugglewith
+diagnosingraretumors.Weidentifysignificantgapsindetectinguncommon
+thyroidcancertypeswithultrasound,wherescarcedataleadstofrequent
+misdiagnosis.Traditionalaugmentationstrategiesdonotcapturetheunique
+diseasevariations,hinderingmodeltrainingandperformance.Toovercome
+this,weproposeatext-drivengenerativemethodthatfusesclinicalinsights
+withimagegeneration,producingsyntheticsamplesthatrealisticallyreflect
+raresubtypes.Inrigorousevaluations,ourapproachachievessubstantialgains
+indiagnosticmetrics,surpassesexistingmethodsinauthenticityanddiversity
+measures,andgeneralizeseffectivelytootherprivateandpublicdatasetswith
+variousrarecancers.Inthiswork,wedemonstratethattext-guidedimage
+augmentationsubstantiallyenhancesmodelaccuracyandrobustnessforrare
+tumordetection,offeringapromisingavenueformorereliableandwide-
+spreadclinicaladoption.
+Recent advancements in medicalartificial intelligence (AI) have sig- diversity,posingsignificantchallengesintrainingAImodels3–5.More
+nificantlyaidedclinicaldecision-making.However,theissueofinsuf- specifically, their low incidence rates lead to scarce data, often
+ficient sample collection haslong been a concern for researchers1,2. resultingincollecteddatathatcannotcoverallfeaturesofthedisease,
+Thisisparticularlytrueforthediagnosisofrarediseasesorraresub- manifestinginaphenomenonofcertainfeaturedeficiencies6.Given
+types, where low incidence rates result in limited data and sample these limitations, contemporary research primarily focuses on
+1DepartmentofBioinformaticsandBiostatistics,SchoolofLifeSciencesandBiotechnology,ShanghaiJiaoTongUniversity,Shanghai,China.2SJTU-YaleJoint
+CenterofBiostatisticsandDataScience,TechnicalCenterforDigitalMedicine,NationalCenterforTranslationalMedicine,ShanghaiJiaoTongUniversity,
+Shanghai,China.3DepartmentofClinicalLaboratoryMedicine,ShanghaiTenthPeople’sHospital,SchoolofMedicine,TongjiUniversity,Shanghai,PRChina.
+4DepartmentofCriticalCareMedicine,JiuquanHospitalofShanghaiGeneralHospital,ShanghaiJiaotongUniversitySchoolofMedicine,Jiuquan,Gansu,PR
+China.5DepartmentofUltrasound,PudongNewAreaPeople’sHospitalAffiliatedtoShanghaiUniversityofMedicineandHealthSciences,Shanghai,PRChina.
+6DepartmentofAutomation,TsinghuaUniversity,Beijing,PRChina.7Medicalcollege,NantongUniversity,Nantong,Jiangsu,PRChina.8ShcoolofArtificial
+Intelligence,UniversityofChineseAcademyofsciences,Beijing,PRChina.9Xin’anLeaguePeople’sHospital,Xing’anLeague,InnerMongolia,PRChina.
+10DepartmentofUltrasound,ShanghaiFourthPeople’sHospitalAffiliatedtoTongjiUniversity,Shanghai,PRChina.11DepartmentofBiomedicalSciences
+Laboratory,AffiliatedDongyangHospitalofWenzhouMedicalUniversity,Dongyang,Zhejiang,PRChina.12DepartmentofHepatobiliarypancreaticcenter,
+XuzhouCityCentralHospital,Xuzhou,Jiangsu,China.13DepartmentofGeneralSurgery,RuijinHospital,ShanghaiJiaotongUniversitySchoolofmedicine,
+Shanghai,PRChina.14NanjingDrumTowerHospital,TheAffiliatedHospitalofNanjingUniversityMedicalSchool,Nanjing,Jiangsu,PRChina.15WorldTea
+Organization,Cambridge,MA,USA.16InstituteofBioinformatics,ShanghaiAcademyofExperimentalMedicine,Shanghai,China.17Theseauthorscontributed
+equally:FangDai,SiqiongYao.18Theseauthorsjointlysupervisedthiswork:SiqiongYao,FenyongSun,WeiCai,XingcaiZhang,HuiLu.
+e-mail:yaosiqiong@sjtu.edu.cn;sunfenyong@263.net;caiwei@shsmu.edu.cn;drzhangxingcai@outlook.com;huilu@sjtu.edu.cn
+NatureCommunications|( 2025)1 6:4449 1
+;,:)(0987654321 ;,:)(0987654321
+
+Article https://doi.org/10.1038/s41467-025-59478-8
+achievinghighpredictiveperformancewithinthegeneralorcommon diseasesinchestradiographs,whichimprovedthepredictionaccuracy
+disease cohorts, making itchallenging to estimate progress on rare for different types of diseases. In fact, generative data augmentation
+subpopulations. This leads to lower detection rates, higher mis- methodsguidedbydiseaseknowledgeareoneofthemoreeffective
+diagnosis and underdiagnosis rates, and potentially increased mor- meanstoenhancethediversityandauthenticityofgeneratedimages27.
+tality rates among rare subpopulation groups7,8 and can lead to However, the majority of existing studies primarily employ category-
+potentialmedicalAIunfairness9,10. levelclassifications,suchasdiseasetypesorsubtypenames,todirect
+Althoughindividualrarediseasesorsubtypeshavelowincidence thegenerationofnewimages.Thisapproachissuitableforaugmenting
+rates,theoverallpopulationaffectedbysuchconditionsissubstantial. datasets with images of prevalent diseases or common subtypes, yet
+This disparity not only raises ethical concerns but also constitutes a may be faced with challenges when utilized for generating diverse
+significantbarriertothewidespreadadoptionandpracticalapplication samples of insufficiently represented diseases or variations (rare
+of medical AI models11,12. In the case of thyroid cancer, for instance, subtypes)28. To address this limitation, it is crucial to incorporate
+current clinical guidelines generally follow standard procedures for detailedtextualdescriptionsthathighlighttheuniquefeaturesofthese
+papillary thyroid carcinoma (PTC)13, such as fine-needle aspiration raresubtypesatanattributelevel.Thisadditionwillfacilitatethegen-
+biopsyandsurgicaltreatment.However,moreaccuratepre-diagnosisof erationoftrulydiverseandrepresentativeimagesofrareconditions.
+subtypes, particularly rare ones, could enable the adoption of more Inthiswork,weintroducetheTigerModel,atext-guidedmedical
+targetedapproaches,suchasconservativetreatmentstrategiesorfur- imagegenerationdeeplearningmodeltospecificallyaddressdiversity
+therdiagnosticinvestigationsindifferentdirections.Forexample,while andgeneralizationinthepredictionofraremedicaldiseases.Itenables
+PTCtypicallywarrantstotalthyroidectomywithcentralcompartment controlledgenerationoffeaturesatafinegranularitybyintroducing
+neckdissection,thesurgicalapproachforfollicularthyroidcarcinoma extensiveclinicalknowledgeofimaging.Themodelcomeswithtext
+(FTC)variesdependingontumorsizeandvascularinvasion,sometimes and image control modules, aiming to enhance the diversity and
+requiring only a hemithyroidectomy14. Conversely, medullary thyroid authenticityofraresubtypefeaturegeneration.Thetext-guideddata
+carcinoma (MTC), which is associated with genetic factors, often generationframeworkoftheTigerModelshowspromiseindiagnosing
+involvesregionallymphnodemetastasisanddistantmetastasestothe raremedicaldiseases,offeringimagesthataremorediverseandrea-
+lungs and bones, necessitating the observation of metastatic sites listicwithenhancedusercomprehensibilitythatcouldacceleratethe
+before proceeding with treatment15. Some subtypes are prone to translationofmedicalAIadvancements.
+metastasisandmaynotbesuitableforsurgicalintervention16,17.Hence,
+theprecisediagnosisofraresubtypesisessentialtorefinetheexisting Results
+ultrasound-basedriskstratificationsystems. OverviewoftheTigerModel
+Buildingonpreviouswork10,inourAImodelforthediagnosisof To achieve models that realize detailed feature control in order to
+thyroid cancer subtypes through ultrasound imaging, we identified generate new images with realistic diversity, we designed the Tiger
+significant predictive imbalances. The scarcity of certain subtypes, Modelasoutlinedbelow.TheoverallusageprocessoftheTigerModel
+characterizedbylowincidenceratesandfeaturesthataredifficultto isillustratedinFig.1.Firstly,weconstructedandsummarizedadisease
+distinguish from those of more common subtypes, means that knowledge base detailing the imaging feature differences between
+imbalancesinsamplecategoriesandtheunevendistributionofdis- common and rare subtypes, based on literature search and clinical
+tinguishingfeaturesaretheprimaryreasonsforthesepredictivedis- reportsincludingComposition,Echogenicity,Echotexture,Calcifica-
+crepancies.ThisposeschallengestothetrainingofdeeplearningAI tion,Aspect,Shape,Margin,Halo,Diameter,NoduleLocation,Exten-
+algorithms.Dataaugmentationisanapproachtoaddresssamplesize sionandSonogramDirection.Wecategorizedsimilardescriptionsand
+limitationsinAI18–21.Traditionalaugmentationmethodssuchasbasic summarized the commonalities and distinctive features between
+imagemanipulations(rotations,stretching,translation,scaling,arbi- commonandraresubtypes,forming adisease knowledge base.We
+trarycropping,etc.),imagemixing(overlayingtwoimages),andran- refertoSupplementaryTable1fordetails.Next,utilizingtheclinical
+domerasing(obscuringcertainpartsofanimage)19,aremoresuitable knowledgeguidancemechanismoftheTigerModel,wetrainedthe
+forhandlingnaturalimages.Whenappliedtomedicalimages,these modeltogeneratefeaturesofbenignandcommontumors,andthen
+techniquescanalterthemorphologicalinformationoflesions,making trainedittogenerateuniquefeaturesofraretumorsthroughcommon
+them unsuitable for medical AI training sets due to the changes in feature transfer. Finally, by combining the permutations of benign
+clinicalsignificanceandpotentiallyleadingtoinaccuraciesindiagnosis nodulesandcommontumorfeatureswiththeuniquefeaturesofrare
+ortreatmentrecommendations.Anincreasingnumberofresearches tumors,weachievedtherealisticanddiversesynthesisofraresubtype
+areturningtheirfocustogenerativemodels,whichautomaticallylearn features.
+andreplicatethepatternsininputimages,enablingthemtoproduce ThearchitectureoftheTigerModelisshowninFig.2,consisting
+examples that resemble those from the original dataset20,22. Such of two main phases: Coarse-Training and Fine-Training. Coarse-
+generativemethods,basedonexistingdatasetsforfeatureaugmen- Training utilizes ultrasound images and corresponding textual
+tation,oftenfaceissuesofinsufficientsamplediversitywhenapplied reports as inputs (Fig. 2). Clinically, features of rare subtypes are
+torarediseaseswithlimitedsamplesizes23.Theseproblemsdirectly usuallyderivedfromcombinationsandpermutationsofbenignand
+impactthegeneralizationperformanceofmodelpredictions. common tumor features, with a few unique features29. Therefore,
+Recently, generative models have demonstrated a performance transferringfeaturesfrombenignandcommontumorscanfosterthe
+advantageinfeaturefusionbetweenimageandtext24.Thismethoduses reconstruction of features for rare subtype tumors. During Fine-
+text-guidedapproachestoavoidmodecollapse,producinghigh-quality Training, we conducted rule-based generative training according to
+generated images in natural settings, resulting in significant perfor- the characteristic combinations of disease subtypes. The ultrasonic
+manceimprovementsfordownstreamtasks.Forinstance,Mohamedet diagnosisofthyroidcancersubtypesoftenreliesoncomprehensive
+al.25investigatedtheimpactofusingdiffusion-basedtext-to-imagedata judgmentbasedontheco-occurrenceandsynergyfeaturesofultra-
+augmentationmethodsontheclassificationofskindiseases,especially sonography.Consideringtheissueofintra-classimbalancebetween
+focusing on the comparison between original medical datasets and the tumor area (foreground, abbr. FG) and background (abbr. BG)
+entirelysyntheticimages.Throughthisapproach,thestudyaimedto informationinultrasoundimages,wedesigneddetailedfeaturecon-
+enhance the accuracy and generalization capability of skin disease trolmethodsforextractingfeaturesfromtheforeground(FG)andthe
+classificationmodels.Chambonetal.26usedthestablediffusionmethod background (BG) separately, using FG-Encoder and BG-Encoder
+toguidethegenerationofCTimagesbasedonthenamesofvarious (Fig.2).Thecomputationprocessoftheattentionmechanisminthe
+NatureCommunications|( 2025)1 6:4449 2
+
+Article https://doi.org/10.1038/s41467-025-59478-8
+Prompt
+DataAugmentation ClassificationModel
+Originatefrom hospitals Synthesisimages {Benign,Malignant}
+Tiger Model
+P mc ar U DRIF1 i n t o . a i g l ea 8 i n m d t c 0 t h ft ri d e r i e .t p ea c o 5 r i n o a o s n c r 1 t o c n t t f ha i g. in m u el 6 y N o E s cn g n : r n . i c xa o tf d T:P s m am A iicd hE mh a R , a e e r h yv t a :e i e li y sn atn o p o [ h i n p l a d b F c n o uy o o ti es ra rt aa i t e, h t o o e k nt c a ei n d i e hm : do n. : lo T n N D d e e g [ ifc h a F l a rf ta ,s . i o yma n n u l [r i r o k c F d rr eo b ir r t e] a n i e e hie d s kD gg a y m s u e n E r a e l oo 1 e tN a d v e ri . ar a 8 dm a] sl l v yu m u na a rl a o m e s e t c id] sn i a u1 o u 4r l. s n g l a . 2 ei2i r z n i e t a y t a e1n d o1 .d7 n.1n e o c D dc h1 omu o. p l5t .e e p xc l iT m e t s u rh .r ie e dT i . m eh nn T a e ot h g id if e i siun etr l h g d i e gm . h id un N t e sl o tm oihsb eos em ing ms mi nt lir d i e daf la - it y c p s e u asot n hr l e e t i i cs nok ct 4 efe y . r n5 s tnt ehai de cl U hi Armi i g l g ht ah h ry gt l ap iy tn soh o gs ey u u. cr s n oh Np iod od i i c cR sl i o oi ne gb u po ne s do i ,ff ur mio tl c e rae mn wa T sta iu ht cl hr iy y i g snir n r tg o i r ac ei n 1 dg cc .u8o E y l .m avra p1ml o u .n2aa e r t cn gi mt io s nn ..s TIanh nce drel m eassi iec odr n ovc is aalsc ccl i auf s ilc sai arfit iti eyo d nissas in soT dtee Idt - e Roc A tne D dDS ionp5 tp, h leer
+Originatefrom journals:
+macmR Funmmsehc on oli A a i aa tg ho nd d c r r ll D u ow a s i r i u gp gg oi s g r l i S s i u o nn e n c e en tn su a aa e sng 5 X c, l nn n n i w )c cm ti ct t d . . a i n i iy f t w R t t t a i t h i y h e m e c r r e i y ,k r i ta e v p rs h a in e t c r o a r k g i a dr h e o r i. e el d s y o n A h s gv e i g s nyu n n a o e op ( l g s tf n a T a d c or t i t u I u h c i - v l l y af e er or o ict i iy d , Fndoe ig mc.2aolncA sitfriA ac tab itn eiog nni s gsm n(oTt o hI-y tRh roAb i o dDr nSd o e2d r)s u. ( lBe TI wA-R i lt AohwD a -S wsue 3sl )pl . - idceiofinn endodmualerg in,and Train set Realism E C v a l a a n l s u d s a i t c D io a i l n v ersit C y LIP
+BenignThyroid Disease MalignantThyroid Cancer
+EvaluationIndicators
+image + report image + report
+Disease Information
+PhysicianTurningTest
+Fig.1|TrainingandEvaluationProcessofTigerModel.TheTigerModelis imagesandultrasonicreports.Tigergeneratesaugmenteddatasetsandmerges
+trainedandconstructedbasedonthedifferencesindiseasesubtypefeatures, themwithrealdatafortrainingclassificationmodels.Therealismanddiversityof
+utilizingdiseaseknowledge(prompt).Throughthemodel’sextractionofcom- theimagesarethentestedbyprofessionalsandevaluatedusingcomputervision
+monalityanddifferencesinthefeaturedomain,itachievesthegenerationoftrue indices.
+diversityoffeaturesforraresubtypes.Thetrainingdataofthemodelareultrasonic
+j-thlayerofeachencodercanbeexpressedbythefollowingformula: diagnosistaskacrossfoursubtypesofthyroidcancer(onecommon
+(cid:1) (cid:1) (cid:3)(cid:3) subtype,PTC,andthreeraresubtypesFTC,MTC,andATC,asoutlined
+Cj m=Attentionm jðQ,K,VÞ=softmax Wj m Qj ,Kj (cid:2)Vj ð1Þ inTable1a),focusingprimarilyonthemalignancydegreeofthyroid
+nodules.Toimprovenoduleidentification,priortoconstructingthe
+Where m2fFG,BGg. The output of FG-Encoder and BG-Encoder TigerModel,wetrainedathyroidandnodulesegmentationnetwork
+(denotedasF andF )wascombinedwithaweightedmodulefor usingindependent4000imagesannotatedbymedicalprofessionals
+FG BG
+foreground-backgroundfusionrepresentedintheformula(2)and(3). (2000benignand2000malignant).ThedatasetsplitsforClassifica-
+Detailed implementations are elaborated in the Method section 2: tion, Generation, Segmentation, and CLIP tasks, including thyroid,
+TigerModelarchitectureandMethodsection3:Trainingdetails.The pediatric chest, and breast datasets, are detailed in Supplementary
+fusiondesignenhancestherealismandrigorofthegeneratedimages, Table2.
+including the following aspects: color and resolution consistency,
+texturerationality,scanningplaneauthenticity,andthecorrectnessof Quantitativeanalysisofimagegenerationquality
+thesynthesizedtumorsubtype. InTable2,weutilizeacomprehensivesetofmetricstoevaluatethe
+performance of our generative network, including the Structural
+W =sigmoidðConvðF (cid:3)F ÞÞ ð2Þ Similarity Index (SSIM)33, CLIP-MMD (CMMD)34, Gradient Similarity
+FG+BG FG BG
+(GS)35, and Density and Coverage (D&C)36. The SSIM scores for the
+Tiger-Fmodelaresignificantlyhigherthanthoseofthestablediffusion
+F=e F +ð1(cid:4)W ÞF ð3Þ model (SD-S) (by 13.16, 39.34, and 31.75%), indicating superior pre-
+FG+BG FG FG+BG BG
+servation of structural information in the Tiger Model. In addition,
+Tiger-FoutperformsthestablediffusionmodelinbothCMMDandGS
+Datacollectionandexperimentaldesign metrics,showingreductionsof37.14,38.46,and26.79%inCMMDand
+Thedatacollectionprocessstrictlyfollowedtheinclusionandexclu- 18.65,82.02,and73.43%inGS.TheseresultssuggestthattheTiger
+sion criteria detailed in the Method section. We collected thyroid Modelgeneratesmorerealisticimages.Furthermore,theD&Cscoreof
+ultrasound reports and pathological reports from 68,386 patients theTigerModelsurpassesthatofthestablediffusionmodel,reflecting
+across10hospitals.Afterexclusion,weenrolledafinalcohortof40,571 amorecompactandcomprehensiveclusteringsolution.Comparedto
+patients.Amongthese,therewere21,920benigncases,13,552casesof the stable diffusion model, images generated by the Tiger Model
+PapillaryThyroidCarcinoma(PTC,withanincidencerateof90–95%)13, exhibitimprovedauthenticity,witha16.69%reductioninFIDanda
+4102casesoftheraresubtypeFollicularThyroidCarcinoma(FTC,with 19.64%reduction in p-Hash,and greater diversity,as indicated bya
+an incidence rate of only 3–5%)30, 997 cases of the rare subtype 39.17% increase in IS. Detailed experimental results are provided in
+Medullary Thyroid Carcinoma(MTC, with anincidencerate of only SupplementaryTable3.
+1–3%)31,and274casesoftheraresubtypesAnaplasticThyroidCarci-
+noma (ATC, with an incidence rate of only 0.2%)32. For gender, the Doctorassessmentofimagegenerationquality
+male-to-female ratio was 0.46; for nodule sizes, they ranged from We conducted three Turing test experiments with medical profes-
+0.1cmto1.9cm,withthe<1cmgroupaccountingfor44%.Wecol- sionals(Figs.3and4)toqualitativelyevaluatethediversityandquality
+lected a total of 186,812 thyroid cancer ultrasound images corre- controloftheimagesgeneratedbytheTigerModel.Werecruited50
+spondingtothe40,845reports.Specifically,therewere93,220images ultrasoundphysicians,evenlydividedbetweenseniorclinicians(with
+forbenigncases,48,585forPTC,31,725forFTC,12,910forMTC,and over5yearsofclinicalexperience)andjuniorclinicians(with3–5years
+372forATC(Table1). ofclinicalexperience).
+To validate the enhancement in model generalization through Inthefirsttest,doctorswereshownimagesandaskedtoassess
+dataaugmentation,weobservedtheimpactonthebenign-malignant whethertheywererealorgenerated.Theimagesincludedrealimages,
+NatureCommunications|( 2025)1 6:4449 3
+
+Article https://doi.org/10.1038/s41467-025-59478-8
+Tiger Model Coarse-Fine Training
+Coarse-Training Fine-Training
+Image
+Image Prompt Prompt SegM* Sobel Prompt
+{malignant}, {papillary},
+{solid, wider-than-tall, clear,
+irregular, uneven echo, white
+points, enormous nodes} ConditionFG ConditionFG Gaussian noise ConditionBG ConditionBG
+{Sonogramtransverse right, Prompt Image Image Prompt
+definition, bright, detail}
+SD Encoder Block_1 Q V FG-EncoderBlock_1 BG-EncoderBlock_1
+64× ×3 K (train 6 a 4 b × le 6 c 4 o py) ×3 ×3 (train 6 a 4 b l × e 6 c 4 o py)
+FG-EncoderBlock_2 BG-EncoderBlock_2
+SD Encoder Block_2
+32 ×32 32 ×32
+32× 32 ×3 (trainablecopy) ×3 ×3 (trainablecopy)
+FG-EncoderBlock_3 × BG-EncoderBlock_3
+SD Encoder Block_3 16 ×16 16 ×16
+16×16 ×3 (trainablecopy) ×3 Fusion Module ×3 (trainablecopy)
+FG-Encoder BG-Encoder
+SD Encoder Block_4 8 ×8 ×3 BBlock_4 8 ×8
+(trainablecopy))))×3 ((trrainablecopy)
+Block_4 8× 88×3 Conv1 Conv2
+FG-MiddleBlock BG-MiddleBlack
+SD MiddleBlock 8 ×8 8 ×8
+8× 8 Zero convolution Zero convolution
+SD Decoder Fusion

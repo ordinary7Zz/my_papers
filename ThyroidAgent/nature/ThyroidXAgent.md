@@ -37,7 +37,7 @@
 
 \author[1,$\dagger$]{Haifan Gong}
 \author[1,$\dagger$]{Shiyu Chen}
-\author[2,$\dagger$]{Baidong Wang}
+\author[2,$\dagger$]{Bodong Wang}
 \author[3,$\dagger$]{Yuqi Wang}
 \author[4]{Shijie Wang}
 \author[5]{Guoliang You}
@@ -46,9 +46,9 @@
 \author[7]{Qinghua Liu}
 \author[2]{Mingzhi Mao}
 \author[4]{Dexing Kong}
-\author[8,*,$\ddagger$]{Wei Lou}
-\author[9,*,$\ddagger$]{Fei Chen}
-\author[1,*,$\ddagger$]{Guanbin Li}
+\author[8,*]{Wei Lou}
+\author[9,*]{Fei Chen}
+\author[1,*]{Guanbin Li}
 
 \affil[1]{School of Computer Science and Engineering, Sun Yat-sen University, Guangdong, China}
 \affil[2]{School of Software Engineering, Sun Yat-sen University, Guangdong, China}
@@ -62,7 +62,6 @@
 
 \affil[*]{\textbf{Corresponding authors:} Wei Lou~([louwei@zjnu.edu.cn](mailto:louwei@zjnu.edu.cn)), Fei Chen~([gzchenfei@126.com](mailto:gzchenfei@126.com)), and Guanbin Li~([liguanbin@mail.sysu.edu.cn](mailto:liguanbin@mail.sysu.edu.cn))}
 \affil[$\dagger$]{These authors contributed equally to this work}
-\affil[$\ddagger$]{These authors jointly supervised this work and contributed equally to this work}
 
 
 
@@ -83,24 +82,33 @@ Artificial intelligence has been applied to several components of thyroid ultras
 
 Agentic AI offers a framework for connecting these isolated capabilities into a traceable clinical process \cite{Zou2025LancetAgenticTeammates}. In medicine, agentic systems are increasingly defined by their ability to plan, use tools, maintain intermediate state, coordinate specialized modules, and interact with clinicians or clinical environments \cite{Qiu2024NatMachIntellAgenticSystems}. Coordinated networks of specialized medical agents have been proposed as a way to organize heterogeneous AI tools across clinical and operational tasks \cite{Moritz2025NatBMECoordinatedAgents}. At the same time, emerging benchmarks such as MedAgentBench emphasize that medical agents should be evaluated in interactive environments that require information retrieval, action execution, and workflow-level reasoning rather than static question answering alone \cite{Jiang2025NEJMAIMedAgentBench}. For thyroid ultrasound, this means that an agentic system should not merely output a malignancy score; it should connect image evidence, nodule masks, measurements, sonographic descriptors, lymph-node findings, risk estimates, report statements, uncertainty signals, and clinician feedback within a single auditable workflow \cite{Tessler2017ACRTIRADS,Grani2024NatRevEndocrinol}.
 
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/Introduction3.pdf}
+    \caption{Overview of OpenThyroidDB and ThyroidXAgent. \textbf{a}, OpenThyroidDB integrates curated public thyroid ultrasound resources and newly collected institutional datasets into a full-spectrum database for lesion segmentation, benign--malignant classification, report generation and advanced malignant-lesion analysis across heterogeneous scanners and acquisition settings. \textbf{b}, ThyroidXAgent supports four downstream workflows: expert-refined nodule segmentation, clinician-verified malignancy classification, expert-edited structured report generation, and advanced diagnosis for lymph-node metastasis assessment and PTC/FTC subtype analysis. \textbf{c}, The human-in-the-loop self-evolving workflow enables physicians to review and correct AI-generated masks, predictions and reports. The resulting expert-refined outputs shorten diagnostic workflows and are stored as high-quality feedback for continual model updating.}
+    \label{fig:introduction_overview}
+\end{figure}
+
 Here we present ThyroidXAgent, a clinician-interactive agentic AI framework for thyroid ultrasound diagnosis and reporting. The system is designed to support the thyroid ultrasound workflow rather than to replace it with a single end-to-end model. It integrates public thyroid ultrasound datasets with large-scale institutional clinical data and organizes heterogeneous inputs into task-specific workflows for nodule localization, malignancy diagnosis, malignant-lesion characterization, and structured report generation. ThyroidXAgent coordinates segmentation models, classification models, radiomics extraction, tabular learning, measurement tools, anatomical-context parsing, report-template retrieval, and post hoc explanation modules. A planning-and-routing layer selects the relevant tools for each case, consolidates their outputs into a case-level thyroid evidence store, and exposes masks, measurements, sonographic descriptors, risk estimates, uncertainty signals, and report clauses for clinician inspection and correction.
 
 We evaluate ThyroidXAgent along three clinically motivated axes. First, we test whether agentic orchestration improves nodule localization and malignancy diagnosis across heterogeneous ultrasound datasets. Second, we assess whether the framework extends beyond benign--malignant classification to clinically relevant malignant-lesion tasks, including ultrasound-based prediction of lymph-node metastasis and follicular versus papillary thyroid carcinoma subtype. Third, we formulate thyroid ultrasound reporting as structured evidence-to-report generation, in which image-derived findings are first converted into auditable evidence and then assembled into editable clinical reports. To evaluate clinical semantic correctness, we introduce ThyClinScore, a thyroid-ultrasound-specific metric that compares lesion-level and feature-level information rather than surface word overlap alone. By linking thyroid ultrasound data resources, domain-specific tool use, structured evidence generation, controlled report assembly, and clinician feedback, ThyroidXAgent provides a reproducible framework for developing auditable agentic AI systems in specialty medical imaging.
 
 
 \section{Results}
-\subsection{Segmentation, classification performance and interpretability}
-Accurate lesion delineation and reliable benign--malignant classification are central to thyroid ultrasound decision-making, yet both remain challenging across datasets with different class balance and lesion geometry (Supplementary Figs.~\ref{fig:BM_Case_Counts} and~\ref{fig:Mask_Position_Size}). Across five segmentation datasets, ThyroidXAgent achieved a mean Dice of 85.24\% and a mean HD95 of 8.30, compared with 78.77\% and 14.44 for UltraFedFM~\cite{jiang2025pretraining}; exact per-dataset values and 95\% confidence intervals are reported in Supplementary Table~\ref{tab:seg_performance}. Across the four datasets that also supported benign--malignant classification, ThyroidXAgent achieved a mean AUROC of 0.9466 and a mean AUPRC of 0.8361, substantially exceeding GPT-5.5~\cite{openai2025gpt5systemcard} (0.7025 and 0.6441, respectively). Cross-dataset comparisons are summarized in Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}a--d and Supplementary Table~\ref{tab:cls_performance}. On a blinded 500-image physician comparison set, ThyroidXAgent also achieved the strongest overall discrimination, with an AUROC of 0.9256 and an AUPRC of 0.9250 (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}f,g), indicating strong performance under direct reader-level comparison.
+\subsection{Cross-dataset segmentation and benign--malignant classification}
+Accurate lesion delineation and reliable benign--malignant classification are central to thyroid ultrasound decision-making, yet both remain challenging across datasets with different class balance and lesion geometry (Supplementary Figs.~\ref{fig:BM_Case_Counts} and~\ref{fig:Mask_Position_Size}). Across five segmentation datasets, ThyroidXAgent achieved a mean Dice of 85.24\% and a mean HD95 of 8.30, compared with 78.77\% and 14.44 for UltraFedFM~\cite{jiang2025pretraining}; exact per-dataset values and 95\% confidence intervals are reported in Supplementary Table~\ref{tab:seg_performance}. Across the four datasets that also supported benign--malignant classification, ThyroidXAgent achieved a mean AUROC of 0.9466 and a mean AUPRC of 0.8361, substantially exceeding GPT-5.5~\cite{openai2025gpt5systemcard} (0.7025 and 0.6441, respectively). Cross-dataset comparisons are summarized in Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}b--e and Supplementary Table~\ref{tab:cls_performance}.
 
-To interpret these predictions, we next examined cohort-level SHAP profiles and representative cases. Morphology-related descriptors, particularly Sphericity and Elongation, dominated benign--malignant classification, whereas texture and intensity features provided complementary signal (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}e). Representative benign and malignant cases showed that stronger segmentation was accompanied by tighter alignment between lesion boundaries, attribution maps and downstream predictions (Supplementary Fig.~\ref{fig:BM_cases}). These signals were further exposed in an interactive review workflow for mask inspection, feature attribution and corrective annotation (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}h). In this clinician-in-the-loop setting, AI assistance shortened segmentation time across most cases while preserving Dice agreement with manual segmentation (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}i--k).
+This advantage was also preserved under direct reader-level comparison. On a blinded 500-image physician comparison set, ThyroidXAgent achieved the strongest overall discrimination, with an AUROC of 0.9256 and an AUPRC of 0.9250 (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}g,h). Together, these results establish ThyroidXAgent as a robust cross-dataset foundation for thyroid nodule delineation and malignancy discrimination.
 
-We then evaluated whether the same framework generalized beyond benign--malignant discrimination to clinically consequential malignant-lesion tasks. On lymph node metastasis prediction, ThyroidXAgent achieved an AUROC of 0.864 and an AUPRC of 0.881, corresponding to relative improvements of 12.7\% and 19.6\% over LLNM-Net~\cite{shen2025explainable}; on FTC/PTC subtype classification, it achieved an AUROC of 0.805 and an AUPRC of 0.786, corresponding to relative improvements of 12.9\% and 10.5\% over Tiger-Model~\cite{dai2025improving} (Fig.~\ref{fig:ThyroidXAgent_Malignant_Image_tasks}b and Supplementary Table~\ref{tab:Malignant_images_tasks_performance}). SHAP analyses again revealed task-specific radiomic signatures, with lymph node metastasis prediction driven mainly by intensity- and size-related features and FTC/PTC discrimination driven more strongly by texture heterogeneity and shape descriptors (Fig.~\ref{fig:ThyroidXAgent_Malignant_Image_tasks}c--f). Distinct attribution profiles were therefore observed across the two malignant-lesion tasks.
+\subsection{Interpretable predictions and clinician-interactive review}
+To interpret these predictions, we next examined cohort-level SHAP profiles and representative cases. Morphology-related descriptors, particularly Sphericity and Elongation, dominated benign--malignant classification, whereas texture and intensity features provided complementary signal (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}f). Representative benign and malignant cases showed that stronger segmentation was accompanied by tighter alignment between lesion boundaries, attribution maps and downstream predictions (Supplementary Fig.~\ref{fig:BM_cases}), supporting the interpretability of the decision process.
 
+We then asked whether these explanatory signals could support clinician-interactive review. In an interactive workflow for mask inspection, feature attribution and corrective annotation (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}a), AI assistance shortened segmentation time across most cases while preserving Dice agreement with manual segmentation (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}i--k). These results suggest that ThyroidXAgent can expose auditable evidence for review while improving annotation efficiency.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{imgs/ThyroidXAgent_SegCls_performance.pdf}
-    \caption{ThyroidXAgent improves thyroid nodule segmentation and benign--malignant classification while enabling clinician-interactive review. \textbf{a--d}, Cross-dataset segmentation and classification performance across thyroid ultrasound benchmarks. \textbf{e}, Cohort-level SHAP beeswarm analysis for benign--malignant classification. \textbf{f,g}, ROC and precision--recall curves on the 500-image physician comparison set, with clinician operating points shown before and after ThyroidXAgent support. \textbf{h}, Interactive review workflow for mask inspection, SHAP-based feature analysis and corrective annotation. \textbf{i}, Segmentation time under manual and AI-assisted workflows. \textbf{j}, Within-case time saving ranked across cases. \textbf{k}, Paired Dice distributions for manual and AI-assisted segmentation, indicating preserved segmentation quality.}
+    \caption{ThyroidXAgent improves thyroid nodule segmentation and benign--malignant classification while enabling clinician-interactive review. \textbf{a}, Interactive review workflow for mask inspection, SHAP-based feature analysis and corrective annotation. \textbf{b--e}, Cross-dataset summaries of segmentation and classification performance, reported as Dice coefficient, HD95, AUROC and AUPRC, respectively, across heterogeneous thyroid ultrasound benchmarks. \textbf{f}, Cohort-level SHAP beeswarm analysis for benign--malignant classification. \textbf{g,h}, ROC and precision--recall curves on the 500-image physician comparison set, with clinician operating points shown before and after ThyroidXAgent support. \textbf{i}, Segmentation time under manual and AI-assisted workflows. \textbf{j}, Within-case time saving ranked across cases. \textbf{k}, Paired Dice distributions for manual and AI-assisted segmentation, showing preserved segmentation quality with improved efficiency.}
     \label{fig:ThyroidXAgent_SegCls_performance}
 \end{figure}
 
@@ -122,20 +130,18 @@ To validate the clinical reliability of ThyClinScore, we next performed two-side
 
 We then examined whether ThyroidXAgent could improve the efficiency of human report writing in a reader-study setting. Two physicians wrote reports for 151 thyroid ultrasound videos under both manual and AI-assisted workflows, with each case evaluated in both workflows but by different physicians to reduce memory bias (Fig.~\ref{fig:reader_study}a). AI-assisted report writing shortened the mean reporting time from 2.5 to 1.8 min per case, corresponding to a 27.4\% reduction, while preserving the paired case structure of the comparison (Fig.~\ref{fig:reader_study}b,c). The time-saving effect was also observed after stratification by physician, with reporting-time reductions of 28.1\% and 26.6\% for the two readers, respectively (Fig.~\ref{fig:reader_study}d). Representative cases further illustrate how the structured evidence generated by ThyroidXAgent can support clinically concordant statements on gland morphology, nodule location, measurements, sonographic features and diagnostic impression, while exposing partially correct or incorrect statements for review (Fig.~\ref{fig:reader_study}e).
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/ThyClinScore.pdf}
+    \caption{ThyClinScore for clinical semantic evaluation of thyroid ultrasound reports. \textbf{a}, ThyClinScore first structures the ground-truth and predicted reports into lesion-level entries, matches corresponding lesions, and scores clinically relevant attributes, including size, vascularity, morphology, lesion-level F1 and completeness. \textbf{b}, Pearson correlation matrix comparing conventional natural-language generation metrics with clinical semantic metrics. Overlap-based metrics were highly correlated with one another, whereas the clinical semantic metrics captured complementary report-quality dimensions. \textbf{c}, Pearson correlations between each metric and a location-aware LLM judge. ThyClinScore showed the strongest correlation among the evaluated metrics; asterisks denote statistical significance (* \(p<0.05\), ** \(p<0.01\), *** \(p<0.001\)). \textbf{d}, Qualitative comparison showing that reports with similar wording overlap can differ in clinically important lesion attributes, which is reflected by ThyClinScore.}
+    \label{fig:thyclinscore}
+\end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{imgs/ThyroidRGAgent_fig1(3).pdf}
-    \caption[Report generation and evaluation in ThyroidXAgent]{
-    Overview of report generation and evaluation in ThyroidXAgent. The figure presents its report generation pipeline and the proposed ThyClinScore metric.
-    a. Data resources and experimental settings.
-    b. ThyClinScore structures ground-truth and generated reports, matches lesions, and compares clinically relevant attributes.
-    c. Multi-view and multi-modal thyroid ultrasound inputs.
-    d. ROI cropping and context parsing produce agent-ready image priors.
-    e. The planner generates a diagnostic plan from image priors and tool definitions.
-    f. A ReAct-style executor invokes segmentation, classification, measurement, and captioning tools on demand.
-    g. Structured evidence is converted into reports through BM25 template retrieval, slot filling, and clause combination.
-    h. Comparison with baselines on the in-house dataset and the public KMVE benchmark.
+    \includegraphics[width=\textwidth]{imgs/ReportGeneration-crop.pdf}
+    \caption[Skill-based report generation in ThyroidXAgent]{
+    Skill-based report generation in ThyroidXAgent. Panels a--e show the staged workflow of a reusable, MCP-callable thyroid ultrasound report-generation skill, from case-level multi-view ultrasound inputs to the final evidence-grounded report. \textbf{a}, Multi-view and multimodal thyroid ultrasound images provide case-level input to the report-generation skill. \textbf{b}, ROI cropping and context parsing generate agent-ready image priors, including image patches, CDFI signals, anatomical regions and nodule candidates. \textbf{c}, The skill planner combines SKILL.md instructions, preprocessing outputs and the tool contract to construct a staged diagnostic task graph. \textbf{d}, A Workflow MCP server exposes the public workflow interface, while a ReAct-style executor follows the task graph and delegates model calls to the diagnostic runtime. \textbf{e}, Structured evidence is converted into the final ultrasound report through BM25 template retrieval, slot filling and clause combination. \textbf{f}, Report-generation performance on the in-house dataset and the public KMVE benchmark.
     }
     \label{fig:thyroidxagent_report_generation}
 \end{figure}
@@ -146,6 +152,8 @@ We then examined whether ThyroidXAgent could improve the efficiency of human rep
     \caption{Reader study of AI-assisted thyroid ultrasound report writing. \textbf{a}, Cross-over reader-study design comparing manual and AI-assisted workflows. \textbf{b--d}, Reporting-time analyses across 151 paired cases, showing a 27.4\% reduction overall and consistent physician-stratified time saving. \textbf{e}, Representative qualitative examples illustrating report generation for a normal thyroid case and a malignant thyroid nodule case, with clinically correct, partially correct and incorrect statements highlighted in comparison with the ground-truth reports.}
     \label{fig:reader_study}
 \end{figure}
+
+
 
 \section{Discussion}
 
@@ -203,35 +211,37 @@ Writing -- review \& editing: YL, YW, HG, QK.
 \section{Data availability}
 \begin{table}[htbp]
 \centering
-\caption{Composition of the thyroid ultrasound benchmark across source datasets and study cohorts. Numbers indicate images contributed by each dataset to the full benchmark ((n=23{,}622)) and to the training ((n=18{,}723)), validation ((n=945)) and test ((n=3{,}954)) cohorts. Percentages indicate the proportion of each dataset within the corresponding column. PKTN contributed images for segmentation only, as classification labels were unavailable.}
+\caption{Composition of the thyroid ultrasound benchmark across source datasets. Numbers indicate images contributed by each dataset to the full benchmark (n=22{,}981) and to the training (n=18{,}277), validation (n=850), and test (n=3{,}854) cohorts. Percentages represent the proportion of each dataset within the corresponding column. DDTI, SH-7K, and ZJH-2K are independent external test sets.}
 \label{tab:dataset_summary}
 \renewcommand{\arraystretch}{1.2}
-\setlength{\tabcolsep}{8pt}
-\begin{tabular}{lcccc}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lccccc}
 \hline
 \cellcolor[gray]{0.90}\textbf{DataSet} &
-\cellcolor[gray]{0.90}\textbf{Total (n=23622)} &
+\cellcolor[gray]{0.90}\textbf{Task} &
+\cellcolor[gray]{0.90}\textbf{Total (n=22981)} &
 \multicolumn{3}{c}{\cellcolor[gray]{0.90}\textbf{Cohort}} \\
-\cline{3-5}
+\cline{4-6}
 \cellcolor[gray]{0.90}\textbf{} &
 \cellcolor[gray]{0.90}\textbf{} &
-\cellcolor[gray]{0.90}\makecell[c]{\textbf{Train Cohort}\\\textbf{(n=18723)}} &
-\cellcolor[gray]{0.90}\makecell[c]{\textbf{Valid Cohort}\\\textbf{(n=945)}} &
-\cellcolor[gray]{0.90}\makecell[c]{\textbf{Test Cohort}\\\textbf{(n=3954)}} \\
+\cellcolor[gray]{0.90}\textbf{} &
+\cellcolor[gray]{0.90}\makecell[c]{\textbf{Train Cohort}\\\textbf{(n=18277)}} &
+\cellcolor[gray]{0.90}\makecell[c]{\textbf{Valid Cohort}\\\textbf{(n=850)}} &
+\cellcolor[gray]{0.90}\makecell[c]{\textbf{Test Cohort}\\\textbf{(n=3854)}} \\
 \hline
-\makecell[l]{TN3K~\cite{gong2021multi}} & 5347 (22.64\%) & 4633 (24.74\%) & 100 (10.58\%) & 614 (15.53\%) \\
+\makecell[l]{TN3K~\cite{gong2021multi}} & \makecell[c]{Segmentation,\\Classification} & 5347 (23.27\%) & 4633 (25.35\%) & 100 (11.76\%) & 614 (15.93\%) \\
 \hline
-\makecell[l]{TN5K~\cite{zhang2025tn5000}} & 5000 (21.17\%) & 3500 (18.69\%) & 500 (52.91\%) & 1000 (25.29\%) \\
+\makecell[l]{TN5K~\cite{zhang2025tn5000}} & \makecell[c]{Segmentation,\\Classification} & 5000 (21.76\%) & 3500 (19.15\%) & 500 (58.82\%) & 1000 (25.95\%) \\
 \hline
-\makecell[l]{ThyroidXL~\cite{duong2025thyroidxl}} & 11631 (49.26\%) & 9441 (50.42\%) & 100 (10.58\%) & 2090 (52.95\%) \\
+\makecell[l]{ThyroidXL~\cite{duong2025thyroidxl}} & \makecell[c]{Segmentation,\\Classification} & 11631 (50.61\%) & 9441 (51.66\%) & 100 (11.76\%) & 2090 (54.23\%) \\
 \hline
-\makecell[l]{PKTN~\cite{sun2025clip}} & 1003 (4.25\%) & 703 (3.75\%) & 150 (15.87\%) & 150 (3.79\%) \\
+\makecell[l]{PKTN~\cite{sun2025clip}} & Segmentation & 1003 (4.36\%) & 703 (3.85\%) & 150 (17.65\%) & 150 (3.89\%) \\
 \hline
-\makecell[l]{DDTI~\cite{pedraza2015open}} & 349 (2.70\%) & --- & --- & 349 (2.43\%) \\
+\makecell[l]{DDTI~\cite{pedraza2015open}} & Classification & 349 & --- & --- & 349 \\
 \hline
-\makecell[l]{Shanghai7K} & 7288 (---\%) & --- & --- & 7288 (---\%) \\
+\makecell[l]{SH-7K} & Segmentation & 7288 & --- & --- & 7288 \\
 \hline
-\makecell[l]{Zhujiang2K} & 1854 (---\%) & --- & --- & 1854 (---\%) \\
+\makecell[l]{ZJH} & \makecell[c]{Segmentation,\\Classification} & 1854 & --- & --- & 1854 \\
 \hline
 \end{tabular}
 \end{table}
@@ -352,8 +362,8 @@ N/A \\
 & \textbf{ThyroidXL}
 & \textbf{PKTN}
 & \textbf{TN5K}
-& \textbf{Zhujiang2K}
-& \textbf{Shanghai7K} \\
+& \textbf{ZJH-2K}
+& \textbf{SH-7K} \\
 \midrule
 TransUnet~\cite{chen2024transunet}
 & $81.84 \pm 1.62$
@@ -453,7 +463,7 @@ UltraFedFM~\cite{jiang2025pretraining}
 & \textbf{ThyroidXL}
 & \textbf{TN5K}
 & \textbf{DDTI}
-& \textbf{Zhujiang2K} \\
+& \textbf{ZJH-2K} \\
 \midrule
 ResNet-50~\cite{he2016deep}
 & $0.7674 \pm 0.0394$
@@ -740,59 +750,83 @@ Tiger-Model~\cite{dai2025improving}
 \label{tab:report_generation_nlg_ci}
 
 \footnotesize
-\setlength{\tabcolsep}{8pt}
+\setlength{\tabcolsep}{5.2pt}
 \renewcommand{\arraystretch}{1.08}
 
-\begin{tabular}{lcccc}
+\begin{tabular}{lcccccc}
 \toprule
 \textbf{Model}
 & \textbf{BLEU-1}
+& \textbf{BLEU-2}
+& \textbf{BLEU-3}
 & \textbf{BLEU-4}
 & \textbf{METEOR}
 & \textbf{ROUGE$_L$} \\
 \midrule
 
 \rowcolor{gray!20}
-\multicolumn{5}{c}{\textbf{In-house Dataset}} \\
+\multicolumn{7}{c}{\textbf{SMU-HMC Testset} ($n=400$)} \\
 
 GPT-4o~\cite{openai_gpt4_2024}
 & 0.3500$\pm$0.0100
+& 0.2535$\pm$0.0080
+& 0.1842$\pm$0.0066
 & 0.1330$\pm$0.0057
 & 0.3247$\pm$0.0047
 & 0.3577$\pm$0.0077 \\
 
 GPT-5~\cite{openai2025gpt5systemcard}
 & 0.3836$\pm$0.0085
+& 0.2749$\pm$0.0069
+& 0.1965$\pm$0.0059
 & 0.1374$\pm$0.0054
 & 0.3254$\pm$0.0037
 & 0.3732$\pm$0.0068 \\
 
 Gemini2.5 Pro~\cite{comanici_gemini_2025}
 & 0.3702$\pm$0.0094
+& 0.2660$\pm$0.0081
+& 0.1907$\pm$0.0070
 & 0.1373$\pm$0.0063
 & 0.3308$\pm$0.0038
 & 0.3584$\pm$0.0071 \\
 
 Qwen3.5 Plus~\cite{yang_qwen3_2025}
 & 0.4483$\pm$0.0130
+& 0.3623$\pm$0.0111
+& 0.2959$\pm$0.0095
 & 0.2427$\pm$0.0081
 & \textbf{0.3628$\pm$0.0040}
 & 0.5147$\pm$0.0088 \\
 
-Medgemma~\cite{sellergren2025medgemma}
+Claude-Sonnet-4.6~\cite{anthropic2026claudesonnet46}
+& 0.3326$\pm$0.0099
+& 0.2543$\pm$0.0080
+& 0.1968$\pm$0.0067
+& 0.1528$\pm$0.0056
+& 0.3417$\pm$0.0035
+& 0.3782$\pm$0.0074 \\
+
+MedGemma~\cite{sellergren2025medgemma}
 & 0.0457$\pm$0.0072
+& 0.0343$\pm$0.0056
+& 0.0265$\pm$0.0044
 & 0.0207$\pm$0.0035
 & 0.1736$\pm$0.0051
 & 0.0829$\pm$0.0075 \\
 
 LLaVA-Med~\cite{li_llavamed_2023}
 & 0.1670$\pm$0.0077
+& 0.0581$\pm$0.0066
+& 0.0290$\pm$0.0040
 & 0.0159$\pm$0.0024
 & 0.1439$\pm$0.0053
 & 0.1482$\pm$0.0073 \\
 
 KMVE~\cite{li_ultrasound_2024}
 & 0.1743$\pm$0.0131
+& 0.1110$\pm$0.0082
+& 0.0684$\pm$0.0052
 & 0.0398$\pm$0.0035
 & 0.1719$\pm$0.0063
 & 0.2212$\pm$0.0039 \\
@@ -800,6 +834,8 @@ KMVE~\cite{li_ultrasound_2024}
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
 & \textbf{0.5799$\pm$0.0141}
+& \textbf{0.4691$\pm$0.0139}
+& \textbf{0.3902$\pm$0.0138}
 & \textbf{0.3291$\pm$0.0137}
 & 0.3575$\pm$0.0088
 & \textbf{0.5390$\pm$0.0119} \\
@@ -807,40 +843,60 @@ KMVE~\cite{li_ultrasound_2024}
 \midrule
 
 \rowcolor{gray!20}
-\multicolumn{5}{c}{\textbf{KMVE Dataset}} \\
+\multicolumn{7}{c}{\textbf{KMVE Testset} ($n=492$)} \\
 
 GPT-4o~\cite{openai_gpt4_2024}
 & 0.4467$\pm$0.0154
+& 0.3423$\pm$0.0143
+& 0.2683$\pm$0.0118
 & 0.2136$\pm$0.0102
 & 0.2799$\pm$0.0116
 & 0.3850$\pm$0.0148 \\
 
 GPT-5~\cite{openai2025gpt5systemcard}
 & 0.4149$\pm$0.0073
+& 0.2992$\pm$0.0066
+& 0.2190$\pm$0.0059
 & 0.1668$\pm$0.0062
 & 0.3042$\pm$0.0070
 & 0.4128$\pm$0.0089 \\
 
 Gemini2.5 Pro~\cite{comanici_gemini_2025}
 & 0.5065$\pm$0.0117
+& 0.3851$\pm$0.0103
+& 0.2981$\pm$0.0095
 & 0.2394$\pm$0.0092
 & 0.2863$\pm$0.0083
 & 0.4742$\pm$0.0111 \\
 
 Qwen3.5 Plus~\cite{yang_qwen3_2025}
 & 0.5425$\pm$0.0135
+& 0.4243$\pm$0.0126
+& 0.3415$\pm$0.0121
 & 0.2783$\pm$0.0120
 & 0.2952$\pm$0.0084
 & 0.5066$\pm$0.0118 \\
 
-Medgemma~\cite{sellergren2025medgemma}
+Claude-Sonnet-4.6~\cite{anthropic2026claudesonnet46}
+& 0.4331$\pm$0.0119
+& 0.3380$\pm$0.0112
+& 0.2638$\pm$0.0107
+& 0.2089$\pm$0.0106
+& 0.3284$\pm$0.0079
+& 0.4639$\pm$0.0115 \\
+
+MedGemma~\cite{sellergren2025medgemma}
 & 0.0374$\pm$0.0195
+& 0.0299$\pm$0.0175
+& 0.0252$\pm$0.0161
 & 0.0219$\pm$0.0151
 & 0.1075$\pm$0.0119
 & 0.1862$\pm$0.0205 \\
 
 LLaVA-Med~\cite{li_llavamed_2023}
 & 0.2842$\pm$0.0149
+& 0.2135$\pm$0.0124
+& 0.1595$\pm$0.0099
 & 0.1244$\pm$0.0088
 & 0.2138$\pm$0.0101
 & 0.3939$\pm$0.0127 \\
@@ -848,17 +904,95 @@ LLaVA-Med~\cite{li_llavamed_2023}
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
 & \textbf{0.6209$\pm$0.0178}
+& \textbf{0.5493$\pm$0.0164}
+& \textbf{0.4919$\pm$0.0159}
 & \textbf{0.4465$\pm$0.0159}
 & \textbf{0.3596$\pm$0.0102}
 & \textbf{0.5826$\pm$0.0123} \\
+
+\midrule
+
+\rowcolor{gray!20}
+\multicolumn{7}{c}{\textbf{ZJH-TS Testset} ($n=159$)} \\
+
+GPT-4o~\cite{openai_gpt4_2024}
+& 0.4092$\pm$0.0263
+& 0.2962$\pm$0.0200
+& 0.2171$\pm$0.0149
+& 0.1622$\pm$0.0116
+& 0.2493$\pm$0.0159
+& 0.3686$\pm$0.0214 \\
+
+GPT-5~\cite{openai2025gpt5systemcard}
+& 0.5023$\pm$0.0152
+& 0.3718$\pm$0.0125
+& 0.2709$\pm$0.0104
+& 0.1931$\pm$0.0092
+& 0.3275$\pm$0.0058
+& 0.4811$\pm$0.0095 \\
+
+Gemini2.5 Pro~\cite{comanici_gemini_2025}
+& 0.1819$\pm$0.0109
+& 0.1238$\pm$0.0076
+& 0.0848$\pm$0.0056
+& 0.0584$\pm$0.0043
+& 0.2766$\pm$0.0051
+& 0.2533$\pm$0.0086 \\
+
+Qwen3.5 Plus~\cite{yang_qwen3_2025}
+& \textbf{0.5433$\pm$0.0182}
+& \textbf{0.4364$\pm$0.0161}
+& \textbf{0.3532$\pm$0.0143}
+& \textbf{0.2868$\pm$0.0127}
+& \textbf{0.3485$\pm$0.0073}
+& 0.5381$\pm$0.0119 \\
+
+Claude-Sonnet-4.6~\cite{anthropic2026claudesonnet46}
+& 0.4646$\pm$0.0180
+& 0.3664$\pm$0.0155
+& 0.2917$\pm$0.0132
+& 0.2337$\pm$0.0115
+& 0.3424$\pm$0.0072
+& 0.4864$\pm$0.0124 \\
+
+MedGemma~\cite{sellergren2025medgemma}
+& 0.0793$\pm$0.0205
+& 0.0612$\pm$0.0162
+& 0.0479$\pm$0.0130
+& 0.0378$\pm$0.0104
+& 0.2179$\pm$0.0090
+& 0.1579$\pm$0.0199 \\
+
+LLaVA-Med~\cite{li_llavamed_2023}
+& 0.2375$\pm$0.0194
+& 0.1358$\pm$0.0138
+& 0.0917$\pm$0.0098
+& 0.0628$\pm$0.0073
+& 0.1609$\pm$0.0103
+& 0.2483$\pm$0.0199 \\
+
+KMVE~\cite{li_ultrasound_2024}
+& 0.1511$\pm$0.0148
+& 0.0948$\pm$0.0092
+& 0.0557$\pm$0.0055
+& 0.0316$\pm$0.0039
+& 0.1604$\pm$0.0070
+& 0.2240$\pm$0.0037 \\
+
+\rowcolor{lightgray}
+\textbf{ThyroidXAgent}
+& 0.4654$\pm$0.0229
+& 0.3830$\pm$0.0203
+& 0.3199$\pm$0.0184
+& 0.2706$\pm$0.0169
+& 0.2995$\pm$0.0115
+& \textbf{0.5393$\pm$0.0153} \\
 
 \bottomrule
 \end{tabular}
 
 \end{threeparttable}
 \end{table*}
-```
-
 
 \begin{table*}[!htp]
 \centering
@@ -868,7 +1002,7 @@ LLaVA-Med~\cite{li_llavamed_2023}
 \label{tab:report_generation_clinical_ci}
 
 \footnotesize
-\setlength{\tabcolsep}{5.5pt}
+\setlength{\tabcolsep}{5.2pt}
 \renewcommand{\arraystretch}{1.08}
 
 \begin{tabular}{lcccccc}
@@ -883,7 +1017,7 @@ LLaVA-Med~\cite{li_llavamed_2023}
 \midrule
 
 \rowcolor{gray!20}
-\multicolumn{7}{c}{\textbf{In-house Dataset}} \\
+\multicolumn{7}{c}{\textbf{SMU-HMC Testset} ($n=400$)} \\
 
 GPT-4o~\cite{openai_gpt4_2024}
 & 0.7189$\pm$0.0362
@@ -917,7 +1051,15 @@ Qwen3.5 Plus~\cite{yang_qwen3_2025}
 & 0.4809$\pm$0.0142
 & 0.4883$\pm$0.0137 \\
 
-Medgemma~\cite{sellergren2025medgemma}
+Claude-Sonnet-4.6~\cite{anthropic2026claudesonnet46}
+& 0.8040$\pm$0.0305
+& 0.5580$\pm$0.0464
+& 0.2049$\pm$0.0298
+& 0.8786$\pm$0.0108
+& 0.3886$\pm$0.0147
+& 0.4015$\pm$0.0144 \\
+
+MedGemma~\cite{sellergren2025medgemma}
 & 0.8943$\pm$0.0229
 & 0.5784$\pm$0.0434
 & 0.1027$\pm$0.0202
@@ -953,7 +1095,7 @@ KMVE~\cite{li_ultrasound_2024}
 \midrule
 
 \rowcolor{gray!20}
-\multicolumn{7}{c}{\textbf{KMVE Dataset}} \\
+\multicolumn{7}{c}{\textbf{KMVE Testset} ($n=492$)} \\
 
 GPT-4o~\cite{openai_gpt4_2024}
 & 0.5843$\pm$0.0427
@@ -987,11 +1129,19 @@ Qwen3.5 Plus~\cite{yang_qwen3_2025}
 & 0.4035$\pm$0.0230
 & 0.3674$\pm$0.0193 \\
 
-Medgemma~\cite{sellergren2025medgemma}
+Claude-Sonnet-4.6~\cite{anthropic2026claudesonnet46}
+& 0.5803$\pm$0.0432
+& 0.6605$\pm$0.0578
+& 0.2721$\pm$0.0375
+& \textbf{0.6707$\pm$0.0043}
+& 0.3779$\pm$0.0211
+& 0.3362$\pm$0.0182 \\
+
+MedGemma~\cite{sellergren2025medgemma}
 & 0.1877$\pm$0.0327
 & 0.6820$\pm$0.0463
 & 0.2868$\pm$0.0381
-& \textbf{0.6622$\pm$0.0033}
+& 0.6622$\pm$0.0033
 & 0.5172$\pm$0.0240
 & 0.3932$\pm$0.0203 \\
 
@@ -1012,6 +1162,84 @@ LLaVA-Med~\cite{li_llavamed_2023}
 & 0.5654$\pm$0.0221
 & \textbf{0.4465$\pm$0.0206} \\
 
+\midrule
+
+\rowcolor{gray!20}
+\multicolumn{7}{c}{\textbf{ZJH-TS Testset} ($n=159$)} \\
+
+GPT-4o~\cite{openai_gpt4_2024}
+& 0.4764$\pm$0.0687
+& 0.5509$\pm$0.0457
+& 0.2627$\pm$0.0516
+& 0.7258$\pm$0.0296
+& 0.3411$\pm$0.0288
+& 0.3108$\pm$0.0256 \\
+
+GPT-5~\cite{openai2025gpt5systemcard}
+& 0.4938$\pm$0.0643
+& 0.5262$\pm$0.0468
+& 0.4034$\pm$0.0523
+& 0.9543$\pm$0.0107
+& 0.4829$\pm$0.0230
+& 0.4604$\pm$0.0244 \\
+
+Gemini2.5 Pro~\cite{comanici_gemini_2025}
+& 0.5613$\pm$0.0660
+& 0.5477$\pm$0.0546
+& 0.3067$\pm$0.0505
+& 0.7869$\pm$0.0180
+& 0.3846$\pm$0.0287
+& 0.3507$\pm$0.0241 \\
+
+Qwen3.5 Plus~\cite{yang_qwen3_2025}
+& 0.6352$\pm$0.0453
+& 0.5001$\pm$0.0450
+& 0.3800$\pm$0.0428
+& 0.9697$\pm$0.0064
+& \textbf{0.4883$\pm$0.0203}
+& 0.4543$\pm$0.0198 \\
+
+Claude-Sonnet-4.6~\cite{anthropic2026claudesonnet46}
+& 0.6071$\pm$0.0550
+& 0.5628$\pm$0.0445
+& 0.3466$\pm$0.0470
+& 0.8253$\pm$0.0171
+& 0.4342$\pm$0.0229
+& 0.3897$\pm$0.0213 \\
+
+MedGemma~\cite{sellergren2025medgemma}
+& 0.6596$\pm$0.0605
+& 0.5427$\pm$0.0490
+& 0.2931$\pm$0.0495
+& 0.9446$\pm$0.0101
+& 0.3869$\pm$0.0218
+& 0.3790$\pm$0.0227 \\
+
+LLaVA-Med~\cite{li_llavamed_2023}
+& 0.2830$\pm$0.0692
+& \textbf{0.6595$\pm$0.1072}
+& 0.1171$\pm$0.0435
+& 0.6150$\pm$0.0482
+& 0.1480$\pm$0.0302
+& 0.1785$\pm$0.0263 \\
+
+KMVE~\cite{li_ultrasound_2024}
+& 0.7904$\pm$0.0603
+& 0.6288$\pm$0.1489
+& 0.0420$\pm$0.0243
+& 0.6241$\pm$0.0081
+& 0.1542$\pm$0.0158
+& 0.1626$\pm$0.0119 \\
+
+\rowcolor{lightgray}
+\textbf{ThyroidXAgent}
+& \textbf{0.2799$\pm$0.0597}
+& 0.5491$\pm$0.0447
+& \textbf{0.4786$\pm$0.0565}
+& \textbf{0.9731$\pm$0.0053}
+& 0.4516$\pm$0.0208
+& \textbf{0.4630$\pm$0.0257} \\
+
 \bottomrule
 \end{tabular}
 
@@ -1024,7 +1252,6 @@ and FDR is 0 because no positive predictions were made.
 
 \end{threeparttable}
 \end{table*}
-```
 
 \begin{figure}[htbp]
     \centering
@@ -1038,7 +1265,7 @@ and FDR is 0 because no positive predictions were made.
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{imgs_sup/BM_Case_Counts.pdf}
-    \caption{Benign and malignant case counts across thyroid ultrasound datasets. Bar plots show the numbers of benign and malignant cases in TN3K, TN5K, ThyroidXL, DDTI and Zhujiang2K. The y axis is logarithmic. Dataset size and class balance vary substantially across cohorts.}
+    \caption{Benign and malignant case counts across thyroid ultrasound datasets. Bar plots show the numbers of benign and malignant cases in TN3K, TN5K, ThyroidXL, DDTI and ZJH-2K. The y axis is logarithmic. Dataset size and class balance vary substantially across cohorts.}
     \label{fig:BM_Case_Counts}
 \end{figure}
 
@@ -1074,67 +1301,67 @@ and FDR is 0 because no positive predictions were made.
 & \textbf{ThyroidXL}
 & \textbf{PKTN}
 & \textbf{TN5K}
-& \textbf{Zhujiang2K}
-& \textbf{Shanghai7K} \\
+& \textbf{ZJH-2K}
+& \textbf{SH-7K} \\
 \midrule
 dataset1
-& 85.11 $\pm$ 1.24
-& 81.76 $\pm$ 0.61
-& 81.40 $\pm$ 2.44
-& 77.75 $\pm$ 1.23
-& ---
-& --- \\
+& 82.76 $\pm$ 3.54
+& 81.97 $\pm$ 2.63
+& 79.21 $\pm$ 2.71
+& 72.18 $\pm$ 5.08
+& 94.57 $\pm$ 0.43
+& 80.77 $\pm$ 0.44 \\
 dataset2
-& 84.90 $\pm$ 1.31
-& 87.23 $\pm$ 0.46
-& 80.28 $\pm$ 2.82
-& 77.76 $\pm$ 1.23
-& ---
-& --- \\
+& 81.63 $\pm$ 3.81
+& 86.84 $\pm$ 1.90
+& 81.73 $\pm$ 2.26
+& 71.07 $\pm$ 5.35
+& 94.85 $\pm$ 0.40
+& 82.38 $\pm$ 0.42 \\
 dataset3
-& 85.18 $\pm$ 1.21
-& 87.81 $\pm$ 0.43
-& 84.40 $\pm$ 1.74
-& 78.05 $\pm$ 1.24
-& ---
-& --- \\
+& 80.81 $\pm$ 3.82
+& 86.00 $\pm$ 2.31
+& 81.91 $\pm$ 2.26
+& 72.82 $\pm$ 4.91
+& 94.82 $\pm$ 0.39
+& 91.44 $\pm$ 0.15 \\
 dataset4
-& 85.22 $\pm$ 1.24
-& 87.71 $\pm$ 0.44
-& 84.37 $\pm$ 2.15
-& 83.29 $\pm$ 1.29
-& ---
-& --- \\
+& 81.86 $\pm$ 3.70
+& 86.97 $\pm$ 2.19
+& 83.28 $\pm$ 2.19
+& 82.57 $\pm$ 3.46
+& 94.77 $\pm$ 0.39
+& 91.46 $\pm$ 0.15 \\
 
 \midrule
 dataset1
-& 10.97 $\pm$ 1.72
-& 9.44 $\pm$ 0.57
-& 11.75 $\pm$ 3.47
-& 12.53 $\pm$ 1.43
-& ---
-& --- \\
+& 13.49 $\pm$ 3.83
+& 8.34 $\pm$ 2.34
+& 11.73 $\pm$ 3.07
+& 11.37 $\pm$ 3.49
+& 2.30 $\pm$ 0.47
+& 11.46 $\pm$ 0.50 \\
 dataset2
-& 11.17 $\pm$ 2.03
-& 5.73 $\pm$ 0.46
-& 13.62 $\pm$ 4.07
-& 12.56 $\pm$ 1.53
-& ---
-& --- \\
+& 15.92 $\pm$ 4.58
+& 4.99 $\pm$ 1.58
+& 9.72 $\pm$ 2.71
+& 13.64 $\pm$ 4.28
+& 1.98 $\pm$ 0.41
+& 9.65 $\pm$ 0.44 \\
 dataset3
-& 10.19 $\pm$ 1.61
-& 5.37 $\pm$ 0.45
-& 7.48 $\pm$ 2.11
-& 11.63 $\pm$ 1.36
-& ---
-& --- \\
+& 15.94 $\pm$ 4.34
+& 5.46 $\pm$ 1.62
+& 10.92 $\pm$ 3.52
+& 11.07 $\pm$ 3.28
+& 1.93 $\pm$ 0.38
+& 1.87 $\pm$ 0.07 \\
 dataset4
-& 10.97 $\pm$ 1.78
-& 5.38 $\pm$ 0.44
-& 9.13 $\pm$ 3.29
-& 8.46 $\pm$ 1.34
-& ---
-& --- \\
+& 17.00 $\pm$ 5.34
+& 4.74 $\pm$ 1.42
+& 8.89 $\pm$ 2.93
+& 4.64 $\pm$ 1.43
+& 2.07 $\pm$ 0.40
+& 1.88 $\pm$ 0.07 \\
 
 \bottomrule
 \end{tabular}
@@ -1159,45 +1386,45 @@ dataset4
 & \textbf{ThyroidXL}
 & \textbf{TN5K}
 & \textbf{DDTI}
-& \textbf{Zhujiang2K} \\
+& \textbf{ZJH-2K} \\
 \midrule
 dataset1
-& 0.7860 $\pm$ 0.00
-& 0.8795 $\pm$ 0.00
-& 0.8177 $\pm$ 0.00
-& ---
-& --- \\
+& 0.7666 $\pm$ 0.03
+& 0.8713 $\pm$ 0.01
+& 0.8272 $\pm$ 0.02
+& 0.7244 $\pm$ 0.07
+& 0.9924 $\pm$ 0.01 \\
 dataset2
-& 0.7576 $\pm$ 0.00
-& 0.9283 $\pm$ 0.00
-& 0.8083 $\pm$ 0.00
-& ---
-& --- \\
+& 0.7724 $\pm$ 0.04
+& 0.9254 $\pm$ 0.01
+& 0.8151 $\pm$ 0.02
+& 0.5762 $\pm$ 0.10
+& 0.9932 $\pm$ 0.01 \\
 dataset3
-& 0.7947 $\pm$ 0.00
-& 0.9304 $\pm$ 0.00
-& 0.9614 $\pm$ 0.00
-& ---
-& --- \\
+& 0.7906 $\pm$ 0.03
+& 0.9288 $\pm$ 0.01
+& 0.9515 $\pm$ 0.01
+& 0.7623 $\pm$ 0.07
+& 0.9937 $\pm$ 0.01 \\
 \midrule
 dataset1
-& 0.7019 $\pm$ 0.00
-& 0.8378 $\pm$ 0.00
-& 0.9179 $\pm$ 0.00
-& ---
-& --- \\
+& 0.6806 $\pm$ 0.06
+& 0.8147 $\pm$ 0.03
+& 0.9151 $\pm$ 0.02
+& 0.3578 $\pm$ 0.13
+& 0.9951 $\pm$ 0.01 \\
 dataset2
-& 0.6886 $\pm$ 0.00
-& 0.9156 $\pm$ 0.00
-& 0.9023 $\pm$ 0.00
-& ---
-& --- \\
+& 0.7237 $\pm$ 0.05
+& 0.9140 $\pm$ 0.01
+& 0.9074 $\pm$ 0.01
+& 0.3190 $\pm$ 0.14
+& 0.9968 $\pm$ 0.01 \\
 dataset3
-& 0.7301 $\pm$ 0.00
-& 0.9201 $\pm$ 0.00
-& 0.9853 $\pm$ 0.00
-& ---
-& --- \\
+& 0.7188 $\pm$ 0.05
+& 0.9144 $\pm$ 0.01
+& 0.9803 $\pm$ 0.01
+& 0.4029 $\pm$ 0.14
+& 0.9967 $\pm$ 0.01 \\
 \bottomrule
 \end{tabular}
 \end{threeparttable}

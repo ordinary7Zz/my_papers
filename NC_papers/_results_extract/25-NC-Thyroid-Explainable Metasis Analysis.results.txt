@@ -1,0 +1,278 @@
+[RESULTS SECTION NOT FOUND]
+
+Article https://doi.org/10.1038/s41467-025-62042-z
+Explainable multimodal deep learning for
+predicting thyroid cancer lateral lymph node
+metastasis using ultrasound imaging
+Received:29October2024 PengchengShen1,10,ZheyuYang2,10,JingjingSun3,10,YunWang4,ChengQiu5,
+YirouWang6,YongyongRen 1,7,ShengLiu8 ,WeiCai 2 ,HuiLu 1,7,9 &
+Accepted:9July2025
+SiqiongYao 1,7
+Checkforupdates Preoperativepredictionoflaterallymphnodemetastasisisclinicallycrucial
+forguidingsurgicalstrategyandprognosisassessment,yetpreciseprediction
+methodsarelacking.WethereforedevelopLateralLymphNodeMetastasis
+Network(LLNM-Net),abidirectional-attentiondeep-learningmodelthatfuses
+multimodaldata(preoperativeultrasoundimages,radiologyreports,patho-
+logicalfindings,anddemographics)from29,615patientsand9836surgical
+casesacrosssevencenters.Integratingnodulemorphologyandpositionwith
+clinicaltext,LLNM-NetachievesanAreaUndertheCurve(AUC)of0.944and
+84.7%accuracyinmulticentertesting,outperforminghumanexperts(64.3%
+accuracy)andsurpassingpreviousmodelsby7.4%.Hereweshowtumors
+within0.25cmofthethyroidcapsulecarry>72%metastasisrisk,withmiddle
+andupperlobesashigh-riskregions.Leveraginglocation,shape,echogenicity,
+margins,demographics,andclinicianinputs,LLNM-NetfurtherattainsanAUC
+of0.983foridentifyinghigh-riskpatients.Themodelisthusapromisingfor
+toolforpreoperativescreeningandriskstratification.
+Thyroidcancerisaprevalentmalignancyworldwide,withanincreas- pathways and connection patterns of lymphatic vessels around the
+ing incidence reported globally1,2. Cervical lymph node metastasis, thyroidvaryingamongindividuals11;(2)thedisperseddistributionof
+encompassing both central and lateral compartments, is a critical laterallymphnodes,complicatingstatisticalanalysisandpotentially
+factoraffectingpatientprognosis,withanincidencerateof20–50%3, leading to omissions12; (3) limitations of research methods—lateral
+andincreasingtheriskofmortalityby46%4,5.Thecentralcompartment lymphnodesareoftenlocatedindeepcervicaltissues,andtheirsmall
+iswidelyrecognizedasthestationforlymphnodemetastasis6,and sizeanddepthmakeaccuratedetectionandresearchchallenging,with
+numerousrelatedstudieshavebeenconducted7–9.Incontrast,studies ultrasound sensitivity in predicting lateral lymph node metastasis
+onlateralcompartmentmetastasisarescarce,primarilydueto:(1)the (LLNM)beingonly62%3;and(4)difficultyinsampleacquisition.Biopsy
+complexity of the anatomical structure10, with the distribution oflaterallymphnodesrequiresahighlevelofclinicianexpertiseand
+1DepartmentofBioinformaticsandBiostatistics,SchoolofLifeSciencesandBiotechnology,ShanghaiJiaoTongUniversity,Shanghai,PRChina.2Department
+ofGeneralSurgery,RuijinHospital,ShanghaiJiaoTongUniversitySchoolofMedicine,Shanghai,PRChina.3DepartmentofUltrasound,ShanghaiFourth
+People’sHospital,SchoolofMedicine,TongjiUniversity,Shanghai,PRChina.4HepatobiliaryPancreaticCenter,XuzhouCentralHospital,Xuzhou,Jiangsu
+Province,PRChina.5Medicalcollege,NantongUniversity,Nantong,Jiangsu,PRChina.6DepartmentofEndocrinologyandMetabolism,ShanghaiChildren’s
+MedicalCenter,SchoolofMedicine,ShanghaiJiaoTongUniversity,Shanghai,PRChina.7SJTU-YaleJointCenterofBiostatisticsandDataScience,Technical
+CenterforDigitalMedicine,NationalCenterforTranslationalMedicine,ShanghaiJiaoTongUniversity,Shanghai,PRChina.8DepartmentofThyroidandBreast
+Surgery,ShanghaiFourthPeople’sHospital,SchoolofMedicine,TongjiUniversity,Shanghai,PRChina.9InstituteofBioinformatics,ShanghaiAcademyof
+ExperimentalMedicine,Shanghai,PRChina.10Theseauthorscontributedequally:PengchengShen,ZheyuYang,JingjingSun. e-mail:tocter@msn.com;
+caiwei@shsmu.edu.cn;huilu@sjtu.edu.cn;yaosiqiong@sjtu.edu.cn
+NatureCommunications|( 2025)1 6:7052 1
+;,:)(0987654321 ;,:)(0987654321
+
+Article https://doi.org/10.1038/s41467-025-62042-z
+posescertainriskstopatients,limitingthescaleanddepthofrelated HereweshowtheLLNM-Net,abidirectionalattentionarchitecture
+studies13.Furthermore,centralcompartmentlymphnodesarerouti- thatintegratesmultimodaldataforpreoperativeLLNMprediction.As
+nelydissected,whereasprophylacticdissectionoflaterallymphnodes illustratedinFig.1a,weemployforeground-optimizedsegmentation39,40
+isnottypicallyconsideredstandardprocedureinsomecountriesand andCentralPointDistanceTransformation(CPDT)41toextracttumor
+regions, leading to a significant shortage of available samples for morphology and precise location. Our Thyroid Multimodal Deep
+research3. Learning (TMDL) transformer42 (Fig. 1b) fuses imaging features with
+Preoperative prediction of Lateral Lymph Node Metastasis clinical reports and demographic data via bidirectional attention
+(LLNM)iscrucialforsurgicalplanningandprognosticmanagementin exchange43–45. We generate 3D risk heatmaps through diffeomorphic
+thyroid cancer. A positive LLNM result typically indicates that the registrationandperformattention-basedgradientanalysistointerpret
+tumorhasbeguntospreadmoreextensively,promptingphysiciansto metastasismechanisms.Evaluatedon39,451patientsfromseveninsti-
+adopt a more aggressive treatment strategy, which may include tutions (Fig. 2), LLNM-Net provides quantitative preoperative assess-
+expanding the surgical field and considering postoperative radio- menttoguidesurgicalplanningandprognosismanagement.
+therapy or chemotherapy14. Literature15,16 has shown that LLNM is
+associatedwithaworseprognosis;therecurrencerateissignificantly Results
+highercomparedtopatientswithcentralcompartmentlymphnode Datadescription
+metastasis(60%vs.30%,P=0.007).Disease-freesurvivalandaverage Wecollectedpathologicaldiagnoses,preoperativeultrasoundima-
+recurrencetimearealsomarkedlyshorter(30monthsvs.52months, ges,radiologyreports,anddemographicinformationfromacohort
+P=0.035, and 7 months vs. 44 months, P=0.004, respectively)15. of39,451patients(Table1).Notably,themedianagewas43years,
+Therefore,effectivelypredictingLLNMenablesphysicianstodevelop with female patients outnumbering male patients by more than
+moreappropriatetreatmentplans,reducetheriskofcancerprogres- twofold, and approximately 91% of the cohort identified as Han
+sion due to missed dissections, and more accurately assess patient ethnicity. The most represented categories in the Kwak Thyroid
+prognosis, providing more comprehensive support and care3,16. In ImagingReportingandDataSystem(Kwak-TIRADS)46were4B(48%)
+some cases, patients may present with skip metastases—negative and 4C (28%). Patients with thyroid nodules smaller than 10mm
+centralcompartmentandpositivelateralcompartment17,18—whichare accountedfor73%,andtherateofLLNM-positivepatientswas52%.
+pronetobeingmissedduringpreoperativeevaluationandsurgery19. The subtypes collected included 35,804 cases of papillary thyroid
+Moreover, the prognosis of skip metastases varies among different carcinoma(PTC),2845casesoffollicularthyroidcarcinoma (FTC),
+tumortypes20,21,suggestingthatcliniciansshouldconsiderthespecific and802casesofmedullarythyroidcarcinoma(MTC).Wetrainedthe
+biologicalcharacteristicsofthetumorandtheanatomicalpathwaysof modelusing80%ofthe29,615patientsfromtwohospitals,withthe
+thelymphaticsystem13.Currently,preoperativelymphnodebiopsyis remaining 20% used for model validation. The external test sets
+the standard method for evaluating LLNM3; however, ultrasound- comprised9836patientsfromfivemulticentersites.Moredetailed
+guided fine-needle aspiration has limitations, such as inaccurate or informationcanbefoundinTablesS1andS2.
+missedpunctures3,22.GiventheparticularimportanceofLLNM,thereis
+anurgentneedforpreoperativeevaluationmethodsthatcaneffec- Predictionperformanceofmodelsandhumanexperts
+tivelypredictLLNM,assistingcliniciansindeterminingthenatureof Figure 3a shows that LLNM-Net exhibits significantly superior pre-
+the disease and taking appropriate measures, thereby contributing dictive performance,with an Area Under the Curve (AUC) of0.948
+significantlytoimprovingpatientsurvivalrates. (95%CI:0.946–0.950)onthevalidationset.Furthermore,theAUCon
+Currentresearchindicatesthatcervicallymphnodemetastasisis theexternaltestsetis0.944(95%CI:0.942–0.945),withanaccuracyof
+closelyassociatedwiththehistologicalmorphologyand locationof 0.847(95% CI: 0.840–0.854). In the comparative test, LLNM-Net
+theprimarytumor6,23,24.Specifically,itoftenresultsfromthegrowth (accuracy=0.875)issignificantlyhigherthanthepredictiveaccuracy
+and spread of the primary tumor (thyroid nodule), with different ofhumanexperts(accuracy=0.643,pairedt-test,t=1.998,P=0.0473)
+tumor types exhibiting varying metastatic tendencies. For instance, (Fig.3a,b).Additionally,thehighspecificityandPPVdemonstratedin
+abnormallyenlargedtumorsmaybeanimportantsignoflymphnode theresultscanmoreeffectivelypreventmisseddiagnosesandenhance
+metastasis25,whiletumorswithabnormalmorphologyortexturemay thescreeningperformanceforLLNM.Theaccuracyofthesegmenta-
+also suggest the possibility of metastasis6,26. Moreover, the growth tionmoduleispresentedinTableS4,andtheaccuracyresultsforFTC
+locationoftheprimarytumoraffectstheinvasionpathwayoftumor andMTCcanbefoundinTableS5.Comparativeexperimentalresults
+cellsintothelymphaticsystem,increasingthelikelihoodofsuperior withthelatestpublishedAImethodsareprovidedinTableS7.
+pole metastasis23,24 and influencing the risk and prognosis oflymph The study recruited 108 imaging experts, including 42 senior
+nodemetastasisindifferentregions3,15. radiologists(withoverfiveyearsofclinicalexperience,21femaleand
+Ultrasound imaging, known for its non-invasive, real-time, and 21male)and66juniorradiologists(withthreetofiveyearsofclinical
+convenientfeatures,isoneofthemostcommondiagnosticmethods experience,33femaleand33male).Thesephysiciansdemonstrated
+forthyroidcancer.Ithelpsphysiciansdetectearlytumorabnormalities high accuracy in diagnosing the malignancy of thyroid nodules
+suchasincreasedsize,irregularshape,andabnormalinternalstruc- (Fig.3b),withanaverageaccuracyof0.883,specificityof0.899,and
+ture,therebyplayingapredictiveroleinLLNM27–29.However,itsuffers sensitivity of 0.868. However, in the experiments predicting LLNM
+fromlowinter-organcontrastandpoorimagequality,andevaluation classification,bothseniorandjuniorphysiciansexhibitedlowerpre-
+results heavily depend on the physician experience. Deep learning dictivecapabilities,withanaccuracyof0.643,specificityof0.642,and
+techniquescanenhancetumorrecognitionbylearningimagefeatures sensitivityof0.644(Fig.3b,c).Thisindicatesthattheabilitytopredict
+such as tumor morphology, size, and calcification6,30–33. Techniques LLNMbasedontraditionalclinicalknowledgeandsubjectiveexperi-
+likeforeground-backgroundalgorithmsandgraphconvolutionalnet- ence is limited, whereas artificial intelligence models can learn
+worksstatisticallyanalyzepositionalinformation7,assistingphysicians important factors contributing to LLNM from a large number of
+inpreoperativediagnosisandprognosisassessment,includingtumor features.
+malignancy grading, subtype evaluation, and prediction of cervical
+lymph node metastasis34,35. Yet, thereisa lack of large-scale cohort QualitativeandquantitativeanalysisforpredictingLLNM
+studies and efficient intelligent tools for precise analysis of Figure4providesqualitativeandquantitativeanalysesforpredicting
+LLNM16,27,36–38,withconclusionsoftenlackingqualitative/quantitative LLNMinthelocationaldimension.Figure4adisplaysthevisualization
+explanations23,24. resultsofnodulelocationalinformation.Wedefinedthecentralpoint
+NatureCommunications|( 2025)1 6:7052 2
+
+Article https://doi.org/10.1038/s41467-025-62042-z
+a
+Shape
+Echogenicity
+Random
+Optimized YOLO-v8 Nodule label mosaic Internal
+Input morphology
+concatenate
+Margin
+Distance
+U-Net++ CPDT
+Thyroid label Location
+b
+Prediction score and model interpretation
+Classi(cid:2)ication head
+12
+MLP MLP
+Norm Norm
+4
+Scaled softmax Scaled softmax Scaled softmax Scaled softmax
+Linear proj. Linear proj.
+Norm Norm
+Tokens 3n Token m T T T T
+Convolution Tokenization Linear proj.
+Radiological Dropout Position Injection
+Margin reports
+Location Internal
+morphology
+andcalculatedtheminimumdistancefromallpointswithinthenodule showthatastheminimumdistancedecreases,theprobabilityofLLNM
+region,obtainingthelocationfeatureimagethroughthetransforma- correspondinglyincreases.Whentheminimumdistanceislessthan
+tionφ.Themodellearnsiterativelyandcomputestheattentionheat- 0.25cm,theaverageprobabilityofLLNMoccurrenceexceeds72%.
+map through gradient-weighted calculations47, with the heatmap Figure4cillustratesthethree-dimensionalriskheatmapmodel
+indicatingareasidentifiedbythemodelthathaveagreaterimpacton forLLNMoccurrenceinthyroidregions,statisticallyanalyzedbased
+LLNMmetastasis.Figure4bpresentsastatisticalanalysisofthemini- onthediffeomorphicaffinetransformationmethod48,49.Thismodel
+mum distance from the nodule to the thyroid capsule. The results is publicly available at: https://snowinbio.github.io/LLNM-Net/. The
+NatureCommunications|( 2025)1 6:7052 3
+
+Article https://doi.org/10.1038/s41467-025-62042-z
+Fig.1|NetworkarchitectureofLLNM-Net.aDatafeatureextractionprocess.For radiologicalreportsx,demographics(sexx andagex ).Inthetwo-layerinitial
+r sex age
+theultrasoundimageinputx,weusedtheoptimizedYOLO-v8modeltosegment embeddinglayers,convolutionallayersareusedtoencodetheimage-typefeatures
+thenodulelabell .Subsequently,theU-Net++modelisutilizedtosegmentthe x,x andx intoasequenceofimagepatchtokens(Tokens).Theencoder
+n l t m I
+thyroidlabell.Followingthis,l iscombinedwithxtoderivethefeatures encodesx ,x ,x ,x andunstructureddatax intoTokens .Thetwotypesof
+t n sex age e s r T
+includingshapex,echogenicityx ,internalmorphologyx,andobtainingmargin tokensarecombinedintounifiedtokensandtheninputintothebidirectional
+s e t
+x throughrandommosaicmethod.Thecombinationofl andl yieldsthe attentionblock.Thisblockconsistsoftwonormalizationlayers(Norm),abidir-
+m t n
+mergedlabell (cid:1)l ,whichisprocessedthroughtheCPDTφ,convertingdistance ectionalmultimodalfusionlayer,andamulti-layerperceptron(MLP).Theattention
+t n
+informationintoimagegrayscalevalues.Therebyweobtainedthelocationinfor- betweenthetwotypesofdataisexchangedandcomputed.Thisblockisstacked
+mationx.bOverallworkflowofTMDL.Theinputdataconsistsof8features, intofourlayers,followedby12layersofself-attentionblocks.
+l
+including:morphologicalfeatures(x,x ,x ,x),locationalinformationx,
+t m e s l
+Data collected from two hospitals
+Five independent hospitals
+between Jan 1st, 2015 and May 1st, 2024
+(Test cohort)
+(Train cohort)
+Underwent head and neck surgery
+Train cohort (N=39469) Test cohort (N=16744)
+Missing pathological results
+(n=1526)
+Missing pathological results
+Surgery not on thyroid
+(n=1392)
+(n=854)
+Surgery not on thyroid
+Underwent preoperative therapy
+(n=363)
+(n=644)
+Underwent preoperative therapy
+(n=849)
+Poor image quality
+(n=2659)
+One image with multifocal lesions
+Poor image quality
+(n=1214)
+(n=2304)
+Images with measuring line
+One image with multifocal lesions
+(n=2957)
+(n=837)
+Images with measuring line
+Randomization (n=1163)
+Divided at a ratio of 8:2
+Training set Validation set External test sets
+N=23692 N=5923 N=9836
+(47384 images) (11846 images) (19672 images)
+Fig.2|Flowdiagramsummarizingtheinclusionofpatients.Thisstudycon- areas,imagejitter,andincompleteimagingofthenodularregion.Sourcedataare
+sistedof23,692patientsinthetrainingset,5923patientsinthevalidationset,and providedasaSourceDatafile.
+9836patientsinexternaltestsets.Poorimagequalityincludesblurrednodular
+resultsindicatethattheuppercentralregionoftheleftlobeofthe eachfeature,asillustratedbytheSankeydiagramontheright.This
+thyroid,aswellasthemedialandlateralregionsoftheupperpartof multi-feature metastaticscore helps physicians understand howthe
+therightlobe,arekeyareasofconcernforLLNMoccurrence,likely model predicts metastasis. To demonstrate that our interpretation
+closely related to lymphatic metastasis pathways. Figure 4d show- alignswithclinicalknowledge,wecompareditwithTIRADS.Itcanbe
+casesanexampleapplicationoftheheatmapmodel.Whenprovided concludedthatthereisacorrelationbetweentumormalignancyand
+withthegrowth locationofathyroid nodule,the model can auto- LLNM,asshowninFigs.S1,S2.
+maticallygeneratetheprobabilityvalueforLLNMoccurrenceatthat Figure 6a shows the contribution ratio of all features to
+location. LLNM,indicatingthatthegrowthlocationofthethyroidnoduleis
+InFig.5,wepresentanexampleofLLNM-Net.Themodeltakes themostsignificantfactor,accountingfor48.8%.Thisisfollowed
+bothimagingdataanduserinformationasinputsandautomatically by morphological features, which account for 29.9%. Among the
+outputsamulti-featurescore.Italsoprovidesthecontributionratioof morphological features, shape and internal morphology
+NatureCommunications|( 2025)1 6:7052 4
+
+Article https://doi.org/10.1038/s41467-025-62042-z
+Table1|Characteristicsofthepatientsatbaselinea
+Characteristic Trainingset Validationset Externaltestsets Total
+Participants,n 23,692 5923 9836 39,451
+Cancerparticipants,n(%)
+LLNM 12,036(51) 3158(53) 5490(56) 20,684(52)
+OnlyLLNM 1769(7) 558(9) 826(8) 3153(8)
+CLNMandLLNM 10,267(43) 2600(44) 4664(47) 17,531(44)
+NoLLNM 11,656(49) 2765(47) 4346(44) 18,767(48)
+OnlyCLNM 6695(28) 1512(26) 1965(20) 10,172(26)
+NoLNM 4961(21) 1253(21) 2381(24) 8595(22)
+Age,years,median(IQR) 43(34–54) 43(35-53) 45(36–51) 43(35–52)
+Sex,n(%)
+Female 16,773(71) 4079(69) 7638(78) 28,490(72)
+Male 6919(29) 1844(31) 2198(22) 10,961(28)
+Nation,n(%)
+Hannationality 22,491(95) 5767(97) 7569(77) 35,827(91)
+Minoritynationalityb 1201(5) 156(3) 2267(23) 3624(9)
+KwakTIRADS,n(%)
+1–3 116(0) 34(1) 141(1) 291(1)
+4(4A–4C) 21,473(91) 5360(90) 7648(78) 34,481(87)
+4A 1285(5) 294(5) 3044(31) 4623(12)
+4B 12,871(54) 3440(58) 2661(27) 18,972(48)
+4C 7317(31) 1626(27) 1943(20) 10,886(28)
+5–6 2103(9) 529(9) 2047(21) 4679(12)
+Metastaticnumber,n(%)
+0 11,656(49) 2765(47) 4346(44) 18,767(48)
+1–5 10,102(43) 2535(43) 4867(49) 17,504(44)
+6–10 1248(5) 454(7) 442(4) 2144(6)
+>10 686(3) 169(3) 181(2) 1036(3)
+Maxtumorsize,mm,n(%)
+<10 17,404(73) 4220(71) 7079(72) 28,703(73)
+>10 6288(37) 1703(29) 2757(28) 10,748(27)
+Histologicalsubtypes,n(%)
+PapillaryThyroidCancer 21,977(93) 5171(87) 8656(88) 35,804(91)
+FollicularThyroidCancer 1351(6) 635(11) 859(9) 2845(7)
+MedullaryThyroidCancer 364(2) 117(2) 321(3) 802(2)
+aPercentagesmaynotaddupto100duetorounding.
+bTheethnicgroupslistedinthetablecorrespondedtothoseindicatedonthepatients’identificationdocumentsforthesurgicalprocedure.Amongtherepresentedethnicminoritieswere
+Mongolians,Manchus,andHuis.
+contribute 7.5% and 64.1%, respectively, suggesting that clinical LLN FNA. Additionally, we conducted a reverse cognitive test to
+attention should focus on nodules with abnormal shapes or sig- evaluatetheinterpretabilityofourmodel.Theresultsindicatethat
+nificant enlargement. Text information from clinical reports clinicians’understandingofthemodeloutcomesimprovedby25.4%
+contributes 19.7% overall. Gender is an important factor in comparedtogeneralAI(Fig.S4).
+demographics(accountingfor56.7%indemographics).Figure6b
+displays the attention heatmaps for LLNM-negative and LLNM- Predictinghigh-risklymphnodemetastasispatients
+positive cases, showing that the network focuses on the edges The modelis capable ofpredicting the stageoflateral lymph node
+and various internal texture features. Figure S3 illustrates exam- metastasis.Basedonclinicalguidelines3,50–52,weclassifiedlymphnode
+ples of the association between imaging reports and internal metastasis into three stages according to the number and size of
+morphologicalfeatures. metastaticnodes:
+The decision curve analysis (Fig. 6c) illustrates the clinical Stage1:Lowrisk.Fiveorfewermicro-metastases(<0.2cminlargest
+benefitofstratery(thebenefitofeffectiveLLNDminusthecostof dimension).
+LLND).Underdifferentcost-benefitratiosettings,ourmodel-based Stage2:Mediumrisk.Morethanfivemetastaticlymphnodes,and
+strategy outperforms the naïve strategies of performing lateral anymetastaticlymphnode<3cminlargestdimension.
+lymphnode(LLN)fine-needleaspiration(FNA)forallornopatients. Stage 3: High risk. Any metastatic lymph node >3cm in largest
+Figure 6d shows the clinical impact of our model-based strategy dimension.
+withinourcohort.Atathresholdof0.5,thes
