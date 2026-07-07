@@ -1,103 +1,50 @@
-# `ThyroidXAgent` Results 写作模板（按 3 篇参考论文风格提炼）
+# `ThyroidXAgent` Results 写作模板（更准确的文献风格总结版）
 
-## 文件目的
+## 文件定位
 
-这不是泛泛的“写作建议”，而是一份**可直接拿来改稿**的 `Results` 模板。
+这份文档分成 **两层**：
 
-它整合了 3 篇参考论文的共同套路：
+- **第 1 层：文献风格总结**
+  - 尽量只保留能从 3 篇参考文献 `Results` 中直接观察到的写法特征。
+- **第 2 层：对 `ThyroidXAgent` 的应用建议**
+  - 明确标注哪些内容是**基于文献风格做出的定制改稿方案**，而不是三篇论文的原样复刻。
 
-- `2509.20279v1.pdf`：**系统展示型 / capability showcase**
-- `25-NC-Thyroid-Explainable Metasis Analysis.pdf`：**临床转化型 / Nature Communications 标准链条**
-- `25-NC-RareThyroid Cancer.pdf`：**方法验证型 / evidence ladder**
-
-这份模板的目标是：
-
-1. 把 `ThyroidXAgent` 当前偏拥挤的 `Results`，拆成**更像 NC 风格**的证据阶梯。
-2. 让每个 subsection 只承担**一个主要 job**。
-3. 给出**可直接替换的英文句型模板**。
-4. 在合适的地方放入**参考原文示例**，帮助你把语气和节奏拉到更接近目标风格。
+这样做的目的，是避免把“参考文的真实共性”和“针对当前稿件的最佳改写路径”混在一起。
 
 ---
 
-## 一句话总原则
+## 参考文献范围
 
-把 `Results` 从“把所有强结果都塞进两个 subsection”改成：
+本模板基于以下 3 篇文献的 `Results` 部分：
 
-**数据/任务背景 → 核心性能 → 解释性/机制线索 → 扩展任务/泛化 → 新指标验证 → 临床工作流价值**
-
-也就是说，`Results` 不是结果堆叠，而是**说服顺序**。
-
----
-
-## 一、先给 `ThyroidXAgent` 的推荐 Results 新目录
-
-## 推荐版本（最建议，6 个 subsection）
-
-```text
-\section{Results}
-
-\subsection{Cross-dataset segmentation and benign--malignant classification}
-\subsection{Interpretable predictions and clinician-interactive review}
-\subsection{Generalization to clinically consequential malignant-lesion tasks}
-\subsection{Evidence-grounded report generation from thyroid ultrasound}
-\subsection{Clinical semantic validation of ThyClinScore}
-\subsection{AI-assisted reporting improves efficiency while preserving clinical utility}
-```
-
-这是最接近你当前材料强项、也最像两篇 `Nature Communications` 参考文的写法。
-
-### 为什么要这样拆
-
-因为你当前版本有两个核心问题：
-
-- **第一个 subsection 太挤**：分割、分类、解释性、交互式 review、恶性病灶任务泛化都塞在一起。
-- **第二个 subsection 太满**：报告生成流程、文本指标、临床语义指标、指标有效性验证、reader study 都塞在一起。
-
-拆开后，每个 subsection 的功能就会更清楚：
-
-- **Subsection 1**：证明模型在核心影像任务上真的强
-- **Subsection 2**：证明模型不是黑箱，而且能进入 clinician-in-the-loop workflow
-- **Subsection 3**：证明不是只会做良恶性二分类，还能外延到更临床相关的恶性任务
-- **Subsection 4**：证明 agent 能把结构化证据转成报告
-- **Subsection 5**：证明 `ThyClinScore` 不是随便造的 metric，而是值得相信的 metric
-- **Subsection 6**：证明系统在真实工作流里有时间收益和临床实用性
+- `2509.20279v1.pdf`
+- `25-NC-Thyroid-Explainable Metasis Analysis.pdf`
+- `25-NC-RareThyroid Cancer.pdf`
 
 ---
 
-## 二、三篇参考论文里最值得迁移的 `Results` 套路
+## 一、先给总判断
 
-## 1. 参考论文 A：`2509.20279v1.pdf` 的可迁移套路
+如果严格从这 3 篇文献本身出发，它们并不是同一种 `Results` 写法，而是 3 种不同但可迁移的组织模式：
 
-### 核心特征
+- **`LLNM-Net`**：更像**临床证据阶梯**
+  - 数据描述 → 主性能 → 解释性/机制线索 → 更临床的风险分层 → 临床应用价值。
+- **`Tiger Model`**：更像**模块验证 + 医生评估 + 下游任务 + 外部泛化**
+  - 先证明中间模块本身成立，再证明它对诊断任务有帮助。
+- **`TissueLab`**：更像**capability showcase / 任务模块展示**
+  - 每个 subsection 围绕一个能力模块展开，强调 workflow、工具调用、任务完成率和与 baseline 的差异。
 
-- 按**能力模块**拆 subsection，而不是把所有实验混写。
-- 每个 subsection 都遵循：
-  - 任务为什么重要
-  - 这个任务怎么设置
-  - agent / workflow 做了什么
-  - 关键数字结果
-  - 与 baseline 或人工对比
-  - 必要时解释为什么 baseline 看起来还行但其实不可靠
+因此，更准确的表述不是“3 篇论文共同给出同一条固定链条”，而是：
 
-### 可直接借鉴的原文示例
-
-> “We first evaluated TissueLab on predicting tumor invasion depth from whole-slide pathology images.”
-
-> “As illustrated in Figure 2b, TissueLab agent (TLAgent) designs a structured workflow…”
-
-> “As a result, the predicted invasion depths were strongly correlated with pathologist annotated ground truth…”
-
-### 你该学什么
-
-- `We first evaluated...` 这类句子特别适合用作 subsection 开头
-- `As illustrated in Figure X...` 很适合在结果里快速交代 workflow，而不是让 workflow 悬空
-- `As a result...` 适合在给数字前做结果起句
+**这 3 篇论文分别提供了 3 种可迁移的 `Results` 组织方式；它们在写法上有交集，但并不存在一个可以机械套用到所有论文上的统一模板。**
 
 ---
 
-## 2. 参考论文 B：`LLNM-Net` 的可迁移套路
+## 二、三篇参考论文各自的 `Results` 组织特征
 
-### Results 小标题顺序
+## 1. `25-NC-Thyroid-Explainable Metasis Analysis.pdf`：临床证据阶梯最完整
+
+### `Results` 的实际顺序
 
 - `Data description`
 - `Prediction performance of models and human experts`
@@ -105,35 +52,33 @@
 - `Predicting high-risk lymph node metastasis patients`
 - `Application of LLNM-Net in clinical practice`
 
-### 这个顺序为什么好
+### 这篇文献最值得抓住的写法
 
-因为它是非常稳的临床 AI 说服链：
+- **先交代队列与任务场景**，让后面的结果有落点。
+- **主性能是第一层证据**，而且紧跟 human experts / model baselines 对比。
+- **解释性结果不是只展示图**，而是会压缩成一个可复述的临床观察。
+- **结果会向更高层级的临床问题推进**，比如从是否转移，推进到高风险分层。
+- **最后落回 clinical practice**，形成完整说服链。
 
-1. 先交代数据
-2. 再证明模型准
-3. 再解释模型为什么这样判
-4. 再把任务往更细粒度临床决策推进
-5. 最后落到真实 clinical workflow
+### 代表性句式
 
-### 可直接借鉴的原文示例
-
-> “Figure 3a shows that LLNM-Net exhibits significantly superior predictive performance…”
+> “Figure 3a shows that LLNM-Net exhibits significantly superior predictive performance...”
 
 > “When the minimum distance is less than 0.25 cm, the average probability of LLNM occurrence exceeds 72%.”
 
 > “The model is capable of predicting the stage of lateral lymph node metastasis.”
 
-### 你该学什么
+### 对它的准确概括
 
-- **小标题本身就是证据阶梯**
-- 结果段先报**headline finding**，再给图和数字
-- 解释性分析不是单独炫图，而是要给出一个**可复述的 clinically relevant observation**
+这篇文献最适合概括为：
+
+**数据与任务背景明确、主性能先行、解释性要能转成临床观察、后段再走向更具体的临床决策与实践价值。**
 
 ---
 
-## 3. 参考论文 C：`Tiger Model` 的可迁移套路
+## 2. `25-NC-RareThyroid Cancer.pdf`：先验证模块，再验证任务收益
 
-### Results 小标题顺序
+### `Results` 的实际顺序
 
 - `Overview of the Tiger Model`
 - `Data collection and experimental design`
@@ -142,738 +87,400 @@
 - `Diagnoses for rare thyroid cancer subtype - downstream task`
 - `External evaluation of the Tiger Model on public datasets`
 
-### 这个顺序为什么好
+### 这篇文献最值得抓住的写法
 
-它特别适合你的第二个大块，也就是 `report generation + ThyClinScore + reader study` 这一组内容。
+- **不是一上来就报下游分类结果**，而是先解释系统/模型在做什么。
+- **中间模块先独立验证**，例如先验证生成图像质量，再去谈对诊断的帮助。
+- **医生评估被单独作为证据层**，不混在主性能段里。
+- **下游 rare subtype diagnosis 放在后面**，形成“模块有效 → 人看起来也合理 → 下游任务受益”的顺序。
+- **最后做外部评估**，把泛化能力作为后段收束，而不是开头主卖点。
 
-它的套路是：
+### 代表性句式
 
-1. 先说明系统/方法在干什么
-2. 再证明中间环节本身成立
-3. 再做人工评估
-4. 最后才说“对下游任务真的有帮助”
+> “In Table 2, we utilize a comprehensive set of metrics to evaluate the performance of our generative network...”
 
-### 可直接借鉴的原文示例
+> “We conducted three Turing test experiments with medical professionals...”
 
-> “In Table 2, we utilize a comprehensive set of metrics to evaluate the performance of our generative network…”
+### 对它的准确概括
 
-> “We conducted three Turing test experiments with medical professionals…”
+这篇文献最适合概括为：
 
-### 你该学什么
-
-- **新指标或新模块不要和主任务性能写在同一段里**
-- 先证明“这个中间机制本身有效”，再证明“它提升了最终任务”
-- 人工评估单独成段，甚至单独成 subsection，会更像高水平论文
+**先证明方法中的中间机制可靠，再引入医生评估，最后说明它确实改善了下游任务并具备外部泛化。**
 
 ---
 
-## 三、把这三篇套路压缩成一套 `ThyroidXAgent` 专用骨架
+## 3. `2509.20279v1.pdf`：按能力模块组织的 `Results`
 
-## `ThyroidXAgent` 的建议总结构
+### `Results` 的实际顺序
 
-### Block A：核心影像任务
+- `2.1 Creating a co-evolving agentic AI system for medical imaging`
+- `2.2 Co-evolving agentic AI accelerates expert-level assessment of tissue measurement`
+- `2.3 TissueLab enables guideline-aligned diagnosis using an effectively infinite medical knowledge database`
+- `2.4 TissueLab enables high-dimensional radiology image analysis`
+- `2.5 TissueLab interactive ecosystem enables customized tool development`
+- `2.6 TissueLab enables multi-modal integration of spatial omics and histology to improve accuracy in pathology analysis`
 
-- `Cross-dataset segmentation and benign--malignant classification`
-- `Interpretable predictions and clinician-interactive review`
-- `Generalization to clinically consequential malignant-lesion tasks`
+### 这篇文献最值得抓住的写法
 
-### Block B：报告生成与临床工作流
+- **一个 subsection 对应一个能力模块或一个任务场景**。
+- **workflow 可以写进 `Results`**，而不是只能放在 `Methods`。
+- **模型为什么强，会通过流程结构来解释**，不是只报数字。
+- **baseline 不可靠时，会明确解释原因**，例如任务失败、输入限制、表面指标好但不具区分性。
+- **human feedback / interactive loop** 可以作为结果的一部分呈现，而不是只能在系统设计里说。
 
-- `Evidence-grounded report generation from thyroid ultrasound`
-- `Clinical semantic validation of ThyClinScore`
-- `AI-assisted reporting improves efficiency while preserving clinical utility`
+### 代表性句式
 
-这个拆法有两个好处：
+> “We first evaluated TissueLab on predicting tumor invasion depth from whole-slide pathology images.”
 
-- 更像 `LLNM-Net`：从核心性能一路走到 clinical use
-- 也更像 `Tiger Model`：把“report metric validity”单独拉出来做中间证据验证
+> “As illustrated in Figure 2b, TissueLab agent (TLAgent) designs a structured workflow...”
 
----
+> “As a result, the predicted invasion depths were strongly correlated with pathologist annotated ground truth...”
 
-## 四、逐 subsection 模板：每节该写什么
+### 对它的准确概括
 
-下面这部分是本文件最重要的内容。
+这篇文献最适合概括为：
 
-每个 subsection 我都给你：
-
-- **该节的 job**
-- **推荐段落数**
-- **每段该放什么**
-- **英文模板句**
-- **和你现有内容的映射关系**
+**按能力模块拆解 `Results`，每节都让读者同时看到任务、workflow、关键指标和与 baseline 的结构性差异。**
 
 ---
 
-## Subsection 1
-## `Cross-dataset segmentation and benign--malignant classification`
+## 三、真正可以跨文献归纳的共同规律
 
-### 这一节的 job
+下面这些规律，有比较充分的跨文献支撑。
 
-只做一件事：
+## 规则 1：小标题往往承担“证据推进”功能，而不只是内容清单
 
-**证明 ThyroidXAgent 在核心影像任务上跨数据集表现强，而且这种强不是单一数据集偶然现象。**
+- `LLNM-Net` 的小标题本身就在推动证据层级：数据 → 性能 → 解释 → 风险分层 → 临床应用。
+- `Tiger Model` 的小标题体现的是验证顺序：overview → 模块质量 → 医生评估 → downstream task → external evaluation。
+- `TissueLab` 的小标题体现的是能力边界：每节只围绕一个能力模块展开。
 
-### 不要在这一节里做的事
-
-- 不要展开 SHAP 解释性
-- 不要展开 clinician-in-the-loop time saving
-- 不要展开恶性病灶泛化
-- 不要展开 report generation
-
-### 推荐段落数
-
-**2 段** 或 **3 段**。
-
-### 段落功能分配
-
-- **P1**：任务重要性 + 跨数据集 headline performance
-- **P2**：与 baseline / physician comparison 的关键对照
-- **P3（可选）**：一句短的 roll-up，收束成“robust base capability”
-
-### 英文模板
-
-#### P1 模板
-
-```text
-Accurate lesion delineation and reliable benign--malignant classification are central to thyroid ultrasound decision-making, yet both remain challenging across heterogeneous datasets with different lesion geometry and class balance. Across [N] segmentation datasets, ThyroidXAgent achieved a mean Dice of [X] and a mean HD95 of [Y], compared with [baseline values] for [baseline] (Fig. Xa and Supplementary Table X). Across the [N] datasets supporting benign--malignant classification, ThyroidXAgent achieved a mean AUROC of [X] and a mean AUPRC of [Y], exceeding [baseline/model] ([X], [Y]) (Fig. Xb--d and Supplementary Table X).
-```
-
-#### P2 模板
-
-```text
-This advantage was also preserved under direct reader-level comparison. On a blinded [N]-image physician comparison set, ThyroidXAgent achieved an AUROC of [X] and an AUPRC of [Y], outperforming [comparison group] (Fig. Xf,g). Together, these results establish ThyroidXAgent as a robust cross-dataset foundation for thyroid nodule delineation and malignancy discrimination.
-```
-
-### 可借鉴的句法节奏
-
-- 开头先说重要性：`Accurate X and reliable Y are central to ...`
-- 第二句立刻给总体性能：`Across [N] datasets...`
-- 然后给对照：`compared with...`, `exceeding...`
-- 收束句不要过长：`Together, these results establish...`
-
-### 你现有内容如何迁移
-
-你当前 `Results` 第一个 subsection 的第一段基本已经是这个 subsection 的主体。
-
-可以直接保留大部分数字，只需要：
-
-- 去掉后面 SHAP 和 malignant tasks 的内容
-- 把这一节的标题从宽泛标题改成更聚焦的标题
-- 增强最后一句的 roll-up 功能
+**可迁移结论**：
+`Results` 的小标题最好不仅说“写了什么内容”，还要反映“证据在往哪里推进”。
 
 ---
 
-## Subsection 2
-## `Interpretable predictions and clinician-interactive review`
+## 规则 2：段首常常先给 judgement，再给数字
 
-### 这一节的 job
+这 3 篇文献虽然风格不同，但都经常采用 **conclusion-first** 的段首组织：
 
-只做一件事：
+- 先说 `significantly superior predictive performance`
+- 再说具体 `AUC`、`accuracy` 或其他指标
+- 或先说某个能力成立，再给图和数字支撑
 
-**证明 ThyroidXAgent 的预测不是黑箱，并且这种解释性可以进入可审阅、可纠正的人机交互流程。**
-
-### 推荐段落数
-
-**2 段**。
-
-### 段落功能分配
-
-- **P1**：cohort-level SHAP + representative cases，说明模型关注什么
-- **P2**：interactive review + corrective annotation + time saving
-
-### 英文模板
-
-#### P1 模板
-
-```text
-To interpret these predictions, we next examined cohort-level SHAP profiles together with representative benign and malignant cases. Morphology-related descriptors, particularly [feature 1] and [feature 2], contributed most strongly to benign--malignant discrimination, whereas [feature family] provided complementary signal (Fig. Xe). Representative cases further showed close alignment between lesion boundaries, attribution maps and downstream predictions (Supplementary Fig. X), supporting the interpretability of the decision process.
-```
-
-#### P2 模板
-
-```text
-We then asked whether these explanatory signals could support clinician-interactive review. In an interactive workflow for mask inspection, feature attribution and corrective annotation (Fig. Xh), AI assistance shortened segmentation time across most cases while preserving agreement with manual segmentation (Fig. Xi--k). These results suggest that ThyroidXAgent can expose auditable evidence for review while improving annotation efficiency.
-```
-
-### 参考原文示例
-
-> `LLNM-Net` 风格：先给解释性图，再提炼一个临床上能复述的规律
->
-> “When the minimum distance is less than 0.25 cm, the average probability of LLNM occurrence exceeds 72%.”
-
-> `TissueLab` 风格：先写 workflow 可视化，再写它如何进入专家反馈环
->
-> “With TissueLab platform, user can further provide additional feedback…”
-
-### 这一节的关键写作要求
-
-- 不要把它写成单纯“有 SHAP 图所以可解释”
-- 要强调：
-  - **what features dominate**
-  - **whether representative cases align with those features**
-  - **whether clinicians can inspect or correct them**
-
-### 你现有内容如何迁移
-
-你当前 `Results` 第一个 subsection 的第二段，基本就是这个 subsection 的原料。
-
-要做的只是：
-
-- 把它从“夹在性能段中间”改成独立 subsection
-- 让第二段结尾明确写到 **auditable review workflow** 或 **clinician-interactive review**
+**可迁移结论**：
+段落开头最好先告诉读者“这一段的主判断是什么”，而不是先平铺实验动作。
 
 ---
 
-## Subsection 3
-## `Generalization to clinically consequential malignant-lesion tasks`
+## 规则 3：headline claim 后面通常很快跟上图表锚点
 
-### 这一节的 job
+这 3 篇文献里，强 claim 往往很快就会落到 `Fig.`、`Table` 或 `Supplementary` 上，而不是把图表引用拖到很后面。
 
-只做一件事：
-
-**证明 ThyroidXAgent 不仅能做良恶性分类，还能迁移到更临床相关的恶性病灶任务。**
-
-### 推荐段落数
-
-**2 段**。
-
-### 段落功能分配
-
-- **P1**：两个 malignant tasks 的 headline metrics + baseline comparison
-- **P2**：task-specific SHAP signatures，说明不同任务学到的不是同一种模式
-
-### 英文模板
-
-#### P1 模板
-
-```text
-We next evaluated whether the same framework generalized beyond benign--malignant discrimination to clinically consequential malignant-lesion tasks. On lymph node metastasis prediction, ThyroidXAgent achieved an AUROC of [X] and an AUPRC of [Y], corresponding to relative improvements of [X]% and [Y]% over [baseline]. On FTC/PTC subtype classification, it achieved an AUROC of [X] and an AUPRC of [Y], exceeding [baseline] by [X]% and [Y]%, respectively (Fig. X and Supplementary Table X).
-```
-
-#### P2 模板
-
-```text
-SHAP analyses further revealed task-specific radiomic signatures rather than a single shared decision pattern. Whereas [task 1] was driven mainly by [feature family], [task 2] depended more strongly on [feature family] (Fig. Xc--f). These distinct attribution profiles indicate that ThyroidXAgent can adapt to clinically different malignant-lesion tasks while retaining interpretable task-specific evidence.
-```
-
-### 参考原文思路
-
-- 这节最接近 `LLNM-Net` 的 `Predicting high-risk lymph node metastasis patients`
-- 同时借用了 `Tiger Model` 的“不是只在主任务有效，还要看泛化/外部任务”的结构思维
-
-### 写作提醒
-
-- 这里的关键词是 **clinically consequential**，不是 `additional tasks`
-- 要写成“向更重要任务推进”，而不是“顺手又做了两个实验”
-
-### 你现有内容如何迁移
-
-你当前第一个 subsection 的第三段，几乎完整可迁移到这里。
-
-重点只是：
-
-- 把这段从“大杂烩 subsection”里解救出来
-- 让标题和开头句更明确地对准 “generalization”
+**可迁移结论**：
+强结论出现后，应尽快给出支撑它的图表位置，避免读者需要回头找证据。
 
 ---
 
-## Subsection 4
-## `Evidence-grounded report generation from thyroid ultrasound`
+## 规则 4：强 claim 通常带比较对象或操作性意义
 
-### 这一节的 job
+这 3 篇文献都不太满足于只写：
 
-只做一件事：
+- `performed well`
+- `showed robust performance`
+- `was useful`
 
-**证明 ThyroidXAgent 能把多视图超声输入和结构化事实转成高质量报告。**
+更常见的是：
 
-### 推荐段落数
+- **相对 baseline / human experts 更强**
+- **能完成 baseline 常失败的任务**
+- **能推进到更高层级的临床判断**
+- **能进入可操作的工作流或医生反馈环**
 
-**2 段**。
-
-### 段落功能分配
-
-- **P1**：report-generation workflow + why structured evidence matters
-- **P2**：NLG metrics 上的 headline result
-
-### 英文模板
-
-#### P1 模板
-
-```text
-We next evaluated evidence-grounded report generation, a core task of the thyroid diagnostic agent. Given multi-view and multimodal thyroid ultrasound inputs, ThyroidXAgent constructed image priors, invoked segmentation, classification, measurement and captioning tools through an agentic planning-and-execution workflow, and converted the resulting structured findings into editable reports through [retrieval / slot filling / clause assembly] (Fig. Xc--g). To assess performance, we evaluated the generated reports on [dataset 1] and [dataset 2] using both conventional natural-language-generation metrics and a thyroid-specific clinical semantic metric, ThyClinScore (Fig. Xh and Supplementary Tables X--Y).
-```
-
-#### P2 模板
-
-```text
-On conventional overlap-based metrics, ThyroidXAgent achieved the strongest overall performance across both evaluation settings (Fig. Xh). On the in-house dataset, it reached [BLEU-1], [BLEU-4] and [ROUGE_L], while maintaining a competitive METEOR score. On the public benchmark, it ranked first on all four evaluated natural-language-generation metrics. These results indicate that grounding report generation in structured diagnostic facts improves agreement with reference reports while preserving the surface form of expert-written ultrasound reports.
-```
-
-### 可借鉴的参考思路
-
-这一节的结构最像 `Tiger Model` 里的：
-
-- `Overview of the Tiger Model`
-- `Quantitative analysis of image generation quality`
-
-也就是说，先说系统如何工作，再说其在第一层指标上的表现。
-
-### 这一节最重要的写法要求
-
-- 先写 **evidence-grounded report generation**，不要一上来就写 BLEU/ROUGE
-- 指标必须放在 workflow 之后，不然读者不知道你在评价什么
-- 收束句要强调 “structured diagnostic facts” 的价值
-
-### 你现有内容如何迁移
-
-你当前 `Report generation` subsection 的第一段和第二段，基本就是这里的主体。
-
-调整时只需要：
-
-- 把指标验证和 reader study 后移
-- 让这一节只负责“report generation works”
+**可迁移结论**：
+强结果最好不仅有数字，还要有比较对象、失败对照或实际意义。
 
 ---
 
-## Subsection 5
-## `Clinical semantic validation of ThyClinScore`
+## 规则 5：解释性结果最好压缩成“可复述的发现”
 
-### 这一节的 job
+这一点在 `LLNM-Net` 最典型：解释性分析并不止于“给一张热图”，而是会提炼成一句能被临床读者复述的规律。
 
-只做一件事：
+**可迁移结论**：
+如果写 SHAP、attention、attribution 或 case analysis，尽量把它变成：
 
-**证明 `ThyClinScore` 不是附带指标，而是比传统文本重叠指标更贴近临床语义正确性。**
+- 哪类特征主导判断
+- 哪个任务依赖哪些特征
+- 有什么 clinically meaningful observation
 
-### 推荐段落数
-
-**2 段** 或 **3 段**。
-
-### 段落功能分配
-
-- **P1**：先报 `ThyClinScore` 在两个数据集上的 headline result
-- **P2**：解释 submetrics 捕捉的是哪些 failure modes
-- **P3**：相关性分析，证明它比传统 NLG metric 更接近 clinical semantic correctness
-
-### 英文模板
-
-#### P1 模板
-
-```text
-Clinical semantic evaluation further showed that ThyroidXAgent retained clinically relevant information rather than only matching reference wording. On the in-house dataset, it achieved the highest ThyClinScore of [X], together with the highest [feature accuracy / F1 / ...], while maintaining competitive completeness and consistency. On the public benchmark, ThyroidXAgent again achieved the highest ThyClinScore, indicating the strongest overall clinical semantic alignment among the compared methods (Fig. Xb,h).
-```
-
-#### P2 模板
-
-```text
-Because the individual submetrics captured different failure modes, including [false lesion detection], [feature mismatch] and [missing structured fields], the combined ThyClinScore provided a more balanced assessment than any single submetric alone. This design was intended to distinguish reports that were lexically similar from those that were clinically correct at the lesion and attribute levels.
-```
-
-#### P3 模板
-
-```text
-To validate this interpretation, we next compared ThyClinScore with conventional overlap-based metrics and with a location-aware [judge / expert reference]. Conventional NLG metrics were strongly correlated with one another, indicating substantial redundancy in their evaluation criteria, whereas their correlations with ThyClinScore and its submetrics were lower. When benchmarked against the location-aware [judge], ThyClinScore achieved the highest correlation among all evaluated metrics ([statistic]), supporting its value as a clinically oriented report-quality measure (Supplementary Fig. X).
-```
-
-### 参考论文上的对应套路
-
-这一节本质上是在借 `Tiger Model` 的“先证明中间环节有效，再证明它支撑最终任务”逻辑。
-
-### 关键写作提醒
-
-- 这节必须与 report generation 主性能分开
-- 不要把 `ThyClinScore` 和 BLEU/ROUGE 混写在同一段里
-- 这里写的是 **metric validation**，不是再重复 report generation result
-
-### 你现有内容如何迁移
-
-你当前 `Report generation` subsection 的第三、第四段，基本可直接搬到这里。
-
-最重要的是：
-
-- 把 `ThyClinScore` 作为一个独立科学对象来写
-- 让这节的结尾强调 `clinical semantic correctness`，而不是泛泛说“better metric”
+而不是只写“见图”。
 
 ---
 
-## Subsection 6
-## `AI-assisted reporting improves efficiency while preserving clinical utility`
+## 规则 6：clinical / practical value 往往出现在后段收束
 
-### 这一节的 job
+三篇论文都不是一开始就把“临床价值”当主句，而是通常在：
 
-只做一件事：
+- 核心能力已经被证明之后
+- 或中间模块已经被验证之后
+- 再去谈 clinical practice、doctor assessment、human feedback、workflow benefit
 
-**证明 ThyroidXAgent 在 reader study / 临床工作流里不是只会自动生成报告，而是真的能帮助医生更高效地工作。**
-
-### 推荐段落数
-
-**2 段**。
-
-### 段落功能分配
-
-- **P1**：reader-study design + time reduction
-- **P2**：physician-stratified result + representative examples + clinical utility closing sentence
-
-### 英文模板
-
-#### P1 模板
-
-```text
-We then examined whether ThyroidXAgent could improve human report-writing efficiency in a reader-study setting. [N] physicians wrote reports for [N] thyroid ultrasound videos under both manual and AI-assisted workflows, with [paired / crossover design detail] to reduce memory bias (Fig. Xa). AI-assisted report writing shortened the mean reporting time from [X] to [Y] min per case, corresponding to a [X]% reduction (Fig. Xb,c).
-```
-
-#### P2 模板
-
-```text
-This time-saving effect was preserved after stratification by physician, with reductions of [X]% and [Y]% for the two readers, respectively (Fig. Xd). Representative cases further showed that the structured evidence generated by ThyroidXAgent supported clinically concordant statements on [location / size / morphology / impression], while exposing partially correct or incorrect statements for review (Fig. Xe). Together, these findings indicate that ThyroidXAgent can accelerate thyroid ultrasound reporting while preserving clinically reviewable evidence.
-```
-
-### 参考论文上的对应套路
-
-- 这节对应 `LLNM-Net` 的 `Application ... in clinical practice`
-- 也借用了 `Tiger Model` 的医生人工评估逻辑
-
-### 写法提醒
-
-- 先报 workflow benefit，再给定性案例
-- 结尾不要只写 “improves efficiency”
-- 更好的句子是：`while preserving clinically reviewable evidence` 或 `while maintaining clinical utility`
-
-### 你现有内容如何迁移
-
-你当前 `Report generation` subsection 的最后一段，几乎完整可迁移到这里。
+**可迁移结论**：
+临床或应用价值通常更适合作为后段证据，而不是在最前面替代核心结果。
 
 ---
 
-## 五、给你一个可直接套的 LaTeX/Markdown 版骨架
+## 四、不宜过度概括为“三篇共同规律”的几点
 
-下面这个骨架可以直接拿去改你的 `Results`：
+下面这些说法，在原模板里比较强，但如果严格按文献本身来讲，应该弱化或改写。
+
+## 1. 不能把三篇论文都概括成同一条固定链条
+
+原先那种：
+
+**数据/任务背景 → 核心性能 → 解释性/机制线索 → 扩展任务/泛化 → 新指标验证 → 临床工作流价值**
+
+更适合看作一种**改稿时的理想证据顺序**，而不是 3 篇论文共同共享的原始结构。
+
+更准确的说法是：
+
+- `LLNM-Net` 更接近线性临床证据链
+- `Tiger Model` 更接近模块验证链
+- `TissueLab` 更接近能力模块展示链
+
+---
+
+## 2. “一段只做一个 job”是很好的编辑原则，但不是三篇论文的严格共同事实
+
+这个原则对改稿非常有帮助，但它更像**写作优化建议**，而不是三篇参考文全都严格遵守的真实规律。
+
+更准确的表述应是：
+
+**高质量 `Results` 往往会让每段的主功能比较清楚，但并不意味着每段都绝对只承担一种功能。**
+
+---
+
+## 3. “新 metric 必须独立成块”不是三篇共同特征，而是面向 `ThyClinScore` 的定制建议
+
+`Tiger Model` 确实体现了“先证明模块，再证明下游收益”的思路；
+但三篇文献并没有共同展示一个“新 report metric 独立验证”的固定结构。
+
+更准确的表述应是：
+
+**如果你的稿件中存在一个需要单独建立合理性的指标，例如 `ThyClinScore`，那么把它独立成节会更清楚；但这是一项针对当前稿件的写作决策，不是三篇参考文共同复现的结构。**
+
+---
+
+## 4. “6 个 subsection 最像两篇 NC 文”这个说法应改成“基于参考文风格的实用改稿方案”
+
+原模板里的 6-subsection 结构是**实用且合理的**，但更准确的定位应是：
+
+**这是综合 3 篇参考文的风格后，为 `ThyroidXAgent` 量身定制的一种推荐写法，而不是参考文原样结构的直接翻版。**
+
+---
+
+## 五、基于上述文献风格，对 `ThyroidXAgent` 的应用建议
+
+这一节开始，不再是“文献本身如何写”，而是“基于这些风格，`ThyroidXAgent` 最适合怎么写”。
+
+## 推荐结构（应用建议，不是文献原样）
 
 ```text
 \section{Results}
 
 \subsection{Cross-dataset segmentation and benign--malignant classification}
-[Paragraph 1: why segmentation + benign/malignant matter; headline cross-dataset metrics]
-[Paragraph 2: baseline comparison + physician comparison + short roll-up]
-
 \subsection{Interpretable predictions and clinician-interactive review}
-[Paragraph 1: cohort-level SHAP + representative cases]
-[Paragraph 2: interactive review workflow + corrective annotation + time saving]
-
 \subsection{Generalization to clinically consequential malignant-lesion tasks}
-[Paragraph 1: LLNM and FTC/PTC performance + baseline comparison]
-[Paragraph 2: task-specific SHAP signatures + interpretation]
-
 \subsection{Evidence-grounded report generation from thyroid ultrasound}
-[Paragraph 1: workflow + structured evidence design]
-[Paragraph 2: NLG metric results on in-house and public benchmarks]
-
 \subsection{Clinical semantic validation of ThyClinScore}
-[Paragraph 1: ThyClinScore headline performance]
-[Paragraph 2: submetrics and failure modes]
-[Paragraph 3: correlation with conventional metrics and external judge]
-
 \subsection{AI-assisted reporting improves efficiency while preserving clinical utility}
-[Paragraph 1: reader-study design + time reduction]
-[Paragraph 2: physician-stratified benefit + representative cases + closing meaning sentence]
 ```
 
----
+### 为什么这个结构对 `ThyroidXAgent` 合理
 
-## 六、`Results` 段落层面的硬规则
+- **前 3 节** 更接近 `LLNM-Net` 的临床证据推进逻辑
+  - 核心性能
+  - 解释性与可审阅性
+  - 更临床相关的恶性任务泛化
+- **后 3 节** 借用了 `Tiger Model` 的“模块先成立，再验证中间证据，再落到实际工作流”的思路
+  - report generation 本身是否成立
+  - `ThyClinScore` 是否值得相信
+  - AI-assisted reporting 是否带来真实工作流收益
+- **workflow 写进 `Results`** 的合法性，则可从 `TissueLab` 得到支持
 
-下面这些规则是三篇参考文的共同底层规律。
+### 这套结构的准确定位
 
-## 规则 1：一段只做一个 job
+这套结构应表述为：
 
-每段只能承担这几类工作中的一种：
+**一种综合三篇参考文风格后形成的 `ThyroidXAgent` 专用改稿骨架。**
 
-- context
-- result
-- comparison
-- mechanism / interpretability
-- implication
+而不是：
 
-不要在一段里同时做 2–3 件事。
-
-### 对 `ThyroidXAgent` 的直接提醒
-
-你当前第一个 subsection 的第一段还算稳，但第二段和第三段已经进入别的 job；
-你当前第二个 subsection 基本是一段接一段地切换 job，所以读起来会更累。
-
----
-
-## 规则 2：段首先给 judgement，再给数字
-
-也就是典型的 **conclusion-first**。
-
-### 不够像 NC 的写法
-
-```text
-We evaluated the model on two datasets. The AUROC was 0.94. The AUPRC was 0.83.
-```
-
-### 更像 NC 的写法
-
-```text
-ThyroidXAgent achieved the strongest overall discrimination across both datasets, with an AUROC of 0.94 and an AUPRC of 0.83.
-```
+**三篇参考文共同展示出的标准答案。**
 
 ---
 
-## 规则 3：headline claim 后面立刻接 figure 或 table 支撑
+## 六、对 `ThyroidXAgent` 最值得迁移的 6 条写作规则
 
-不要让读者等到段末才知道你在靠哪张图。
+## 1. 小标题要体现证据推进，而不是只列内容
 
-### 建议句型
+比起：
 
-- `... (Fig. 2a--d and Supplementary Table 3).`
-- `... (Fig. 3b,c).`
-- `... as summarized in Fig. 4.`
+- `Segmentation, classification performance and interpretability`
+- `Report generation`
 
----
-
-## 规则 4：每个强 claim 都要带一个比较对象
-
-不要只写：
-
-- `performed well`
-- `showed robust performance`
-- `was clinically useful`
-
-最好写成：
-
-- `achieved [metric], compared with [baseline]`
-- `outperformed [baseline/human experts]`
-- `reduced reporting time from [X] to [Y]`
+更好的写法是把不同层级的证据拆开，让标题本身有推进感。
 
 ---
 
-## 规则 5：解释性结果必须变成“可复述的规律”
+## 2. subsection 开头先交代这一节要回答的问题
+
+可直接复用的起句包括：
+
+- `We first evaluated whether ...`
+- `We next asked whether ...`
+- `We then examined whether ...`
+- `To interpret these predictions, we next examined ...`
+- `To assess ..., we evaluated ...`
+
+---
+
+## 3. 第一段先报 headline finding，再给图和数字
+
+尽量避免先堆实验动作、最后才给判断。
+
+更稳的方式是：
+
+- 先说 `ThyroidXAgent achieved ...`
+- 紧接着给 `Fig.` / `Table`
+- 再展开指标与比较对象
+
+---
+
+## 4. 解释性段落要回答“模型到底看到了什么”
 
 不要只写：
 
 - `SHAP analysis is shown in Fig. X`
 
-要写成：
+更好的写法是：
 
-- 哪类特征主导
-- 两个任务是否学到不同特征
-- 有没有一个 clinically meaningful observation
-
-### 你可以参考的写法
-
-> “When the minimum distance is less than 0.25 cm, the average probability of LLNM occurrence exceeds 72%.”
-
-它厉害的地方在于：不是说“看了热图”，而是把解释性结果压缩成了一个**可讲给临床读者听的发现**。
+- 哪些特征主导
+- representative cases 是否与这些特征一致
+- 这些解释信号能否进入 review / correction workflow
 
 ---
 
-## 规则 6：新 metric 要独立成块，不要混在主性能段里
+## 5. workflow 可以写进 `Results`，但必须服务于结果解释
 
-这点对 `ThyClinScore` 尤其重要。
+`TissueLab` 提供了重要启发：workflow 不是不能写进 `Results`，关键在于它必须解释为什么结果成立。
 
-### 为什么
+因此对 `ThyroidXAgent` 来说：
 
-因为一旦混写，读者会分不清：
+- interactive review workflow
+- report-generation workflow
+- reader-study workflow
 
-- 你是在证明 report generation 很强
-- 还是在证明 `ThyClinScore` 很合理
-
-而高水平论文会把这两件事拆开。
-
----
-
-## 七、建议直接替换的 subsection 标题
-
-## 当前标题 1
-
-`Segmentation, classification performance and interpretability`
-
-### 问题
-
-这个标题一次说了 3 件事，范围太宽。
-
-### 建议拆成
-
-- `Cross-dataset segmentation and benign--malignant classification`
-- `Interpretable predictions and clinician-interactive review`
-- `Generalization to clinically consequential malignant-lesion tasks`
+都可以写进 `Results`，但要避免只做流程描述而没有对应结果判断。
 
 ---
 
-## 当前标题 2
+## 6. 每节结尾最好有一句 roll-up sentence
 
-`Report generation`
-
-### 问题
-
-太宽，无法体现：
-
-- workflow
-- report quality
-- metric validation
-- clinical workflow benefit
-
-这 4 件事并不是同一层逻辑。
-
-### 建议拆成
-
-- `Evidence-grounded report generation from thyroid ultrasound`
-- `Clinical semantic validation of ThyClinScore`
-- `AI-assisted reporting improves efficiency while preserving clinical utility`
-
----
-
-## 八、可直接复用的句型库
-
-## 1. subsection 开头句
-
-- `We first evaluated whether ...`
-- `We next asked whether ...`
-- `We then examined whether ...`
-- `To assess ..., we evaluated ...`
-- `To interpret these predictions, we next examined ...`
-
-## 2. headline result 句
-
-- `ThyroidXAgent achieved the strongest overall performance across ...`
-- `This advantage was preserved in ...`
-- `Across heterogeneous datasets, ThyroidXAgent achieved ...`
-- `On the external benchmark, ThyroidXAgent ranked first on ...`
-
-## 3. 对比句
-
-- `..., compared with [baseline]`
-- `..., exceeding [baseline] by [X]% and [Y]%, respectively`
-- `..., outperforming both [baseline] and [baseline]`
-
-## 4. 解释性句
-
-- `SHAP analyses revealed task-specific radiomic signatures ...`
-- `Representative cases showed close alignment between ...`
-- `These attribution profiles indicate that ...`
-
-## 5. roll-up 句
+常用句型包括：
 
 - `Together, these results establish ...`
 - `Overall, these findings indicate that ...`
 - `Collectively, these analyses support ...`
 - `These results position ThyroidXAgent as ...`
 
----
+其作用是：
 
-## 九、不要写成什么样
-
-## 不要 1：一个 subsection 同时讲 4 条证据链
-
-比如：
-
-- 核心性能
-- 解释性
-- 泛化
-- 人机协同
-
-全在一个 subsection 里。
-
-这就是你当前第一节的问题。
-
-## 不要 2：同一段里既报数字又解释 metric 合理性又讲临床意义
-
-尤其第二节里要避免这种段落过载。
-
-## 不要 3：只给 “best overall balance” 这类抽象总结，不给紧邻的数字和比较对象
-
-## 不要 4：把 `Results` 写成 mini-Discussion
-
-比如：
-
-- `addresses an important limitation`
-- `offers a promising avenue`
-- `highlights the broad clinical potential`
-
-这些可以写，但应该出现在段尾或小结，不要整段都在抒情。
+- 收束本节主判断
+- 防止段落停在数字上
+- 让 6 个 subsection 更像一条完整证据链
 
 ---
 
-## 十、给 `ThyroidXAgent` 的直接改稿路线图
+## 七、`ThyroidXAgent` 的最小可复用骨架
 
-如果你接下来要真正改稿，最稳的顺序是：
-
-### Step 1
-先只改结构，不改数字
-
-也就是先把当前两个 subsection 拆成六个 subsection。
-
-### Step 2
-把每一段重新分配 job
-
-建议映射如下：
-
-- 当前第一节第一段 → 新 `Subsection 1`
-- 当前第一节第二段 → 新 `Subsection 2`
-- 当前第一节第三段 → 新 `Subsection 3`
-- 当前第二节第一段 + 第二段 → 新 `Subsection 4`
-- 当前第二节第三段 + 第四段 → 新 `Subsection 5`
-- 当前第二节最后一段 → 新 `Subsection 6`
-
-### Step 3
-再做句法 NC 化
-
-重点改：
-
-- 段首更结论先行
-- figure call 更及时
-- 每节结尾多一个 roll-up sentence
-- 避免 broad laundry-list title
-
-### Step 4
-最后再压字数和统一语气
-
-也就是最后一轮再做：
-
-- 去掉重复 `achieved the highest...`
-- 去掉多余修饰词
-- 统一 `show / indicate / demonstrate / suggest` 的证据强度
-
----
-
-## 十一、给你一个可直接抄用的 Results 总起句模板
-
-如果你想给整个 `Results` 开头加一个更稳的总起，也可以参考下面这个写法：
+如果你接下来要按这份模板改稿，最稳的骨架可以是：
 
 ```text
-We evaluated ThyroidXAgent along two clinically motivated axes. First, we tested whether the framework improves thyroid nodule delineation, malignancy discrimination and malignant-lesion stratification across heterogeneous ultrasound datasets while providing interpretable and reviewable evidence. Second, we assessed whether the same framework supports evidence-grounded report generation, clinically meaningful report evaluation and more efficient physician reporting workflows.
+\section{Results}
+
+\subsection{Cross-dataset segmentation and benign--malignant classification}
+[核心任务重要性 + cross-dataset headline performance]
+[baseline / physician comparison + short roll-up]
+
+\subsection{Interpretable predictions and clinician-interactive review}
+[cohort-level SHAP + representative cases]
+[interactive review workflow + corrective annotation + efficiency / auditability]
+
+\subsection{Generalization to clinically consequential malignant-lesion tasks}
+[malignant-lesion tasks headline results + baseline comparison]
+[task-specific signatures / interpretation]
+
+\subsection{Evidence-grounded report generation from thyroid ultrasound}
+[workflow + structured evidence design]
+[NLG metrics / report-generation headline performance]
+
+\subsection{Clinical semantic validation of ThyClinScore}
+[ThyClinScore headline result]
+[submetrics and failure modes]
+[correlation / external validation of metric meaning]
+
+\subsection{AI-assisted reporting improves efficiency while preserving clinical utility}
+[reader-study design + time reduction]
+[physician-stratified benefit + representative cases + closing sentence]
 ```
 
-这个句子有两个作用：
+---
 
-- 先把 `Results` 总体逻辑告诉读者
-- 避免后面 6 个 subsection 看起来像彼此无关
+## 八、建议保留、但要明确属于“应用建议”的内容
+
+下面这些内容仍然建议保留，因为对 `ThyroidXAgent` 很有用；只是它们应该被明确标为**应用层建议**，而不是“文献共性事实”：
+
+- **把当前两个过宽的 subsection 拆成 6 个 subsection**
+- **把 `ThyClinScore` 单独成节**
+- **把解释性与 interactive review 放在同一节**
+- **把 report generation 主性能与 reader study 分开**
+- **把 `Results` 写成两大块**
+  - 核心影像任务
+  - 报告生成与临床工作流
+
+这些建议之所以合理，不是因为三篇文献都“原样这样写”，而是因为它们分别提供了：
+
+- 证据推进方式
+- 模块验证顺序
+- workflow 写入 `Results` 的写法合法性
 
 ---
 
-## 十二、最后给一个“最像 NC 风格”的最短心法
+## 九、最短结论版心法
 
-如果你只记 4 件事，就记下面这 4 件：
+如果只保留最重要的判断，可以记住下面 5 句：
 
-1. **小标题就是证据阶梯，不是内容清单**
-2. **每段开头先给 judgement，再给数字和图**
-3. **新 metric、新 workflow、人类评估，都要单独成块**
-4. **每一节最后都要回答：所以这说明了什么**
+1. **三篇文献不是一个模板，而是三种可迁移的 `Results` 组织模式。**
+2. **真正稳定的共性，是结论先行、图表紧跟、比较对象明确、解释性要能转成可复述发现。**
+3. **`LLNM-Net` 最像临床证据阶梯，`Tiger Model` 最像模块验证链，`TissueLab` 最像能力模块展示。**
+4. **`ThyroidXAgent` 的 6-subsection 结构是合理的应用方案，但不是参考文原样复刻。**
+5. **写 `Results` 时，应先区分“文献真实共性”和“面向自己稿件的最佳改稿策略”。**
 
 ---
 
-## 十三、你下一步怎么用这份模板
+## 十、你接下来如何使用这份模板
 
-建议你按下面方式使用：
+建议按以下顺序使用：
 
-- 先把当前 `Results` 结构按本模板拆开
-- 再逐节改写，每次只改一个 subsection
-- 改的时候先保留原数字和图号，不先动数据
-- 等结构稳了，再做语言润色
+1. **先按第五节确定结构**
+   - 先拆 subsection，不先改数字。
+2. **再按第六节统一段落写法**
+   - 先把每一节的主判断写清楚。
+3. **最后再做语言层面的 NC 化**
+   - 压缩重复表达
+   - 统一 `show / indicate / demonstrate / suggest` 的证据强度
+   - 让 figure call 更及时
 
-如果你愿意，下一步我可以继续直接做：
+如果后续继续改 `ThyroidXAgent.md`，这份文档应优先被当作：
 
-1. **按这份模板，帮你把 `ThyroidXAgent.md` 的 `Results` 直接重组改写一版**
-2. **先只改 subsection 标题和段落顺序，尽量少动原句**
-3. **再进一步改成更像 `Nature Communications` 的英文 prose**
+**“文献风格校准器 + 应用层骨架说明书”**，而不是“可以无差别机械套用的唯一模板”。
