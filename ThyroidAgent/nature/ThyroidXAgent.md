@@ -207,7 +207,49 @@ For radiomics, candidate masks were optionally refined by connected-component an
 
 
 \subsection{ThyClinScore}
-ThyClinScore evaluates thyroid ultrasound reports by clinical semantic agreement. Ground-truth and generated reports are first converted into structured entries containing gland-level findings and lesion-level attributes. Lesion entries are matched using pairwise similarity and bipartite matching. Matched lesions are scored for clinically relevant attributes, including location, size, morphology, echogenicity, vascularity and completeness. False-positive and false-negative lesion entries contribute to lesion-level precision, recall and F1. The final ThyClinScore combines lesion matching, feature agreement, completeness and consistency, thereby penalizing clinically important disagreements that may be missed by surface-overlap metrics.
+ThyClinScore evaluates thyroid ultrasound reports as a structured clinical semantic agreement task. It measures both report completeness and semantic consistency with the reference report. Semantic consistency is assessed at two levels: gland-level agreement for thyroid measurements, parenchymal morphology and gland-level vascularity; and lesion-level agreement for lesion detection, lesion size, lesion descriptors and lesion-level vascularity. Size and vascularity can therefore be scored at either level when the corresponding fields are available, whereas morphology mainly captures concept-level agreement in gland and parenchymal descriptions.
+
+For each case, the reference report \(R^{\mathrm{gt}}\) and generated report \(R^{\mathrm{pred}}\) were converted into a shared schema containing thyroid measurements, parenchymal findings, lesion attributes, lymph-node findings and diagnostic impressions. Measurements were standardized in millimetres, categorical fields were restricted to predefined thyroid ultrasound descriptors, and absent information was represented as null. The schema retained clinically relevant information, including lesion location, size, composition, echogenicity, margin, shape, echogenic foci, vascularity and TI-RADS category.
+
+At the lesion level, reference and predicted lesions were first matched before lesion detection and attribute agreement were evaluated. Let \(G=\{g_i\}_{i=1}^{m}\) denote reference lesions and \(P=\{p_j\}_{j=1}^{n}\) denote predicted lesions. For each candidate pair, we computed
+\[
+S_{ij}=M^{\mathrm{loc}}_{ij}
+\left(\alpha_sS^{\mathrm{size}}_{ij}+\beta_fS^{\mathrm{feat}}_{ij}\right),
+\qquad
+S^{\mathrm{size}}_{ij}=\frac{\min(d_i,d_j)}{\max(d_i,d_j)},
+\]
+where \(d_i\) and \(d_j\) are maximum lesion diameters, \(M^{\mathrm{loc}}_{ij}\in\{0,1\}\) is a hard anatomical-location gate, and \(S^{\mathrm{feat}}_{ij}\in\{0,0.5,1\}\) scores lesion-composition agreement. Explicit left-right mismatches were assigned \(M^{\mathrm{loc}}_{ij}=0\). We solved the bipartite assignment using \(c_{ij}=1-S_{ij}\) and retained pairs above a predefined threshold. Matched pairs were treated as true positives, unmatched reference lesions as false negatives and unmatched predicted lesions as false positives, from which lesion-level precision, recall, F1 and false discovery rate were calculated.
+
+Numerical measurements were scored using mean relative error (MRE), applied to thyroid lobe and isthmus measurements at the gland level and lesion dimensions at the lesion level. For paired dimensions \(K\),
+\[
+\mathrm{MRE}_{K}=\frac{1}{|K|}\sum_{k\in K}
+\frac{|p_k-g_k|}{\max(|g_k|,\epsilon)},\qquad
+s_{\mathrm{size}}(\mathrm{MRE}_{K};\tau)=2^{-(\mathrm{MRE}_{K}/\tau)^2},
+\]
+where \(\epsilon\) provides numerical stability and \(\tau\) controls tolerance to size error. Vascularity was evaluated at either level when available. It was discretized into four grades, from absent flow to markedly increased flow, and scored as
+\[
+s_{\mathrm{vasc}}=\max\left(0,1-\frac{|v^{\mathrm{gt}}-v^{\mathrm{pred}}|}{3}\right).
+\]
+Morphological consistency was computed at the concept level for gland and parenchymal descriptions. A thyroid-specific lexicon mapped report phrases to concepts covering echogenicity, texture, margin, shape, calcification, posterior acoustic features and composition. For concept sets \(C^{\mathrm{gt}}\) and \(C^{\mathrm{pred}}\), morphology agreement was scored by concept F1. For matched lesions, categorical descriptors were scored by mean accuracy over reference-present fields, including composition, echogenicity, margin, shape and echogenic foci.
+
+Gland-level and lesion-level assessments were combined into a clinical consistency score \(C\), which aggregates thyroid-size agreement, lesion-size agreement, vascularity agreement, lesion-detection F1, lesion-feature accuracy and morphology agreement. Components not applicable to either report were excluded from the denominator, whereas reference-present fields missing from the generated report contributed zero:
+\[
+C=\frac{\sum_{q\in\mathcal{Q}}w_qs_q}{\sum_{q\in\mathcal{Q}}w_q},
+\]
+where \(s_q\) denotes a valid component score and \(w_q\) its predefined weight. Report completeness \(B\) was defined as the weighted fraction of required information present in the generated structured report:
+\[
+B=\frac{\sum_{r\in\mathcal{R}}u_rb_r}{\sum_{r\in\mathcal{R}}u_r}.
+\]
+The completeness groups were thyroid measurements, parenchyma, lesions, impression and lymph-node description; \(b_r\) indicates presence of group \(r\), and \(u_r\) denotes its predefined weight. The final ThyClinScore was
+\[
+\mathrm{ThyClinScore}=
+\left[\lambda B+(1-\lambda)C\right]
+\left[\eta+(1-\eta)F_L\right],
+\]
+for cases with reference lesions, where \(\lambda\) balances completeness and clinical consistency, and \(\eta\) controls the minimum lesion-detection gate. For reports without reference lesions, the gate was omitted. This design rewards complete and semantically consistent reports while penalizing missed or hallucinated lesions.
+
+For evaluation, ThyClinScore was computed together with conventional natural-language generation metrics. We reported the final score and interpretable submetrics, including lesion F1, false discovery rate, feature accuracy, completeness and consistency. We compared all metrics with a location-aware LLM judge using two-sided Pearson correlation analysis.
+
 
 \subsection{Report generation}
 For report generation, ThyroidXAgent accepted case-level multi-view and multimodal ultrasound examinations. ROI cropping and context parsing generated image-level priors, including anatomical region, modality, view, colour Doppler information and nodule presence. These priors conditioned a planner--executor workflow~\cite{wang_plan-and-solve_2023}. The planner generated a case-specific diagnostic outline and dependency structure; the executor used ReAct-style local decision-making~\cite{yao_react:_2022} to select images and tools according to metadata and intermediate observations. Tool outputs were consolidated into gland-level, nodule-level and lymph-node evidence.
@@ -703,18 +745,18 @@ Tiger-Model~\cite{Dai2025NatCommunThyroidSubtype}
 \setlength{\tabcolsep}{2.3pt}
 \renewcommand{\arraystretch}{1.08}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{|>{\raggedright\arraybackslash}p{0.085\textwidth}|>{\raggedright\arraybackslash}p{0.115\textwidth}|>{\raggedright\arraybackslash}p{0.13\textwidth}|>{\raggedright\arraybackslash}p{0.185\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.065\textwidth}|>{\centering\arraybackslash}p{0.085\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|}
+\begin{tabular}{|>{\centering\arraybackslash}p{0.105\textwidth}|>{\raggedright\arraybackslash}p{0.105\textwidth}|>{\raggedright\arraybackslash}p{0.13\textwidth}|>{\raggedright\arraybackslash}p{0.185\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.065\textwidth}|>{\centering\arraybackslash}p{0.085\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|}
 \hline
-\textbf{Agent stage} & \textbf{Tool group} & \multicolumn{2}{c|}{\textbf{Tool}} & \multicolumn{2}{c|}{\textbf{Test set}} & \multicolumn{3}{c|}{\textbf{Primary result}} & \multicolumn{3}{c|}{\textbf{Secondary result}} \\
+\multicolumn{1}{|c|}{\textbf{Agent stage}} & \multicolumn{1}{c|}{\textbf{Tool group}} & \multicolumn{2}{c|}{\textbf{Tool}} & \multicolumn{2}{c|}{\textbf{Test set}} & \multicolumn{3}{c|}{\textbf{Primary result}} & \multicolumn{3}{c|}{\textbf{Secondary result}} \\
 \hline
-\multirow{10}{*}{Preprocessing}
+\multirow{10}{=}{\centering Preprocessing}
 & Image normalization & \multicolumn{2}{l|}{Ultrasound ROI cropping} & \multicolumn{2}{c|}{\(n=49\)} & \multicolumn{3}{l|}{Dice, 0.9803; IoU, 0.9625} & \multicolumn{3}{l|}{Precision, 0.9902; recall, 0.9717; pixel accuracy, 0.9816} \\
 \cline{2-12}
 & Case triage & \multicolumn{2}{l|}{Nodule-presence detection} & \multicolumn{2}{c|}{\(n=16{,}467\)} & \multicolumn{3}{l|}{Accuracy, 0.9830; F1, 0.9749} & \multicolumn{3}{l|}{AUROC, 0.9981; AP, 0.9961; specificity, 0.9821} \\
 \cline{2-12}
 & \multicolumn{11}{c|}{\textbf{Anatomical context parsing}} \\
 \cline{2-12}
-& \textbf{Tool} & \textbf{Class} & \textbf{Train} & \textbf{Val} & \textbf{Test} & \textbf{Total} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{AUROC} & \textbf{AUPRC} \\
+& \multicolumn{1}{c|}{\textbf{Tool}} & \multicolumn{1}{c|}{\textbf{Class}} & \multicolumn{1}{c|}{\textbf{Train}} & \multicolumn{1}{c|}{\textbf{Val}} & \multicolumn{1}{c|}{\textbf{Test}} & \multicolumn{1}{c|}{\textbf{Total}} & \multicolumn{1}{c|}{\textbf{Precision}} & \multicolumn{1}{c|}{\textbf{Recall}} & \multicolumn{1}{c|}{\textbf{F1}} & \multicolumn{1}{c|}{\textbf{AUROC}} & \multicolumn{1}{c|}{\textbf{AUPRC}} \\
 \cline{2-12}
 & \multirow{6}{*}{\makecell[l]{Thyroid-region\\classification}} & Left-lobe lateral view & 780 & 110 & 159 & 1,049 & 0.6643 & 0.5975 & 0.6291 & 0.8521 & 0.7185 \\
 \cline{3-12}
@@ -728,8 +770,8 @@ Tiger-Model~\cite{Dai2025NatCommunThyroidSubtype}
 \cline{3-12}
 & & Neck region & 267 & 21 & 12 & 300 & 1.0000 & 0.9167 & 0.9565 & 0.9974 & 0.9524 \\
 \hline
-\multirow{20}{*}{Executor}
-& Measurement support & \multicolumn{2}{l|}{Spacing prediction} & \multicolumn{2}{c|}{Not reported} & \multicolumn{3}{l|}{MAE, 0.0131; \(R^2\), 0.8520} & \multicolumn{3}{l|}{MSE, \(5.66\times10^{-4}\); MAPE, 21.39\%} \\
+\multirow{20}{=}{\centering Executor}
+& Measurement support & \multicolumn{2}{l|}{Spacing prediction} & \multicolumn{2}{c|}{\(n=600\)} & \multicolumn{3}{l|}{MAE, 0.0131; \(R^2\), 0.8520} & \multicolumn{3}{l|}{MSE, \(5.66\times10^{-4}\); MAPE, 21.39\%} \\
 \cline{2-12}
 & Gland localization & \multicolumn{2}{l|}{Gland segmentation} & \multicolumn{2}{c|}{\(n=90\)} & \multicolumn{3}{l|}{Dice, 0.8006; IoU, 0.6866} & \multicolumn{3}{l|}{Precision, 0.8025; recall, 0.8339} \\
 \cline{2-12}
@@ -739,7 +781,7 @@ Tiger-Model~\cite{Dai2025NatCommunThyroidSubtype}
 \cline{2-12}
 & \multicolumn{11}{c|}{\textbf{Nodule feature extraction}} \\
 \cline{2-12}
-& \textbf{Tool family} & \textbf{Feature classifier} & \textbf{Class} & \textbf{Train} & \textbf{Val} & \textbf{Test} & \textbf{Total} & \textbf{Specificity} & \textbf{Sensitivity} & \textbf{AUROC} & \textbf{AUPRC} \\
+& \multicolumn{1}{c|}{\textbf{Tool family}} & \multicolumn{1}{c|}{\textbf{Feature classifier}} & \multicolumn{1}{c|}{\textbf{Class}} & \multicolumn{1}{c|}{\textbf{Train}} & \multicolumn{1}{c|}{\textbf{Val}} & \multicolumn{1}{c|}{\textbf{Test}} & \multicolumn{1}{c|}{\textbf{Total}} & \multicolumn{1}{c|}{\textbf{Specificity}} & \multicolumn{1}{c|}{\textbf{Sensitivity}} & \multicolumn{1}{c|}{\textbf{AUROC}} & \multicolumn{1}{c|}{\textbf{AUPRC}} \\
 \cline{2-12}
 & \multirow{14}{*}{\makecell[l]{Nodule-feature\\classification}}
 & \multirow{3}{*}{Composition} & Cystic & 1,877 & 234 & 234 & 2,345 & 0.8345 & 0.8571 & 0.9189 & 0.9127 \\
@@ -783,7 +825,7 @@ Tiger-Model~\cite{Dai2025NatCommunThyroidSubtype}
 
 \footnotesize
 \setlength{\tabcolsep}{5.2pt}
-\renewcommand{\arraystretch}{1.08}
+\renewcommand{\arraystretch}{1.04}
 
 \begin{tabular}{lcccccc}
 \toprule
@@ -828,7 +870,7 @@ Qwen3.5 Plus~\cite{yang_qwen3_2025}
 & 0.3623$\pm$0.0111
 & 0.2959$\pm$0.0095
 & 0.2427$\pm$0.0081
-& \textbf{0.3628$\pm$0.0040}
+& 0.3628$\pm$0.0040
 & 0.5147$\pm$0.0088 \\
 
 Claude-Sonnet-4.6
@@ -865,12 +907,12 @@ KMVE~\cite{li_ultrasound_2024}
 
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
-& \textbf{0.5799$\pm$0.0141}
-& \textbf{0.4691$\pm$0.0139}
-& \textbf{0.3902$\pm$0.0138}
-& \textbf{0.3291$\pm$0.0137}
-& 0.3575$\pm$0.0088
-& \textbf{0.5390$\pm$0.0119} \\
+& \textbf{0.5961$\pm$0.0141}
+& \textbf{0.4839$\pm$0.0138}
+& \textbf{0.4033$\pm$0.0136}
+& \textbf{0.3405$\pm$0.0136}
+& \textbf{0.3646$\pm$0.0086}
+& \textbf{0.5450$\pm$0.0118} \\
 
 \midrule
 
@@ -945,80 +987,80 @@ LLaVA-Med~\cite{li_llavamed_2023}
 \midrule
 
 \rowcolor{gray!20}
-\multicolumn{7}{c}{\textbf{ZJH-TS Testset} ($n=159$)} \\
+\multicolumn{7}{c}{\textbf{ZJH-TS Testset} ($n=150$)} \\
 
 GPT-4o~\cite{openai_gpt4_2024}
-& 0.4092$\pm$0.0263
-& 0.2962$\pm$0.0200
-& 0.2171$\pm$0.0149
-& 0.1622$\pm$0.0116
-& 0.2493$\pm$0.0159
-& 0.3686$\pm$0.0214 \\
+& 0.3402$\pm$0.0273
+& 0.2447$\pm$0.0206
+& 0.1788$\pm$0.0155
+& 0.1332$\pm$0.0119
+& 0.2495$\pm$0.0163
+& 0.3679$\pm$0.0219 \\
 
 GPT-5~\cite{openai2025gpt5systemcard}
-& 0.5023$\pm$0.0152
-& 0.3718$\pm$0.0125
-& 0.2709$\pm$0.0104
-& 0.1931$\pm$0.0092
-& 0.3275$\pm$0.0058
-& 0.4811$\pm$0.0095 \\
+& 0.4736$\pm$0.0158
+& 0.3499$\pm$0.0130
+& 0.2539$\pm$0.0108
+& 0.1789$\pm$0.0095
+& 0.3332$\pm$0.0060
+& 0.4790$\pm$0.0098 \\
 
 Gemini2.5 Pro~\cite{comanici_gemini_2025}
-& 0.1819$\pm$0.0109
-& 0.1238$\pm$0.0076
-& 0.0848$\pm$0.0056
-& 0.0584$\pm$0.0043
-& 0.2766$\pm$0.0051
-& 0.2533$\pm$0.0086 \\
+& 0.1932$\pm$0.0112
+& 0.1307$\pm$0.0080
+& 0.0887$\pm$0.0058
+& 0.0601$\pm$0.0045
+& 0.2765$\pm$0.0052
+& 0.2536$\pm$0.0091 \\
 
 Qwen3.5 Plus~\cite{yang_qwen3_2025}
-& \textbf{0.5433$\pm$0.0182}
-& \textbf{0.4364$\pm$0.0161}
-& \textbf{0.3532$\pm$0.0143}
-& \textbf{0.2868$\pm$0.0127}
-& \textbf{0.3485$\pm$0.0073}
-& 0.5381$\pm$0.0119 \\
+& 0.5015$\pm$0.0191
+& 0.4023$\pm$0.0167
+& 0.3254$\pm$0.0148
+& 0.2639$\pm$0.0131
+& \textbf{0.3551$\pm$0.0074}
+& 0.5372$\pm$0.0122 \\
 
 Claude-Sonnet-4.6
-& 0.4646$\pm$0.0180
-& 0.3664$\pm$0.0155
-& 0.2917$\pm$0.0132
-& 0.2337$\pm$0.0115
-& 0.3424$\pm$0.0072
-& 0.4864$\pm$0.0124 \\
+& 0.4480$\pm$0.0181
+& 0.3518$\pm$0.0157
+& 0.2792$\pm$0.0135
+& 0.2229$\pm$0.0118
+& 0.3455$\pm$0.0073
+& 0.4864$\pm$0.0127 \\
 
 MedGemma~\cite{sellergren2025medgemma}
-& 0.0793$\pm$0.0205
-& 0.0612$\pm$0.0162
-& 0.0479$\pm$0.0130
-& 0.0378$\pm$0.0104
-& 0.2179$\pm$0.0090
-& 0.1579$\pm$0.0199 \\
+& 0.1236$\pm$0.0220
+& 0.0958$\pm$0.0174
+& 0.0750$\pm$0.0138
+& 0.0591$\pm$0.0110
+& 0.2268$\pm$0.0094
+& 0.1592$\pm$0.0211 \\
 
 LLaVA-Med~\cite{li_llavamed_2023}
-& 0.2375$\pm$0.0194
-& 0.1358$\pm$0.0138
-& 0.0917$\pm$0.0098
-& 0.0628$\pm$0.0073
-& 0.1609$\pm$0.0103
-& 0.2483$\pm$0.0199 \\
+& 0.2318$\pm$0.0194
+& 0.1316$\pm$0.0141
+& 0.0891$\pm$0.0101
+& 0.0606$\pm$0.0074
+& 0.1658$\pm$0.0106
+& 0.2479$\pm$0.0201 \\
 
 KMVE~\cite{li_ultrasound_2024}
-& 0.1511$\pm$0.0148
-& 0.0948$\pm$0.0092
-& 0.0557$\pm$0.0055
-& 0.0316$\pm$0.0039
-& 0.1604$\pm$0.0070
-& 0.2240$\pm$0.0037 \\
+& 0.1682$\pm$0.0146
+& 0.1041$\pm$0.0090
+& 0.0598$\pm$0.0054
+& 0.0289$\pm$0.0038
+& 0.1648$\pm$0.0069
+& 0.2244$\pm$0.0038 \\
 
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
-& 0.4654$\pm$0.0229
-& 0.3830$\pm$0.0203
-& 0.3199$\pm$0.0184
-& 0.2706$\pm$0.0169
-& 0.2995$\pm$0.0115
-& \textbf{0.5393$\pm$0.0153} \\
+& \textbf{0.5134$\pm$0.0210}
+& \textbf{0.4201$\pm$0.0189}
+& \textbf{0.3495$\pm$0.0175}
+& \textbf{0.2942$\pm$0.0163}
+& 0.3332$\pm$0.0106
+& \textbf{0.5529$\pm$0.0140} \\
 
 \bottomrule
 \end{tabular}
@@ -1035,7 +1077,7 @@ KMVE~\cite{li_ultrasound_2024}
 
 \footnotesize
 \setlength{\tabcolsep}{5.2pt}
-\renewcommand{\arraystretch}{1.08}
+\renewcommand{\arraystretch}{1.04}
 
 \begin{tabular}{lcccccc}
 \toprule
@@ -1064,7 +1106,7 @@ GPT-5~\cite{openai2025gpt5systemcard}
 & 0.5644$\pm$0.0351
 & 0.4390$\pm$0.0402
 & 0.8585$\pm$0.0077
-& \textbf{0.4980$\pm$0.0166}
+& 0.4980$\pm$0.0166
 & 0.4882$\pm$0.0182 \\
 
 Gemini2.5 Pro~\cite{comanici_gemini_2025}
@@ -1095,7 +1137,7 @@ MedGemma~\cite{sellergren2025medgemma}
 & 0.8943$\pm$0.0229
 & 0.5784$\pm$0.0434
 & 0.1027$\pm$0.0202
-& \textbf{0.9657$\pm$0.0055}
+& 0.9657$\pm$0.0055
 & 0.3353$\pm$0.0119
 & 0.3697$\pm$0.0131 \\
 
@@ -1117,12 +1159,12 @@ KMVE~\cite{li_ultrasound_2024}
 
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
-& 0.2517$\pm$0.0408
-& \textbf{0.6102$\pm$0.0448}
-& \textbf{0.5073$\pm$0.0448}
-& 0.9654$\pm$0.0055
-& 0.4884$\pm$0.0172
-& \textbf{0.5002$\pm$0.0220} \\
+& 0.2100$\pm$0.0363
+& \textbf{0.6455$\pm$0.0326}
+& \textbf{0.5589$\pm$0.0428}
+& \textbf{0.9676$\pm$0.0053}
+& \textbf{0.5070$\pm$0.0166}
+& \textbf{0.5238$\pm$0.0212} \\
 
 \midrule
 
@@ -1197,80 +1239,80 @@ LLaVA-Med~\cite{li_llavamed_2023}
 \midrule
 
 \rowcolor{gray!20}
-\multicolumn{7}{c}{\textbf{ZJH-TS Testset} ($n=159$)} \\
+\multicolumn{7}{c}{\textbf{ZJH-TS Testset} ($n=150$)} \\
 
 GPT-4o~\cite{openai_gpt4_2024}
-& 0.4764$\pm$0.0687
-& 0.5509$\pm$0.0457
-& 0.2627$\pm$0.0516
-& 0.7258$\pm$0.0296
-& 0.3411$\pm$0.0288
-& 0.3108$\pm$0.0256 \\
+& 0.4583$\pm$0.0706
+& 0.5510$\pm$0.0468
+& 0.2706$\pm$0.0523
+& 0.7290$\pm$0.0305
+& 0.3415$\pm$0.0294
+& 0.3139$\pm$0.0260 \\
 
 GPT-5~\cite{openai2025gpt5systemcard}
-& 0.4938$\pm$0.0643
-& 0.5262$\pm$0.0468
-& 0.4034$\pm$0.0523
-& 0.9543$\pm$0.0107
-& 0.4829$\pm$0.0230
-& 0.4604$\pm$0.0244 \\
+& 0.5201$\pm$0.0658
+& 0.5263$\pm$0.0487
+& 0.3771$\pm$0.0531
+& 0.9534$\pm$0.0112
+& 0.4735$\pm$0.0243
+& 0.4472$\pm$0.0248 \\
 
 Gemini2.5 Pro~\cite{comanici_gemini_2025}
-& 0.5613$\pm$0.0660
-& 0.5477$\pm$0.0546
-& 0.3067$\pm$0.0505
-& 0.7869$\pm$0.0180
-& 0.3846$\pm$0.0287
-& 0.3507$\pm$0.0241 \\
+& 0.5450$\pm$0.0689
+& 0.5507$\pm$0.0547
+& 0.3157$\pm$0.0523
+& 0.7859$\pm$0.0183
+& 0.3910$\pm$0.0292
+& 0.3557$\pm$0.0244 \\
 
 Qwen3.5 Plus~\cite{yang_qwen3_2025}
-& 0.6352$\pm$0.0453
-& 0.5001$\pm$0.0450
-& 0.3800$\pm$0.0428
-& 0.9697$\pm$0.0064
-& \textbf{0.4883$\pm$0.0203}
-& 0.4543$\pm$0.0198 \\
+& 0.6433$\pm$0.0458
+& 0.4958$\pm$0.0471
+& 0.3707$\pm$0.0432
+& 0.9695$\pm$0.0067
+& \textbf{0.4823$\pm$0.0208}
+& 0.4487$\pm$0.0196 \\
 
 Claude-Sonnet-4.6
-& 0.6071$\pm$0.0550
-& 0.5628$\pm$0.0445
-& 0.3466$\pm$0.0470
-& 0.8253$\pm$0.0171
-& 0.4342$\pm$0.0229
-& 0.3897$\pm$0.0213 \\
+& 0.6186$\pm$0.0571
+& 0.5748$\pm$0.0455
+& 0.3405$\pm$0.0496
+& 0.8226$\pm$0.0176
+& 0.4298$\pm$0.0233
+& 0.3861$\pm$0.0219 \\
 
 MedGemma~\cite{sellergren2025medgemma}
-& 0.6596$\pm$0.0605
-& 0.5427$\pm$0.0490
-& 0.2931$\pm$0.0495
-& 0.9446$\pm$0.0101
-& 0.3869$\pm$0.0218
-& 0.3790$\pm$0.0227 \\
+& 0.6537$\pm$0.0644
+& 0.5463$\pm$0.0498
+& 0.2959$\pm$0.0520
+& 0.9437$\pm$0.0106
+& 0.3868$\pm$0.0225
+& 0.3807$\pm$0.0238 \\
 
 LLaVA-Med~\cite{li_llavamed_2023}
-& 0.2830$\pm$0.0692
-& \textbf{0.6595$\pm$0.1072}
-& 0.1171$\pm$0.0435
-& 0.6150$\pm$0.0482
-& 0.1480$\pm$0.0302
-& 0.1785$\pm$0.0263 \\
+& \textbf{0.2733$\pm$0.0733}
+& \textbf{0.6595$\pm$0.1077}
+& 0.1241$\pm$0.0454
+& 0.6136$\pm$0.0494
+& 0.1505$\pm$0.0308
+& 0.1812$\pm$0.0275 \\
 
 KMVE~\cite{li_ultrasound_2024}
-& 0.7904$\pm$0.0603
-& 0.6288$\pm$0.1489
-& 0.0420$\pm$0.0243
-& 0.6241$\pm$0.0081
-& 0.1542$\pm$0.0158
-& 0.1626$\pm$0.0119 \\
+& 0.7911$\pm$0.0617
+& 0.6288$\pm$0.1490
+& 0.0445$\pm$0.0253
+& 0.6252$\pm$0.0085
+& 0.1581$\pm$0.0162
+& 0.1650$\pm$0.0124 \\
 
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
-& \textbf{0.2799$\pm$0.0597}
-& 0.5491$\pm$0.0447
-& \textbf{0.4786$\pm$0.0565}
-& \textbf{0.9731$\pm$0.0053}
-& 0.4516$\pm$0.0208
-& \textbf{0.4630$\pm$0.0257} \\
+& 0.2767$\pm$0.0600
+& 0.5343$\pm$0.0443
+& \textbf{0.5093$\pm$0.0563}
+& \textbf{0.9734$\pm$0.0054}
+& 0.4641$\pm$0.0202
+& \textbf{0.4775$\pm$0.0253} \\
 
 \bottomrule
 \end{tabular}
@@ -1285,13 +1327,236 @@ and FDR is 0 because no positive predictions were made.
 \end{threeparttable}
 \end{table*}
 
+\begin{table*}[!htp]
+\centering
+\begin{threeparttable}
+
+\caption{Source values for the static-pipeline comparison in the report-generation radar plots. The table reports the complete conventional natural-language generation metrics and clinical semantic metrics for the static pipeline on the three report-generation test sets used in Fig.~\ref{fig:thyroidxagent_report_generation}g. Values are reported as mean$\pm$95\% CI half-width. FDR with $\downarrow$ indicates that lower is better.}
+\label{tab:static_rule_controller_radar_metrics}
+
+\scriptsize
+\setlength{\tabcolsep}{4.2pt}
+\renewcommand{\arraystretch}{1.10}
+
+\begin{tabular}{lccccccc}
+\toprule
+\rowcolor{gray!20}
+\multicolumn{8}{c}{\textbf{Conventional natural-language generation metrics}} \\
+\midrule
+\textbf{Dataset}
+& \textbf{\(n\)}
+& \textbf{BLEU-1}
+& \textbf{BLEU-2}
+& \textbf{BLEU-3}
+& \textbf{BLEU-4}
+& \textbf{METEOR}
+& \textbf{ROUGE$_L$} \\
+\midrule
+SMU-HMC
+& 400
+& 0.4586$\pm$0.0149
+& 0.3817$\pm$0.0139
+& 0.3271$\pm$0.0136
+& 0.2849$\pm$0.0133
+& 0.3209$\pm$0.0073
+& 0.4725$\pm$0.0115 \\
+KMVE
+& 492
+& 0.3266$\pm$0.0069
+& 0.2105$\pm$0.0048
+& 0.1306$\pm$0.0034
+& 0.0624$\pm$0.0034
+& 0.2724$\pm$0.0051
+& 0.2750$\pm$0.0045 \\
+ZJH-TS
+& 150
+& 0.4242$\pm$0.0234
+& 0.3527$\pm$0.0206
+& 0.2986$\pm$0.0186
+& 0.2534$\pm$0.0172
+& 0.2916$\pm$0.0101
+& 0.4994$\pm$0.0140 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.8em}
+
+\begin{tabular}{lccccccc}
+\toprule
+\rowcolor{gray!20}
+\multicolumn{8}{c}{\textbf{Clinical semantic metrics}} \\
+\midrule
+\textbf{Dataset}
+& \textbf{\(n\)}
+& \textbf{FDR}\,$\downarrow$
+& \textbf{Feat Acc}
+& \textbf{F1 Score}
+& \textbf{Complete.}
+& \textbf{Consist.}
+& \textbf{ThyClin} \\
+\midrule
+SMU-HMC
+& 400
+& 0.3162$\pm$0.0431
+& 0.6227$\pm$0.0382
+& 0.5060$\pm$0.0453
+& 0.7821$\pm$0.0064
+& 0.4325$\pm$0.0161
+& 0.4293$\pm$0.0192 \\
+KMVE
+& 492
+& 0.5894$\pm$0.0432
+& 0.5616$\pm$0.0631
+& 0.2644$\pm$0.0375
+& 0.7665$\pm$0.0059
+& 0.3391$\pm$0.0181
+& 0.3346$\pm$0.0174 \\
+ZJH-TS
+& 150
+& 0.4433$\pm$0.0717
+& 0.5517$\pm$0.0516
+& 0.3894$\pm$0.0603
+& 0.8127$\pm$0.0120
+& 0.3734$\pm$0.0201
+& 0.3648$\pm$0.0239 \\
+\bottomrule
+\end{tabular}
+
+\end{threeparttable}
+\end{table*}
+
+\begin{table*}[!htp]
+\centering
+\begin{threeparttable}
+
+\caption{Ablation study of agent-tool integration for report generation. Tools were added cumulatively from segmentation to classification, captioning and measurement, and performance was evaluated with conventional natural-language generation metrics. Values are reported as mean$\pm$95\% CI half-width.}
+\label{tab:report_generation_tool_ablation}
+
+\footnotesize
+\setlength{\tabcolsep}{5.0pt}
+\renewcommand{\arraystretch}{1.08}
+
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Configuration}
+& \textbf{BLEU-1}
+& \textbf{BLEU-2}
+& \textbf{BLEU-3}
+& \textbf{BLEU-4}
+& \textbf{METEOR}
+& \textbf{ROUGE$_L$} \\
+\midrule
+
+\rowcolor{gray!20}
+\multicolumn{7}{c}{\textbf{SMU-HMC Testset} ($n=400$)} \\
+Segmentation only
+& 0.0889$\pm$0.0095
+& 0.0684$\pm$0.0075
+& 0.0555$\pm$0.0062
+& 0.0453$\pm$0.0052
+& 0.1516$\pm$0.0048
+& 0.2597$\pm$0.0092 \\
++ Classification
+& 0.1873$\pm$0.0172
+& 0.1431$\pm$0.0133
+& 0.1150$\pm$0.0106
+& 0.0932$\pm$0.0086
+& 0.1848$\pm$0.0074
+& 0.2875$\pm$0.0109 \\
++ Captioning
+& 0.4524$\pm$0.0163
+& 0.3748$\pm$0.0151
+& 0.3202$\pm$0.0143
+& 0.2786$\pm$0.0140
+& 0.3064$\pm$0.0082
+& 0.4628$\pm$0.0126 \\
++ Measurement (full)
+& 0.5961$\pm$0.0141
+& 0.4839$\pm$0.0138
+& 0.4033$\pm$0.0136
+& 0.3405$\pm$0.0136
+& 0.3646$\pm$0.0086
+& 0.5450$\pm$0.0118 \\
+
+\midrule
+\rowcolor{gray!20}
+\multicolumn{7}{c}{\textbf{KMVE Testset} ($n=492$)} \\
+Segmentation only
+& 0.5958$\pm$0.0195
+& 0.5315$\pm$0.0189
+& 0.4791$\pm$0.0185
+& 0.4364$\pm$0.0189
+& 0.3578$\pm$0.0107
+& 0.5725$\pm$0.0127 \\
++ Classification
+& 0.6195$\pm$0.0195
+& 0.5552$\pm$0.0189
+& 0.5022$\pm$0.0184
+& 0.4593$\pm$0.0185
+& 0.3694$\pm$0.0104
+& 0.5771$\pm$0.0128 \\
++ Captioning
+& 0.6209$\pm$0.0183
+& 0.5493$\pm$0.0169
+& 0.4919$\pm$0.0159
+& 0.4465$\pm$0.0158
+& 0.3596$\pm$0.0103
+& 0.5826$\pm$0.0124 \\
++ Measurement (full)
+& 0.6209$\pm$0.0183
+& 0.5493$\pm$0.0169
+& 0.4919$\pm$0.0159
+& 0.4465$\pm$0.0158
+& 0.3596$\pm$0.0103
+& 0.5826$\pm$0.0124 \\
+
+\midrule
+\rowcolor{gray!20}
+\multicolumn{7}{c}{\textbf{ZJH-TS Testset} ($n=150$)} \\
+Segmentation only
+& 0.0979$\pm$0.0153
+& 0.0813$\pm$0.0127
+& 0.0686$\pm$0.0108
+& 0.0579$\pm$0.0093
+& 0.1511$\pm$0.0073
+& 0.3371$\pm$0.0128 \\
++ Classification
+& 0.2516$\pm$0.0244
+& 0.2037$\pm$0.0195
+& 0.1686$\pm$0.0161
+& 0.1386$\pm$0.0135
+& 0.2081$\pm$0.0103
+& 0.4038$\pm$0.0136 \\
++ Captioning
+& 0.4171$\pm$0.0244
+& 0.3468$\pm$0.0212
+& 0.2937$\pm$0.0192
+& 0.2494$\pm$0.0176
+& 0.2888$\pm$0.0106
+& 0.4951$\pm$0.0145 \\
++ Measurement (full)
+& 0.5134$\pm$0.0210
+& 0.4201$\pm$0.0189
+& 0.3495$\pm$0.0175
+& 0.2942$\pm$0.0163
+& 0.3332$\pm$0.0106
+& 0.5529$\pm$0.0140 \\
+\bottomrule
+\end{tabular}
+
+\begin{tablenotes}[flushleft]
+\footnotesize
+\item The KMVE dataset retains only the findings section and does not provide original measurement values. To match the original evaluation protocol, only the generated findings section was evaluated and measurement values were masked; therefore, the captioning and full configurations have identical KMVE scores.
+\end{tablenotes}
+
+\end{threeparttable}
+\end{table*}
+
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{imgs/ExperimentForThyClinScore.pdf}
-    \caption{Validation of ThyClinScore for thyroid ultrasound report generation.
-    \textbf{a}, Pearson correlation matrix comparing conventional natural-language generation metrics with the proposed clinical semantic metrics. Traditional overlap-based metrics showed high mutual correlations, whereas the clinical semantic metrics captured complementary report-quality dimensions.
-    \textbf{b}, Pearson correlations between each metric and a location-aware GPT-5 judge. ThyClinScore achieved the highest correlation among the evaluated metrics. Asterisks indicate statistical significance: * \(p<0.05\), ** \(p<0.01\), and *** \(p<0.001\).}
-    \label{fig:experiment_for_thyclinscore}
+    \includegraphics[width=\textwidth]{imgs_sup/RG_CaseReview.pdf}
+    \caption{Additional qualitative examples of thyroid ultrasound report generation. Representative benign and malignant cases compare reports generated by Qwen 3.5, GPT-5 and ThyroidXAgent with the ground-truth reports, with clinically correct, partially correct and incorrect statements highlighted. The malignant case corresponds to the example shown in Fig.~\ref{fig:reader_study}b, whereas the benign case provides an additional complementary example.}
+    \label{fig:RG_CaseReview}
 \end{figure}
 
 \begin{figure}[htbp]
