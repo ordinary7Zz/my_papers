@@ -145,6 +145,7 @@ This reuse enabled rapid adaptation to new clinical questions, generating task-s
 The explanatory profiles also changed with the clinical task (Fig.~\ref{fig:ThyroidXAgent_Malignant_Image_tasks}a,c--f). LNM prediction relied more on lymph-node position and size features, including distance to the thyroid capsule and lesion area. FTC/PTC subtype classification relied more on texture heterogeneity and shape descriptors. These task-dependent attribution patterns indicate that ThyroidXAgent generated new radiomic insight according to the requested clinical question, rather than reusing the benign--malignant decision rule.
 
 
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{imgs/ThyClinScore.pdf}
@@ -1590,7 +1591,7 @@ Segmentation only
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{imgs_sup/BM_Case_Counts.pdf}
-    \caption{Benign and malignant case counts across thyroid ultrasound datasets. Bar plots show the numbers of benign and malignant cases in TN3K, TN5K, ThyroidXL, DDTI and ZJH-2K. The y axis is logarithmic. Dataset size and class balance vary substantially across cohorts.}
+    \caption{Benign and malignant case counts across thyroid ultrasound datasets. Bar plots show the numbers of benign and malignant images in TN3K, TN5K, ThyroidXL, DDTI and ZJH-2K. The y axis is logarithmic. Dataset size and class balance vary substantially across cohorts.}
     \label{fig:BM_Case_Counts}
 \end{figure}
 
@@ -1755,6 +1756,19 @@ dataset3
 \end{threeparttable}
 \end{table*}
 
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{imgs_sup/ReportGenAgent1.pdf}
+    \caption{Interpretable perception, planning and execution in the ThyroidXAgent report-generation skill. \textbf{a}, Agent visual perception of case-level multi-view thyroid ultrasound inputs, showing image selection, anatomical-region recognition and organization of image-context priors. \textbf{b}, Explainable planning within the report-generation skill, in which preprocessing outputs, skill instructions and workflow objectives are converted into a staged diagnostic plan for review and approval. \textbf{c}, Explainable execution after plan approval, showing internal tool calls, intermediate outputs, evidence collection and progression from the approved plan to a reviewable report.}
+    \label{fig:report_generation_agent_trace}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{imgs_sup/ReportGenAgent2.pdf}
+    \caption{Interfaces supporting clinician review and self-evolving report generation. \textbf{a}, Report Review Dashboard displaying the generated report alongside source images, structured evidence and tool traces, enabling clinicians to inspect and edit report statements. \textbf{b}, OpenThyroidDB interface for organizing case-level agent outputs, clinician-reviewed results and reusable expert feedback. \textbf{c}, Extensible template-bank interface for selecting existing report generators or importing a new report corpus. Guided by generic template-construction scripts, the agent writes dataset-specific construction code to derive a template bank for the new data, supporting continual adaptation of the reporting workflow as additional report data become available.}
+    \label{fig:report_generation_review_evolution}
+\end{figure}
 
 \end{appendices}
 
