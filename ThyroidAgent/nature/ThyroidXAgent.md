@@ -105,9 +105,13 @@ We evaluate this workflow across nodule segmentation, benign--malignant classifi
 
 We developed ThyroidXAgent to organize thyroid ultrasound diagnosis as a case-level evidence workflow (Fig.~\ref{fig:introduction_overview}). For each examination, the agent routes the case through tool-callable steps, including nodule segmentation, measurement, benign--malignant classification, radiomics extraction, malignant-lesion stratification and report generation. The workflow stores tool outputs in a shared evidence record that can be inspected, corrected and reused across downstream tasks.
 
-OpenThyroidDB provides the multicenter data resource for this workflow-level formulation. For segmentation and classification, the image-analysis benchmark integrates seven public and institutional ultrasound sources comprising 32,472 images, including 18,277 training images, 850 validation images and 13,345 test images, with independent external cohorts for classification (DDTI), segmentation (RJH-7K) and both segmentation and classification (ZJH-2K) (Supplementary Table~\ref{tab:dataset_summary}). The public report-generation dataset KMVE~\cite{li_ultrasound_2024} comprised 2,474 reports and 15,921 associated images, with 492 reports retained for testing. We further contributed SMU-HMC, comprising 23,955 reports and 248,194 images with 400 test reports, and ZJH-TS, comprising 353 reports and 4,471 images with 150 test reports. The contributed TNVideo cohort comprised 148 case-level ultrasound videos, of which 145 had annotation-derived diagnostic labels for the human--AI cooperative report-generation study. Together, these resources cover heterogeneous acquisition settings, file formats, annotation types and clinical tasks, including nodule segmentation, benign--malignant classification, report generation and advanced malignant-lesion analysis (Fig.~\ref{fig:introduction_overview}a and Supplementary Table~\ref{tab:dataset_comparison}).
+OpenThyroidDB provides the multicenter data resource underlying this workflow-level formulation. The segmentation and classification analyses included seven cohorts from six clinical centres across China, Vietnam and Colombia, acquired on at least eight ultrasound platforms (Supplementary Table~\ref{tab:dataset_summary}). Four cohorts served as internal training data. TN3K~\cite{gong2021multi}, collected at Zhujiang Hospital, Southern Medical University, Guangzhou, comprised 4,633 training, 100 validation and 614 test images acquired on GE Logiq E9, ARIETTA 850 and RESONA 70B scanners. TN5K~\cite{zhang2025tn5000}, from the Cancer Hospital, Chinese Academy of Medical Sciences, Beijing, comprised 3,500 training, 500 validation and 1,000 test images acquired on GE Logiq E9 and GE S7 scanners with 5--12 or 8--15~MHz probes. ThyroidXL~\cite{duong2025thyroidxl}, from the Vietnam National Hospital of Endocrinology, Hanoi, comprised 9,441 training, 100 validation and 2,090 test images acquired on a Hitachi Aloka Arietta V70 scanner. PKTN~\cite{sun2025clip}, from Peking University First Hospital, Beijing, comprised 703 training, 150 validation and 150 test images; the acquisition device was not disclosed. Three cohorts provided independent external test sets. DDTI~\cite{pedraza2015open}, from IDIME, Bogot\'{a}, Colombia, contributed 349 classification-only images acquired on TOSHIBA Nemio 30 and Nemio MX scanners with a 12~MHz probe. RJH-7K~\cite{shusharina2021segmentation}, from Ruijin Hospital, Shanghai Jiao Tong University School of Medicine, Shanghai, contributed 7,288 segmentation-only images acquired on multiple scanners whose models were not specified. ZJH-8K, collected at Zhujiang Hospital, Southern Medical University, Guangzhou, contributed 8,030 images (426 benign cases with 3,238 images and 723 malignant cases with 4,792 images) used for both segmentation and classification; the acquisition device was not disclosed. Overall, the segmentation and classification benchmark comprised 38,648 images (18,277 training, 850 validation, 19,521 test) from seven cohorts spanning six centres.
 
-Using this resource, ThyroidXAgent coordinates four evidence-producing workflow branches: expert-refined nodule segmentation, clinician-verified malignancy classification, expert-edited report generation and advanced diagnosis for lateral lymph-node metastasis and PTC/FTC subtype analysis (Fig.~\ref{fig:introduction_overview}b,c). Each branch contributes structured evidence to the same case-level record, including masks, measurements, class probabilities, radiomic descriptors, feature attributions, uncertainty signals and report clauses. This design allows intermediate outputs to be reused across tasks. A corrected mask can support radiomics extraction, a malignancy estimate can inform the report impression, and structured report evidence can be reviewed and edited rather than accepted as opaque text.
+The report-generation analyses included four cohorts from three centers. SMU-HMC comprised 23,955 reports from 21,954 patients, with 248,194 associated ultrasound images. A patient-level held-out set of 400 patients, comprising 5,984 images, was reserved for internal testing. After excluding all examinations from these internally held-out patients, the remaining SMU-HMC cohort was used to develop the relevant component models, and 7,147 quality-controlled reports were selected to construct the retrieval template library. The KMVE analysis cohort~\cite{li_ultrasound_2024} comprised 2,457 cases and 4,914 image assignments, partitioned according to the original dataset split into 1,719 training, 246 validation and 492 test cases; its training partition was additionally used for template-library construction. External evaluation included two complementary cohorts. ZJH-TS provided an independent external-center test set of 150 reports selected from the original collection of 353 reports, after excluding reports dominated by postoperative findings. TNVideo provided an independently assembled case-level cohort for the external reader study, comprising 148 ultrasound examinations, of which 145 had annotation-derived diagnostic labels. Overall, the report-generation analyses comprised four cohorts from three centers, including an internal SMU-HMC test set, an independent external-center test set and an external reader-study cohort.
+
+For malignant-lesion stratification, the 4,792 malignant images from ZJH-8K served as the primary training set, of which 20 cases (183 images) were held out for validation. For lateral lymph-node metastasis (LNM) prediction, 180 images from LymphUs Center~1 were additionally included as training data, and the 158 images from LymphUs Center~2 served as the independent external test set. For follicular (FTC) versus papillary (PTC) thyroid carcinoma subtype classification, the 200 public images released by Dai \textit{et al.}~\cite{dai2025improving} served as the external test set. Within the ZJH-8K malignant cohort, 533 cases (3,419 images) were classified as CN0 and 190 cases (1,375 images) as CN1 for lymph-node status, and 656 cases (4,340 images) were classic PTC and 67 cases (454 images) were follicular variant for subtype.
+
+Collectively, these resources cover heterogeneous acquisition settings, file formats, annotation types and clinical tasks, including nodule segmentation, benign--malignant classification, report generation and advanced malignant-lesion analysis (Fig.~\ref{fig:introduction_overview}a and Supplementary Table~\ref{tab:dataset_comparison}). Using this resource, ThyroidXAgent coordinates four evidence-producing workflow branches: expert-refined nodule segmentation, clinician-verified malignancy classification, expert-edited report generation and advanced diagnosis for lateral lymph-node metastasis and PTC/FTC subtype analysis (Fig.~\ref{fig:introduction_overview}b,c). Each branch contributes structured evidence to the same case-level record, including masks, measurements, class probabilities, radiomic descriptors, feature attributions, uncertainty signals and report clauses. This design allows intermediate outputs to be reused across tasks. A corrected mask can support radiomics extraction, a malignancy estimate can inform the report impression, and structured report evidence can be reviewed and edited rather than accepted as opaque text.
 
 The resulting workflow makes auditability a property of the diagnostic process rather than a post hoc explanation attached to a final answer. Clinicians can inspect generated masks, correct segmentation errors, review SHAP- or Grad-CAM-based explanations, edit report statements and return corrected outputs to the evidence store. The subsequent results evaluate this formulation across automatic image analysis, clinician correction, malignant-lesion stratification, clinical semantic report scoring and evidence-grounded report assembly.
 
@@ -115,9 +119,9 @@ The resulting workflow makes auditability a property of the diagnostic process r
 
 We first evaluated the two image-analysis tasks that anchor the downstream workflow: nodule segmentation and benign--malignant classification. For each case, ThyroidXAgent collected candidate masks and class probabilities from DINOv3-based experts, selected or fused outputs using case-level quality signals, extracted radiomic features from the selected lesion mask and stored confidence, disagreement and tabular predictions as structured evidence (Supplementary Fig.~\ref{fig:ThyroidXAgent_for_seg_and_cls}). This design tests whether tool routing and evidence consolidation improve robustness across heterogeneous ultrasound datasets, where dataset bias remains a major source of performance degradation~\cite{liu2024decade}.
 
-On six segmentation test sets, including the independent RJH-7K and ZJH-2K cohorts, ThyroidXAgent achieved a mean Dice coefficient of 87.48\% and a mean 95th-percentile Hausdorff distance (HD95) of 6.51~mm (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}b,c and Supplementary Table~\ref{tab:seg_performance}). It obtained the highest Dice score on five of six test sets and the lowest HD95 on all test sets, indicating improved boundary robustness across heterogeneous acquisition conditions. The strongest baseline, MedSAM2~\cite{ma2025medsam2}, achieved a mean Dice of 85.82\%, with the largest gap on the external ZJH-2K cohort (86.29\% versus 94.30\% for ThyroidXAgent). UltraFedFM~\cite{jiang2025pretraining}, a medical imaging foundation model, reached 80.34\%.
+On six segmentation test sets, including the independent RJH-7K and ZJH-8K cohorts, ThyroidXAgent achieved a mean Dice coefficient of 87.48\% and a mean 95th-percentile Hausdorff distance (HD95) of 6.51~mm (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}b,c and Supplementary Table~\ref{tab:seg_performance}). It obtained the highest Dice score on five of six test sets and the lowest HD95 on all test sets, indicating improved boundary robustness across heterogeneous acquisition conditions. The strongest baseline, MedSAM2~\cite{ma2025medsam2}, achieved a mean Dice of 85.82\%, with the largest gap on the external ZJH-8K cohort (86.29\% versus 94.30\% for ThyroidXAgent). UltraFedFM~\cite{jiang2025pretraining}, a medical imaging foundation model, reached 80.34\%.
 
-For benign--malignant classification, ThyroidXAgent achieved a mean AUROC of 0.9466 and a mean AUPRC of 0.8361 across five test sets, including the independent DDTI and ZJH-2K cohorts (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}d,e and Supplementary Table~\ref{tab:cls_performance}). Specialized image models showed weaker cross-dataset consistency; for example, RepViT~\cite{wang2023repvit} reached AUROC of 0.777 on ThyroidXL but 0.556 on TN3K. General-purpose vision-language models~\cite{dong2022survey} also underperformed; GPT-5~\cite{openai2025gpt5systemcard} reached AUROC of 0.611--0.774 across test sets, and Gemini-2.5-Pro~\cite{comanici_gemini_2025} reached 0.616--0.687 (Supplementary Table~\ref{tab:cls_performance}). These results support a division of labour in which domain-specific image and radiomics tools generate the evidence, while the agent routes and consolidates tool outputs.
+For benign--malignant classification, ThyroidXAgent achieved a mean AUROC of 0.9466 and a mean AUPRC of 0.8361 across five test sets, including the independent DDTI and ZJH-8K cohorts (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}d,e and Supplementary Table~\ref{tab:cls_performance}). Specialized image models showed weaker cross-dataset consistency; for example, RepViT~\cite{wang2023repvit} reached AUROC of 0.777 on ThyroidXL but 0.556 on TN3K. General-purpose vision-language models~\cite{dong2022survey} also underperformed; GPT-5~\cite{openai2025gpt5systemcard} reached AUROC of 0.611--0.774 across test sets, and Gemini-2.5-Pro~\cite{comanici_gemini_2025} reached 0.616--0.687 (Supplementary Table~\ref{tab:cls_performance}). These results support a division of labour in which domain-specific image and radiomics tools generate the evidence, while the agent routes and consolidates tool outputs.
 
 Beyond prediction accuracy, we examined whether the structured evidence provided interpretable signals for clinician review. Cohort-level SHAP profiles~\cite{lundberg2017unified} showed that morphology-related radiomic descriptors, especially Sphericity and Elongation, dominated benign--malignant classification, whereas texture and intensity features contributed complementary information (Fig.~\ref{fig:ThyroidXAgent_SegCls_performance}f). Representative cases confirmed that accurate segmentation produced SHAP attributions and Grad-CAM maps aligned with visible nodule characteristics, whereas poor segmentation degraded these explanations (Supplementary Fig.~\ref{fig:BM_cases}).
 
@@ -141,7 +145,7 @@ AI assistance reduced mean segmentation time from 14.21~s to 9.11~s per image, a
 
 We next tested whether the shared ThyroidXAgent tools could be redirected to clinically distinct malignant-lesion stratification tasks after the primary thyroid nodule assessment. Lateral lymph-node metastasis (LNM) prediction informs surgical planning, whereas follicular (FTC) versus papillary (PTC) thyroid carcinoma subtype discrimination informs treatment strategy and follow-up. In a conventional development pipeline, each task would require a separate workflow for preprocessing, feature extraction, prediction, interpretation and reporting. In ThyroidXAgent, the segmentation, radiomics extraction, tabular classification and routing logic were reused, with task-specific classifier fine-tuning and task instructions changed.
 
-This reuse enabled rapid adaptation to new clinical questions while preserving the same evidence structure. ThyroidXAgent achieved AUROC of 0.864 for LNM prediction (338 images from two centers) and 0.805 for FTC/PTC subtype classification (696 images) (Fig.~\ref{fig:ThyroidXAgent_Malignant_Image_tasks}b and Supplementary Table~\ref{tab:Malignant_images_tasks_performance}), outperforming the specialist baselines LLNM-Net~\cite{Shen2025NatCommunLLNM} (0.767) for LNM and Tiger-Model~\cite{Dai2025NatCommunThyroidSubtype} (0.714) for FTC/PTC.
+This reuse enabled rapid adaptation to new clinical questions while preserving the same evidence structure. ThyroidXAgent achieved AUROC of 0.864 for LNM prediction on the 158-image LymphUs Center~2 test set and 0.805 for FTC/PTC subtype classification on the 200-image Dai \textit{et al.} test set~\cite{dai2025improving} (Fig.~\ref{fig:ThyroidXAgent_Malignant_Image_tasks}b and Supplementary Table~\ref{tab:Malignant_images_tasks_performance}), outperforming the specialist baselines LLNM-Net~\cite{Shen2025NatCommunLLNM} (0.767) for LNM and Tiger-Model~\cite{Dai2025NatCommunThyroidSubtype} (0.714) for FTC/PTC.
 
 The attribution profiles changed with the clinical task (Fig.~\ref{fig:ThyroidXAgent_Malignant_Image_tasks}a,c--f). LNM prediction relied more on lymph-node position and size features, including distance to the thyroid capsule and lesion area. FTC/PTC subtype classification relied more on texture heterogeneity and shape descriptors. These task-dependent attribution patterns indicate that ThyroidXAgent generated radiomic evidence according to the requested clinical question, rather than simply reusing the benign--malignant decision rule.
 
@@ -203,9 +207,9 @@ Several limitations remain. The evaluations are retrospective, and although mult
 \section{Methods}
 
 \subsection{Datasets and task definitions}
-For image segmentation and benign--malignant classification, OpenThyroidDB integrates seven public and institutional ultrasound sources comprising 32,472 images (18,277 training, 850 validation, 13,345 test; Supplementary Table~\ref{tab:dataset_summary}). TN3K~\cite{gong2021multi}, TN5K~\cite{zhang2025tn5000}, ThyroidXL~\cite{duong2025thyroidxl} and PKTN~\cite{sun2025clip} served as internal cohorts for nodule segmentation training; TN3K, TN5K and ThyroidXL additionally provided benign--malignant classification labels. DDTI~\cite{pedraza2015open}, RJH-7K~\cite{shusharina2021segmentation} and ZJH-2K (collected at Zhujiang Hospital, Southern Medical University) served as independent external test sets: DDTI for classification, RJH-7K for segmentation, and ZJH-2K for both tasks. To construct the expert pool, we merged training portions across datasets into stacked training sets, with the largest containing 18,277 images.
+For image segmentation and benign--malignant classification, OpenThyroidDB integrates seven public and institutional ultrasound sources comprising 38,648 images (18,277 training, 850 validation, 19,521 test; Supplementary Table~\ref{tab:dataset_summary}). TN3K~\cite{gong2021multi}, TN5K~\cite{zhang2025tn5000}, ThyroidXL~\cite{duong2025thyroidxl} and PKTN~\cite{sun2025clip} served as internal cohorts for nodule segmentation training; TN3K, TN5K and ThyroidXL additionally provided benign--malignant classification labels. DDTI~\cite{pedraza2015open}, RJH-7K~\cite{shusharina2021segmentation} and ZJH-8K (collected at Zhujiang Hospital, Southern Medical University) served as independent external test sets: DDTI for classification, RJH-7K for segmentation, and ZJH-8K for both tasks. To construct the expert pool, we merged training portions across datasets into stacked training sets, with the largest containing 18,277 images.
 
-Two additional datasets were used for malignant-lesion stratification. The LNM dataset comprised 338 cervical lymph-node ultrasound images from a multicenter open-access database of patients with histologically confirmed papillary thyroid carcinoma, with binary labels indicating lateral lymph-node metastasis confirmed by fine-needle aspiration biopsy. The FTC/PTC subtype dataset combined 200 public images released by Dai \textit{et al.}~\cite{dai2025improving} with 496 institutional images, yielding 696 images in total. Public subtype labels were provided with the dataset; institutional labels were confirmed by post-surgical histopathology.
+Two additional datasets were used for malignant-lesion stratification. The primary training data comprised the 4,792 malignant images from ZJH-8K, of which 20 cases (183 images) were held out for validation. For lateral lymph-node metastasis (LNM) prediction, 180 images from LymphUs Center~1~\cite{mohammadi2026lymphus,abbasian2023diagnosis} were additionally included as training data, and the 158 images from LymphUs Center~2 served as the independent external test set. LymphUs is a multicenter open-access database of patients with histologically confirmed papillary thyroid carcinoma, with binary labels indicating lateral lymph-node metastasis confirmed by fine-needle aspiration biopsy. Images were acquired at two clinical centres using different ultrasound platforms: Center~1 used a Samsung Medison RS80 scanner (Samsung Medison, Seoul, Korea) with a 5--12~MHz L5--12/60 linear array transducer, and Center~2 used a SuperSonic Imagine AixPlorer Ultimate scanner (SuperSonic Imagine, Aix-en-Provence, France) with a 4--15~MHz SL15--4 linear array transducer. For follicular (FTC) versus papillary (PTC) thyroid carcinoma subtype classification, the 200 public images released by Dai \textit{et al.}~\cite{dai2025improving} served as the external test set. Within the ZJH-8K malignant cohort, 533 cases (3,419 images) were classified as CN0 and 190 cases (1,375 images) as CN1 for lymph-node status, and 656 cases (4,340 images) were classic PTC and 67 cases (454 images) were follicular variant for subtype. Institutional labels were confirmed by post-surgical histopathology.
 
 \subsection{Agent workflow controller and evidence store}
 ThyroidXAgent decomposes each case into tool calls and structured intermediate outputs. The workflow contains an expert pool for image segmentation and classification, a radiomics branch, a tabular prediction branch, post hoc explanation modules, anatomical-context parsers, measurement tools and report-generation modules. The LLM router operates on structured summaries rather than raw ultrasound images. During inference, it receives candidate masks, class probabilities, confidence estimates, radiomic descriptors and metadata such as image resolution, device and data source. It emits a strict JSON decision that records the selected output, supporting evidence and uncertainty signals. These outputs are normalized into a case-level evidence store containing masks, measurements, class probabilities, radiomic descriptors, explanation objects, warnings and report clauses. The evidence store is used for final prediction, report assembly and clinician review, and clinician corrections can be written back to the same record for subsequent use.
@@ -372,7 +376,7 @@ H.G., S.C., B.W., Y.W., F.C. and G.L. conceived the study. H.G., S.C., B.W., Y.W
 \begin{figure}[p]
     \centering
     \includegraphics[width=\textwidth,height=0.72\textheight,keepaspectratio]{imgs_sup/BM_Case_Counts.pdf}
-    \caption{Class distributions across thyroid ultrasound datasets. Bars show the numbers of benign and malignant images in TN3K, TN5K, ThyroidXL, DDTI and ZJH-2K on a logarithmic y axis, illustrating variation in cohort size and class balance.}
+    \caption{Class distributions across thyroid ultrasound datasets. Bars show the numbers of benign and malignant images in TN3K, TN5K, ThyroidXL, DDTI and ZJH-8K on a logarithmic y axis, illustrating variation in cohort size and class balance.}
     \label{fig:BM_Case_Counts}
 \end{figure}
 \clearpage
@@ -414,29 +418,34 @@ H.G., S.C., B.W., Y.W., F.C. and G.L. conceived the study. H.G., S.C., B.W., Y.W
 % ================================================================
 \begin{table}[p]
 \centering
-\caption{Composition of the multicentre thyroid ultrasound benchmark. Numbers and percentages show the images contributed by each dataset to the full benchmark (n=32{,}472) and to the training (n=18{,}277), validation (n=850) and test (n=13{,}345) cohorts. DDTI, RJH-7K and ZJH-2K are independent external test cohorts.}
+\caption{Composition of the multicentre thyroid ultrasound benchmark. Numbers and percentages show the images contributed by each dataset to the full benchmark (n=38{,}648) and to the training (n=18{,}277), validation (n=850) and test (n=19{,}521) cohorts. DDTI, RJH-7K and ZJH-8K are independent external test cohorts.}
 \label{tab:dataset_summary}
 \renewcommand{\arraystretch}{1.2}
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{lccccc}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllcccc}
 \toprule
 \textbf{Dataset} &
 \textbf{Task} &
-\textbf{Total (n=32{,}472)} &
-\makecell[c]{\textbf{Train}\\\textbf{(n=18{,}277)}} &
-\makecell[c]{\textbf{Valid}\\\textbf{(n=850)}} &
-\makecell[c]{\textbf{Test}\\\textbf{(n=13{,}345)}} \\
+\textbf{Center} &
+\textbf{Ultrasound device} &
+\textbf{Total} &
+\makecell[c]{\textbf{Train}} &
+\makecell[c]{\textbf{Valid}} &
+\makecell[c]{\textbf{Test}} \\
 \midrule
-TN3K~\cite{gong2021multi} & \makecell[c]{Segmentation,\\Classification} & 5{,}347 (16.47\%) & 4{,}633 (25.35\%) & 100 (11.76\%) & 614 (4.60\%) \\
-TN5K~\cite{zhang2025tn5000} & \makecell[c]{Segmentation,\\Classification} & 5{,}000 (15.40\%) & 3{,}500 (19.15\%) & 500 (58.82\%) & 1{,}000 (7.50\%) \\
-ThyroidXL~\cite{duong2025thyroidxl} & \makecell[c]{Segmentation,\\Classification} & 11{,}631 (35.82\%) & 9{,}441 (51.66\%) & 100 (11.76\%) & 2{,}090 (15.66\%) \\
-PKTN~\cite{sun2025clip} & Segmentation & 1{,}003 (3.09\%) & 703 (3.85\%) & 150 (17.65\%) & 150 (1.12\%) \\
+TN3K~\cite{gong2021multi} & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Zhujiang Hospital,\\Southern Medical\\University, Guangzhou,\\China} & \makecell[l]{GE Logiq E9,\\ARIETTA 850,\\RESONA 70B} & 5{,}347 (13.84\%) & 4{,}633 (25.35\%) & 100 (11.76\%) & 614 (3.15\%) \\
+TN5K~\cite{zhang2025tn5000} & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Cancer Hospital,\\Chinese Academy of\\Medical Sciences,\\Beijing, China} & \makecell[l]{GE Logiq E9,\\GE S7 (5--12 MHz\\or 8--15 MHz)} & 5{,}000 (12.94\%) & 3{,}500 (19.15\%) & 500 (58.82\%) & 1{,}000 (5.12\%) \\
+ThyroidXL~\cite{duong2025thyroidxl} & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Vietnam National\\Hospital of\\Endocrinology,\\Hanoi, Vietnam} & Hitachi Aloka Arietta V70 & 11{,}631 (30.09\%) & 9{,}441 (51.66\%) & 100 (11.76\%) & 2{,}090 (10.71\%) \\
+PKTN~\cite{sun2025clip} & Segmentation & \makecell[l]{Peking University\\First Hospital,\\Beijing, China} & --- & 1{,}003 (2.59\%) & 703 (3.85\%) & 150 (17.65\%) & 150 (0.77\%) \\
 \midrule
-DDTI~\cite{pedraza2015open} & Classification & 349 (1.07\%) & --- & --- & 349 (2.62\%) \\
-RJH-7K~\cite{shusharina2021segmentation} & Segmentation & 7{,}288 (22.45\%) & --- & --- & 7{,}288 (54.64\%) \\
-ZJH-2K & \makecell[c]{Segmentation,\\Classification} & 1{,}854 (5.71\%) & --- & --- & 1{,}854 (13.89\%) \\
+DDTI~\cite{pedraza2015open} & Classification & \makecell[l]{IDIME,\\Bogot\'{a}, Colombia} & \makecell[l]{TOSHIBA Nemio 30,\\TOSHIBA Nemio MX\\(12 MHz probe)} & 349 (0.90\%) & --- & --- & 349 (1.79\%) \\
+RJH-7K~\cite{shusharina2021segmentation} & Segmentation & \makecell[l]{Ruijin Hospital,\\Shanghai Jiao Tong\\University School of\\Medicine, Shanghai,\\China} & \makecell[l]{Different machines,\\not specified} & 7{,}288 (18.86\%) & --- & --- & 7{,}288 (37.33\%) \\
+ZJH-8K & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Zhujiang Hospital,\\Southern Medical\\University, Guangzhou,\\China} & --- & 8{,}030 (20.78\%) & --- & --- & 8{,}030 (41.14\%) \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 \clearpage
 
@@ -555,7 +564,7 @@ N/A \\
 & \textbf{ThyroidXL}
 & \textbf{PKTN}
 & \textbf{TN5K}
-& \textbf{ZJH-2K}
+& \textbf{ZJH-8K}
 & \textbf{RJH-7K} \\
 \midrule
 TransUnet~\cite{chen2024transunet}
@@ -657,7 +666,7 @@ UltraFedFM~\cite{jiang2025pretraining}
 & \textbf{ThyroidXL}
 & \textbf{TN5K}
 & \textbf{DDTI}
-& \textbf{ZJH-2K} \\
+& \textbf{ZJH-8K} \\
 \midrule
 ResNet-50~\cite{he2016deep}
 & $0.7674 \pm 0.0394$
@@ -1689,7 +1698,7 @@ Segmentation only
 & \textbf{ThyroidXL}
 & \textbf{PKTN}
 & \textbf{TN5K}
-& \textbf{ZJH-2K}
+& \textbf{ZJH-8K}
 & \textbf{RJH-7K} \\
 \midrule
 dataset1
@@ -1775,7 +1784,7 @@ dataset4
 & \textbf{ThyroidXL}
 & \textbf{TN5K}
 & \textbf{DDTI}
-& \textbf{ZJH-2K} \\
+& \textbf{ZJH-8K} \\
 \midrule
 dataset1
 & 0.7666 $\pm$ 0.03
