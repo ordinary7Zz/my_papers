@@ -106,11 +106,11 @@ We evaluate this workflow across nodule segmentation, benign--malignant classifi
 
 We developed ThyroidXAgent to organize thyroid ultrasound diagnosis as a case-level evidence workflow (Fig.~\ref{fig:introduction_overview}). For each examination, the agent routes the case through tool-callable steps, including nodule segmentation, measurement, benign--malignant classification, radiomics extraction, malignant-lesion stratification and report generation. The workflow stores tool outputs in a shared evidence record that can be inspected, corrected and reused across downstream tasks.
 
-OpenThyroidDB provides the multicenter data resource underlying this workflow-level formulation. The segmentation and classification analyses included seven cohorts from six clinical centres across China, Vietnam and Colombia, acquired on at least eight ultrasound platforms (Supplementary Table~\ref{tab:dataset_summary}). Four cohorts served as internal training data. TN3K~\cite{gong2021multi}, collected at Zhujiang Hospital, Southern Medical University, Guangzhou, comprised 4,633 training, 100 validation and 614 test images acquired on GE Logiq E9, ARIETTA 850 and RESONA 70B scanners. TN5K~\cite{zhang2025tn5000}, from the Cancer Hospital, Chinese Academy of Medical Sciences, Beijing, comprised 3,500 training, 500 validation and 1,000 test images acquired on GE Logiq E9 and GE S7 scanners with 5--12 or 8--15~MHz probes. ThyroidXL~\cite{duong2025thyroidxl}, from the Vietnam National Hospital of Endocrinology, Hanoi, comprised 9,441 training, 100 validation and 2,090 test images acquired on a Hitachi Aloka Arietta V70 scanner. PKTN~\cite{sun2025clip}, from Peking University First Hospital, Beijing, comprised 703 training, 150 validation and 150 test images; the acquisition device was not disclosed. Three cohorts provided independent external test sets. DDTI~\cite{pedraza2015open}, from IDIME, Bogot\'{a}, Colombia, contributed 349 classification-only images acquired on TOSHIBA Nemio 30 and Nemio MX scanners with a 12~MHz probe. RJH-7K~\cite{shusharina2021segmentation}, from Ruijin Hospital, Shanghai Jiao Tong University School of Medicine, Shanghai, contributed 7,288 segmentation-only images acquired on multiple scanners whose models were not specified. ZJH-8K, collected at Zhujiang Hospital, Southern Medical University, Guangzhou, contributed 8,030 images (426 benign cases with 3,238 images and 723 malignant cases with 4,792 images) used for both segmentation and classification; the acquisition device was not disclosed. Overall, the segmentation and classification benchmark comprised 38,648 images (18,277 training, 850 validation, 19,521 test) from seven cohorts spanning six centres.
+OpenThyroidDB provides the multicenter data resource underlying this workflow-level formulation. The segmentation and classification analyses included seven cohorts from six clinical centres across China, Vietnam and Colombia, acquired on at least eight ultrasound platforms (Supplementary Table~\ref{tab:dataset_summary}). Four cohorts served as internal training data. TN3K~\cite{gong2021multi}, collected at Zhujiang Hospital, Southern Medical University, Guangzhou, comprised 4,633 training, 100 validation and 614 test images acquired on GE Logiq E9, ARIETTA 850 and RESONA 70B scanners. TN5K~\cite{zhang2025tn5000}, from the Cancer Hospital, Chinese Academy of Medical Sciences, Beijing, comprised 3,500 training, 500 validation and 1,000 test images acquired on GE Logiq E9 and GE S7 scanners with 5--12 or 8--15~MHz probes. ThyroidXL~\cite{duong2025thyroidxl}, from the Vietnam National Hospital of Endocrinology, Hanoi, comprised 9,441 training, 100 validation and 2,090 test images acquired on a Hitachi Aloka Arietta V70 scanner. PKTN~\cite{sun2025clip}, from Peking University First Hospital, Beijing, comprised 703 training, 150 validation and 150 test images; the acquisition device was not disclosed. Three cohorts provided independent external test sets. DDTI~\cite{pedraza2015open}, from IDIME, Bogot\'{a}, Colombia, contributed 349 classification-only images acquired on TOSHIBA Nemio 30 and Nemio MX scanners with a 12~MHz probe. RJH-7K~\cite{shusharina2021segmentation}, from Ruijin Hospital, Shanghai Jiao Tong University School of Medicine, Shanghai, contributed 7,288 segmentation-only images acquired on multiple scanners whose models were not specified. ZJH-8K, collected at Zhujiang Hospital, Southern Medical University, Guangzhou, contributed 7,958 images (426 benign cases with 3,202 images and 723 malignant cases with 4,756 images) used for both segmentation and classification; the acquisition device was not disclosed. Overall, the segmentation and classification benchmark comprised 38,576 images (18,277 training, 850 validation, 19,449 test) from seven cohorts spanning six centres.
 
 The report-generation analyses included four cohorts from three centers. SMU-HMC comprised 23,955 reports from 21,954 patients, with 248,194 associated ultrasound images. A patient-level held-out set of 400 patients, comprising 5,984 images, was reserved for internal testing. After excluding all examinations from these internally held-out patients, the remaining SMU-HMC cohort was used to develop the relevant component models, and 7,147 quality-controlled reports were selected to construct the retrieval template library. The KMVE analysis cohort~\cite{li_ultrasound_2024} comprised 2,457 cases and 4,914 image assignments, partitioned according to the original dataset split into 1,719 training, 246 validation and 492 test cases; its training partition was additionally used for template-library construction. External evaluation included two complementary cohorts. ZJH-TS provided an independent external-center test set of 150 reports selected from the original collection of 353 reports, after excluding reports dominated by postoperative findings. TNVideo provided an independently assembled case-level cohort for the external reader study, comprising 148 ultrasound examinations, of which 145 had annotation-derived diagnostic labels. Overall, the report-generation analyses comprised four cohorts from three centers, including an internal SMU-HMC test set, an independent external-center test set and an external reader-study cohort.
 
-For malignant-lesion stratification, the 4,792 malignant images from ZJH-8K served as the primary training set, of which 20 cases (183 images) were held out for validation. For lateral lymph-node metastasis (LNM) prediction, 180 images from LymphUs Center~1 were additionally included as training data, and the 158 images from LymphUs Center~2 served as the independent external test set. For follicular (FTC) versus papillary (PTC) thyroid carcinoma subtype classification, the 200 public images released by Dai \textit{et al.}~\cite{dai2025improving} served as the external test set. Within the ZJH-8K malignant cohort, 533 cases (3,419 images) were classified as CN0 and 190 cases (1,375 images) as CN1 for lymph-node status, and 656 cases (4,340 images) were classic PTC and 67 cases (454 images) were follicular variant for subtype.
+For malignant-lesion stratification, the 4,756 malignant images from ZJH-8K served as the primary training set, of which 20 cases (183 images) were held out for validation. For lateral lymph-node metastasis (LNM) prediction, 180 images from LymphUs Center~1 were additionally included as training data, and the 158 images from LymphUs Center~2 served as the independent external test set. For follicular (FTC) versus papillary (PTC) thyroid carcinoma subtype classification, the 200 public images released by Dai \textit{et al.}~\cite{dai2025improving} served as the external test set. Within the ZJH-8K malignant cohort, 533 cases (3,394 images) were classified as CN0 and 190 cases (1,362 images) as CN1 for lymph-node status, and 656 cases (4,312 images) were classic PTC and 67 cases (444 images) were follicular variant for subtype.
 
 Collectively, these resources cover heterogeneous acquisition settings, file formats, annotation types and clinical tasks, including nodule segmentation, benign--malignant classification, report generation and advanced malignant-lesion analysis (Fig.~\ref{fig:introduction_overview}a and Supplementary Table~\ref{tab:dataset_comparison}). Using this resource, ThyroidXAgent coordinates four evidence-producing workflow branches: expert-refined nodule segmentation, clinician-verified malignancy classification, expert-edited report generation and advanced diagnosis for lateral lymph-node metastasis and PTC/FTC subtype analysis (Fig.~\ref{fig:introduction_overview}b,c). Each branch contributes structured evidence to the same case-level record, including masks, measurements, class probabilities, radiomic descriptors, feature attributions, uncertainty signals and report clauses. This design allows intermediate outputs to be reused across tasks. A corrected mask can support radiomics extraction, a malignancy estimate can inform the report impression, and structured report evidence can be reviewed and edited rather than accepted as opaque text.
 
@@ -208,9 +208,9 @@ Several limitations remain. The evaluations are retrospective, and although mult
 \section{Methods}
 
 \subsection{Datasets and task definitions}
-For image segmentation and benign--malignant classification, OpenThyroidDB integrates seven public and institutional ultrasound sources comprising 38,648 images (18,277 training, 850 validation, 19,521 test; Supplementary Table~\ref{tab:dataset_summary}). TN3K~\cite{gong2021multi}, TN5K~\cite{zhang2025tn5000}, ThyroidXL~\cite{duong2025thyroidxl} and PKTN~\cite{sun2025clip} served as internal cohorts for nodule segmentation training; TN3K, TN5K and ThyroidXL additionally provided benign--malignant classification labels. DDTI~\cite{pedraza2015open}, RJH-7K~\cite{shusharina2021segmentation} and ZJH-8K (collected at Zhujiang Hospital, Southern Medical University) served as independent external test sets: DDTI for classification, RJH-7K for segmentation, and ZJH-8K for both tasks. To construct the expert pool, we merged training portions across datasets into stacked training sets, with the largest containing 18,277 images.
+For image segmentation and benign--malignant classification, OpenThyroidDB integrates seven public and institutional ultrasound sources comprising 38,576 images (18,277 training, 850 validation, 19,449 test; Supplementary Table~\ref{tab:dataset_summary}). TN3K~\cite{gong2021multi}, TN5K~\cite{zhang2025tn5000}, ThyroidXL~\cite{duong2025thyroidxl} and PKTN~\cite{sun2025clip} served as internal cohorts for nodule segmentation training; TN3K, TN5K and ThyroidXL additionally provided benign--malignant classification labels. DDTI~\cite{pedraza2015open}, RJH-7K~\cite{shusharina2021segmentation} and ZJH-8K (collected at Zhujiang Hospital, Southern Medical University) served as independent external test sets: DDTI for classification, RJH-7K for segmentation, and ZJH-8K for both tasks. To construct the expert pool, we merged training portions across datasets into stacked training sets, with the largest containing 18,277 images.
 
-Two additional datasets were used for malignant-lesion stratification. The primary training data comprised the 4,792 malignant images from ZJH-8K, of which 20 cases (183 images) were held out for validation. For lateral lymph-node metastasis (LNM) prediction, 180 images from LymphUs Center~1~\cite{mohammadi2026lymphus,abbasian2023diagnosis} were additionally included as training data, and the 158 images from LymphUs Center~2 served as the independent external test set. LymphUs is a multicenter open-access database of patients with histologically confirmed papillary thyroid carcinoma, with binary labels indicating lateral lymph-node metastasis confirmed by fine-needle aspiration biopsy. Images were acquired at two clinical centres using different ultrasound platforms: Center~1 used a Samsung Medison RS80 scanner (Samsung Medison, Seoul, Korea) with a 5--12~MHz L5--12/60 linear array transducer, and Center~2 used a SuperSonic Imagine AixPlorer Ultimate scanner (SuperSonic Imagine, Aix-en-Provence, France) with a 4--15~MHz SL15--4 linear array transducer. For follicular (FTC) versus papillary (PTC) thyroid carcinoma subtype classification, the 200 public images released by Dai \textit{et al.}~\cite{dai2025improving} served as the external test set. Within the ZJH-8K malignant cohort, 533 cases (3,419 images) were classified as CN0 and 190 cases (1,375 images) as CN1 for lymph-node status, and 656 cases (4,340 images) were classic PTC and 67 cases (454 images) were follicular variant for subtype. Institutional labels were confirmed by post-surgical histopathology.
+Two additional datasets were used for malignant-lesion stratification. The primary training data comprised the 4,756 malignant images from ZJH-8K, of which 20 cases (183 images) were held out for validation. For lateral lymph-node metastasis (LNM) prediction, 180 images from LymphUs Center~1~\cite{mohammadi2026lymphus,abbasian2023diagnosis} were additionally included as training data, and the 158 images from LymphUs Center~2 served as the independent external test set. LymphUs is a multicenter open-access database of patients with histologically confirmed papillary thyroid carcinoma, with binary labels indicating lateral lymph-node metastasis confirmed by fine-needle aspiration biopsy. Images were acquired at two clinical centres using different ultrasound platforms: Center~1 used a Samsung Medison RS80 scanner (Samsung Medison, Seoul, Korea) with a 5--12~MHz L5--12/60 linear array transducer, and Center~2 used a SuperSonic Imagine AixPlorer Ultimate scanner (SuperSonic Imagine, Aix-en-Provence, France) with a 4--15~MHz SL15--4 linear array transducer. For follicular (FTC) versus papillary (PTC) thyroid carcinoma subtype classification, the 200 public images released by Dai \textit{et al.}~\cite{dai2025improving} served as the external test set. Within the ZJH-8K malignant cohort, 533 cases (3,394 images) were classified as CN0 and 190 cases (1,362 images) as CN1 for lymph-node status, and 656 cases (4,312 images) were classic PTC and 67 cases (444 images) were follicular variant for subtype. Institutional labels were confirmed by post-surgical histopathology.
 
 \subsection{Agent workflow controller and evidence store}
 ThyroidXAgent decomposes each case into tool calls and structured intermediate outputs. The workflow contains an expert pool for image segmentation and classification, a radiomics branch, a tabular prediction branch, post hoc explanation modules, anatomical-context parsers, measurement tools and report-generation modules. The LLM router operates on structured summaries rather than raw ultrasound images. During inference, it receives candidate masks, class probabilities, confidence estimates, radiomic descriptors and metadata such as image resolution, device and data source. It emits a strict JSON decision that records the selected output, supporting evidence and uncertainty signals. These outputs are normalized into a case-level evidence store containing masks, measurements, class probabilities, radiomic descriptors, explanation objects, warnings and report clauses. The evidence store is used for final prediction, report assembly and clinician review, and clinician corrections can be written back to the same record for subsequent use.
@@ -352,9 +352,7 @@ H.G., S.C., B.W., Y.W., F.C. and G.L. conceived the study. H.G., S.C., B.W., Y.W
 \suppcontentsline{tab:report_generation_clinical_ci}{Table S8.}{Clinical semantic performance for thyroid ultrasound reporting}
 \suppcontentsline{tab:static_rule_controller_radar_metrics}{Table S9.}{Static-pipeline performance used in report-generation radar plots}
 \suppcontentsline{tab:report_generation_tool_ablation}{Table S10.}{Ablation of agent--tool integration for report generation}
-\suppcontentsline{tab:stacked_seg_performance}{Table S11.}{Effect of cumulative training-data integration on segmentation}
-\suppcontentsline{tab:stacked_cls_performance}{Table S12.}{Effect of cumulative training-data integration on classification}
-\suppcontentsline{tab:stacked_performance}{Table S13.}{Combined view of cumulative training-data integration for segmentation and classification}
+\suppcontentsline{tab:stacked_performance}{Table S11.}{Effect of cumulative training-data integration on segmentation and classification}
 
 
 % ================================================================
@@ -422,7 +420,7 @@ H.G., S.C., B.W., Y.W., F.C. and G.L. conceived the study. H.G., S.C., B.W., Y.W
 % ================================================================
 \begin{table}[p]
 \centering
-\caption{Composition of the multicentre thyroid ultrasound benchmark. Numbers and percentages show the images contributed by each dataset to the full benchmark (n=38{,}648) and to the training (n=18{,}277), validation (n=850) and test (n=19{,}521) cohorts. DDTI, RJH-7K and ZJH-8K are independent external test cohorts.}
+\caption{Composition of the multicentre thyroid ultrasound benchmark. Numbers and percentages show the images contributed by each dataset to the full benchmark (n=38{,}576) and to the training (n=18{,}277), validation (n=850) and test (n=19{,}449) cohorts. DDTI, RJH-7K and ZJH-8K are independent external test cohorts.}
 \label{tab:dataset_summary}
 \renewcommand{\arraystretch}{1.2}
 \setlength{\tabcolsep}{4pt}
@@ -439,14 +437,14 @@ H.G., S.C., B.W., Y.W., F.C. and G.L. conceived the study. H.G., S.C., B.W., Y.W
 \makecell[c]{\textbf{Valid}} &
 \makecell[c]{\textbf{Test}} \\
 \midrule
-TN3K~\cite{gong2021multi} & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Zhujiang Hospital,\\Southern Medical\\University, Guangzhou,\\China} & \makecell[l]{GE Logiq E9,\\ARIETTA 850,\\RESONA 70B} & 5{,}347 (13.84\%) & 4{,}633 (25.35\%) & 100 (11.76\%) & 614 (3.15\%) \\
-TN5K~\cite{zhang2025tn5000} & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Cancer Hospital,\\Chinese Academy of\\Medical Sciences,\\Beijing, China} & \makecell[l]{GE Logiq E9,\\GE S7 (5--12 MHz\\or 8--15 MHz)} & 5{,}000 (12.94\%) & 3{,}500 (19.15\%) & 500 (58.82\%) & 1{,}000 (5.12\%) \\
-ThyroidXL~\cite{duong2025thyroidxl} & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Vietnam National\\Hospital of\\Endocrinology,\\Hanoi, Vietnam} & Hitachi Aloka Arietta V70 & 11{,}631 (30.09\%) & 9{,}441 (51.66\%) & 100 (11.76\%) & 2{,}090 (10.71\%) \\
-PKTN~\cite{sun2025clip} & Segmentation & \makecell[l]{Peking University\\First Hospital,\\Beijing, China} & --- & 1{,}003 (2.59\%) & 703 (3.85\%) & 150 (17.65\%) & 150 (0.77\%) \\
+TN3K~\cite{gong2021multi} & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Zhujiang Hospital,\\Southern Medical\\University, Guangzhou,\\China} & \makecell[l]{GE Logiq E9,\\ARIETTA 850,\\RESONA 70B} & 5{,}347 (13.86\%) & 4{,}633 (25.35\%) & 100 (11.76\%) & 614 (3.16\%) \\
+TN5K~\cite{zhang2025tn5000} & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Cancer Hospital,\\Chinese Academy of\\Medical Sciences,\\Beijing, China} & \makecell[l]{GE Logiq E9,\\GE S7 (5--12 MHz\\or 8--15 MHz)} & 5{,}000 (12.96\%) & 3{,}500 (19.15\%) & 500 (58.82\%) & 1{,}000 (5.14\%) \\
+ThyroidXL~\cite{duong2025thyroidxl} & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Vietnam National\\Hospital of\\Endocrinology,\\Hanoi, Vietnam} & Hitachi Aloka Arietta V70 & 11{,}631 (30.15\%) & 9{,}441 (51.66\%) & 100 (11.76\%) & 2{,}090 (10.75\%) \\
+PKTN~\cite{sun2025clip} & Segmentation & \makecell[l]{Peking University\\First Hospital,\\Beijing, China} & --- & 1{,}003 (2.60\%) & 703 (3.85\%) & 150 (17.65\%) & 150 (0.77\%) \\
 \midrule
 DDTI~\cite{pedraza2015open} & Classification & \makecell[l]{IDIME,\\Bogot\'{a}, Colombia} & \makecell[l]{TOSHIBA Nemio 30,\\TOSHIBA Nemio MX\\(12 MHz probe)} & 349 (0.90\%) & --- & --- & 349 (1.79\%) \\
-RJH-7K~\cite{shusharina2021segmentation} & Segmentation & \makecell[l]{Ruijin Hospital,\\Shanghai Jiao Tong\\University School of\\Medicine, Shanghai,\\China} & \makecell[l]{Different machines,\\not specified} & 7{,}288 (18.86\%) & --- & --- & 7{,}288 (37.33\%) \\
-ZJH-8K & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Zhujiang Hospital,\\Southern Medical\\University, Guangzhou,\\China} & --- & 8{,}030 (20.78\%) & --- & --- & 8{,}030 (41.14\%) \\
+RJH-7K~\cite{shusharina2021segmentation} & Segmentation & \makecell[l]{Ruijin Hospital,\\Shanghai Jiao Tong\\University School of\\Medicine, Shanghai,\\China} & \makecell[l]{Different machines,\\not specified} & 7{,}288 (18.89\%) & --- & --- & 7{,}288 (37.47\%) \\
+ZJH-8K & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Zhujiang Hospital,\\Southern Medical\\University, Guangzhou,\\China} & --- & 7{,}958 (20.63\%) & --- & --- & 7{,}958 (40.92\%) \\
 \bottomrule
 \end{tabular}%
 }
@@ -1680,516 +1678,6 @@ Segmentation only
 \item The KMVE dataset retains only the findings section and does not provide original measurement values. To match the original evaluation protocol, only the generated findings section was evaluated and measurement values were masked; therefore, the captioning and full configurations have identical KMVE scores.
 \end{tablenotes}
 
-\end{threeparttable}
-\end{table*}
-\clearpage
-
-\begin{table*}[p]
-\centering
-\begin{threeparttable}
-
-\caption{Effect of cumulative training-data integration on thyroid nodule segmentation. Models trained on four progressively expanded configurations---dataset1 (TN3K), dataset2 (TN3K + ThyroidXL), dataset3 (TN3K + ThyroidXL + PKTN) and dataset4 (TN3K + ThyroidXL + PKTN + TN5K)---were evaluated on six test sets. Top, Dice coefficient (\%); bottom, 95th-percentile Hausdorff distance (HD95, mm). Values are means $\pm$ 95\% confidence intervals across five independent runs.}
-\label{tab:stacked_seg_performance}
-
-\footnotesize
-\setlength{\tabcolsep}{5.5pt}
-\renewcommand{\arraystretch}{1.08}
-
-\begin{tabular}{lcccccc}
-\toprule
-\textbf{Dataset}
-& \textbf{TN3K}
-& \textbf{ThyroidXL}
-& \textbf{PKTN}
-& \textbf{TN5K}
-& \textbf{ZJh-8K}
-& \textbf{RJH-7K} \\
-\midrule
-dataset1
-& 82.76 $\pm$ 3.54
-& 81.97 $\pm$ 2.63
-& 79.21 $\pm$ 2.71
-& 72.18 $\pm$ 5.08
-& 94.57 $\pm$ 0.43
-& 80.77 $\pm$ 0.44 \\
-dataset2
-& 81.63 $\pm$ 3.81
-& 86.84 $\pm$ 1.90
-& 81.73 $\pm$ 2.26
-& 71.07 $\pm$ 5.35
-& 94.85 $\pm$ 0.40
-& 82.38 $\pm$ 0.42 \\
-dataset3
-& 80.81 $\pm$ 3.82
-& 86.00 $\pm$ 2.31
-& 81.91 $\pm$ 2.26
-& 72.82 $\pm$ 4.91
-& 94.82 $\pm$ 0.39
-& 91.44 $\pm$ 0.15 \\
-dataset4
-& 81.86 $\pm$ 3.70
-& 86.97 $\pm$ 2.19
-& 83.28 $\pm$ 2.19
-& 82.57 $\pm$ 3.46
-& 94.77 $\pm$ 0.39
-& 91.46 $\pm$ 0.15 \\
-
-\midrule
-dataset1
-& 13.49 $\pm$ 3.83
-& 8.34 $\pm$ 2.34
-& 11.73 $\pm$ 3.07
-& 11.37 $\pm$ 3.49
-& 2.30 $\pm$ 0.47
-& 11.46 $\pm$ 0.50 \\
-dataset2
-& 15.92 $\pm$ 4.58
-& 4.99 $\pm$ 1.58
-& 9.72 $\pm$ 2.71
-& 13.64 $\pm$ 4.28
-& 1.98 $\pm$ 0.41
-& 9.65 $\pm$ 0.44 \\
-dataset3
-& 15.94 $\pm$ 4.34
-& 5.46 $\pm$ 1.62
-& 10.92 $\pm$ 3.52
-& 11.07 $\pm$ 3.28
-& 1.93 $\pm$ 0.38
-& 1.87 $\pm$ 0.07 \\
-dataset4
-& 17.00 $\pm$ 5.34
-& 4.74 $\pm$ 1.42
-& 8.89 $\pm$ 2.93
-& 4.64 $\pm$ 1.43
-& 2.07 $\pm$ 0.40
-& 1.88 $\pm$ 0.07 \\
-
-\bottomrule
-\end{tabular}
-\end{threeparttable}
-\end{table*}
-\clearpage
-
-\begin{table*}[p]
-\centering
-\begin{threeparttable}
-
-\caption{Effect of cumulative training-data integration on benign--malignant thyroid nodule classification. Models trained on three progressively expanded configurations---dataset1 (TN3K), dataset2 (TN3K + ThyroidXL) and dataset3 (TN3K + ThyroidXL + TN5K)---were evaluated on five test sets. Top, AUROC; bottom, AUPRC. Values are means $\pm$ 95\% confidence intervals across five independent runs.}
-\label{tab:stacked_cls_performance}
-
-\footnotesize
-\setlength{\tabcolsep}{5.5pt}
-\renewcommand{\arraystretch}{1.08}
-
-\begin{tabular}{lccccc}
-\toprule
-\textbf{Dataset}
-& \textbf{TN3K}
-& \textbf{ThyroidXL}
-& \textbf{TN5K}
-& \textbf{DDTI}
-& \textbf{ZJh-8K} \\
-\midrule
-dataset1
-& 0.7666 $\pm$ 0.03
-& 0.8713 $\pm$ 0.01
-& 0.8272 $\pm$ 0.02
-& 0.7244 $\pm$ 0.07
-& 0.9924 $\pm$ 0.01 \\
-dataset2
-& 0.7724 $\pm$ 0.04
-& 0.9254 $\pm$ 0.01
-& 0.8151 $\pm$ 0.02
-& 0.5762 $\pm$ 0.10
-& 0.9932 $\pm$ 0.01 \\
-dataset3
-& 0.7906 $\pm$ 0.03
-& 0.9288 $\pm$ 0.01
-& 0.9515 $\pm$ 0.01
-& 0.7623 $\pm$ 0.07
-& 0.9937 $\pm$ 0.01 \\
-\midrule
-dataset1
-& 0.6806 $\pm$ 0.06
-& 0.8147 $\pm$ 0.03
-& 0.9151 $\pm$ 0.02
-& 0.3578 $\pm$ 0.13
-& 0.9951 $\pm$ 0.01 \\
-dataset2
-& 0.7237 $\pm$ 0.05
-& 0.9140 $\pm$ 0.01
-& 0.9074 $\pm$ 0.01
-& 0.3190 $\pm$ 0.14
-& 0.9968 $\pm$ 0.01 \\
-dataset3
-& 0.7188 $\pm$ 0.05
-& 0.9144 $\pm$ 0.01
-& 0.9803 $\pm$ 0.01
-& 0.4029 $\pm$ 0.14
-& 0.9967 $\pm$ 0.01 \\
-\bottomrule
-\end{tabular}
-\end{threeparttable}
-\end{table*}
-\clearpage
-
-\begin{table*}[p]
-\centering
-\begin{threeparttable}
-
-\caption{Effect of cumulative training-data integration on benign--malignant thyroid nodule classification. Models trained on three progressively expanded configurations---dataset1 (TN3K), dataset2 (TN3K + ThyroidXL) and dataset3 (TN3K + ThyroidXL + TN5K)---were evaluated on five test sets. Top, AUROC; bottom, AUPRC. Values are means $\pm$ 95\% confidence intervals across five independent runs.}
-\label{tab:stacked_cls_performance}
-
-\footnotesize
-\setlength{\tabcolsep}{5.5pt}
-\renewcommand{\arraystretch}{1.08}
-
-\begin{tabular}{lccccc}
-\toprule
-\textbf{Dataset}
-& \textbf{TN3K}
-& \textbf{ThyroidXL}
-& \textbf{TN5K}
-& \textbf{DDTI}
-& \textbf{ZJh-8K} \\
-\midrule
-dataset1
-& 0.7666 $\pm$ 0.03
-& 0.8713 $\pm$ 0.01
-& 0.8272 $\pm$ 0.02
-& 0.7244 $\pm$ 0.07
-& 0.9924 $\pm$ 0.01 \\
-dataset2
-& 0.7724 $\pm$ 0.04
-& 0.9254 $\pm$ 0.01
-& 0.8151 $\pm$ 0.02
-& 0.5762 $\pm$ 0.10
-& 0.9932 $\pm$ 0.01 \\
-dataset3
-& 0.7906 $\pm$ 0.03
-& 0.9288 $\pm$ 0.01
-& 0.9515 $\pm$ 0.01
-& 0.7623 $\pm$ 0.07
-& 0.9937 $\pm$ 0.01 \\
-\midrule
-dataset1
-& 0.6806 $\pm$ 0.06
-& 0.8147 $\pm$ 0.03
-& 0.9151 $\pm$ 0.02
-& 0.3578 $\pm$ 0.13
-& 0.9951 $\pm$ 0.01 \\
-dataset2
-& 0.7237 $\pm$ 0.05
-& 0.9140 $\pm$ 0.01
-& 0.9074 $\pm$ 0.01
-& 0.3190 $\pm$ 0.14
-& 0.9968 $\pm$ 0.01 \\
-dataset3
-& 0.7188 $\pm$ 0.05
-& 0.9144 $\pm$ 0.01
-& 0.9803 $\pm$ 0.01
-& 0.4029 $\pm$ 0.14
-& 0.9967 $\pm$ 0.01 \\
-\bottomrule
-\end{tabular}
-\end{threeparttable}
-\end{table*}
-\clearpage
-
-\begin{table*}[p]
-\centering
-\begin{threeparttable}
-
-\caption{Effect of cumulative training-data integration on thyroid nodule segmentation. Models trained on four progressively expanded configurations---dataset1 (TN3K), dataset2 (TN3K + ThyroidXL), dataset3 (TN3K + ThyroidXL + PKTN) and dataset4 (TN3K + ThyroidXL + PKTN + TN5K)---were evaluated on six test sets. Top, Dice coefficient (\%); bottom, 95th-percentile Hausdorff distance (HD95, mm). Values are means $\pm$ 95\% confidence intervals across five independent runs.}
-\label{tab:stacked_seg_performance}
-
-\footnotesize
-\setlength{\tabcolsep}{5.5pt}
-\renewcommand{\arraystretch}{1.08}
-
-\begin{tabular}{lcccccc}
-\toprule
-\textbf{Dataset}
-& \textbf{TN3K}
-& \textbf{ThyroidXL}
-& \textbf{PKTN}
-& \textbf{TN5K}
-& \textbf{ZJh-8K}
-& \textbf{RJH-7K} \\
-\midrule
-dataset1
-& 82.76 $\pm$ 3.54
-& 81.97 $\pm$ 2.63
-& 79.21 $\pm$ 2.71
-& 72.18 $\pm$ 5.08
-& 94.57 $\pm$ 0.43
-& 80.77 $\pm$ 0.44 \\
-dataset2
-& 81.63 $\pm$ 3.81
-& 86.84 $\pm$ 1.90
-& 81.73 $\pm$ 2.26
-& 71.07 $\pm$ 5.35
-& 94.85 $\pm$ 0.40
-& 82.38 $\pm$ 0.42 \\
-dataset3
-& 80.81 $\pm$ 3.82
-& 86.00 $\pm$ 2.31
-& 81.91 $\pm$ 2.26
-& 72.82 $\pm$ 4.91
-& 94.82 $\pm$ 0.39
-& 91.44 $\pm$ 0.15 \\
-dataset4
-& 81.86 $\pm$ 3.70
-& 86.97 $\pm$ 2.19
-& 83.28 $\pm$ 2.19
-& 82.57 $\pm$ 3.46
-& 94.77 $\pm$ 0.39
-& 91.46 $\pm$ 0.15 \\
-
-\midrule
-dataset1
-& 13.49 $\pm$ 3.83
-& 8.34 $\pm$ 2.34
-& 11.73 $\pm$ 3.07
-& 11.37 $\pm$ 3.49
-& 2.30 $\pm$ 0.47
-& 11.46 $\pm$ 0.50 \\
-dataset2
-& 15.92 $\pm$ 4.58
-& 4.99 $\pm$ 1.58
-& 9.72 $\pm$ 2.71
-& 13.64 $\pm$ 4.28
-& 1.98 $\pm$ 0.41
-& 9.65 $\pm$ 0.44 \\
-dataset3
-& 15.94 $\pm$ 4.34
-& 5.46 $\pm$ 1.62
-& 10.92 $\pm$ 3.52
-& 11.07 $\pm$ 3.28
-& 1.93 $\pm$ 0.38
-& 1.87 $\pm$ 0.07 \\
-dataset4
-& 17.00 $\pm$ 5.34
-& 4.74 $\pm$ 1.42
-& 8.89 $\pm$ 2.93
-& 4.64 $\pm$ 1.43
-& 2.07 $\pm$ 0.40
-& 1.88 $\pm$ 0.07 \\
-
-\bottomrule
-\end{tabular}
-\end{threeparttable}
-\end{table*}
-\clearpage
-
-\begin{table*}[p]
-\centering
-\begin{threeparttable}
-
-\caption{Effect of cumulative training-data integration on benign--malignant thyroid nodule classification. Models trained on three progressively expanded configurations---dataset1 (TN3K), dataset2 (TN3K + ThyroidXL) and dataset3 (TN3K + ThyroidXL + TN5K)---were evaluated on five test sets. Top, AUROC; bottom, AUPRC. Values are means $\pm$ 95\% confidence intervals across five independent runs.}
-\label{tab:stacked_cls_performance}
-
-\footnotesize
-\setlength{\tabcolsep}{5.5pt}
-\renewcommand{\arraystretch}{1.08}
-
-\begin{tabular}{lccccc}
-\toprule
-\textbf{Dataset}
-& \textbf{TN3K}
-& \textbf{ThyroidXL}
-& \textbf{TN5K}
-& \textbf{DDTI}
-& \textbf{ZJh-8K} \\
-\midrule
-dataset1
-& 0.7666 $\pm$ 0.03
-& 0.8713 $\pm$ 0.01
-& 0.8272 $\pm$ 0.02
-& 0.7244 $\pm$ 0.07
-& 0.9924 $\pm$ 0.01 \\
-dataset2
-& 0.7724 $\pm$ 0.04
-& 0.9254 $\pm$ 0.01
-& 0.8151 $\pm$ 0.02
-& 0.5762 $\pm$ 0.10
-& 0.9932 $\pm$ 0.01 \\
-dataset3
-& 0.7906 $\pm$ 0.03
-& 0.9288 $\pm$ 0.01
-& 0.9515 $\pm$ 0.01
-& 0.7623 $\pm$ 0.07
-& 0.9937 $\pm$ 0.01 \\
-\midrule
-dataset1
-& 0.6806 $\pm$ 0.06
-& 0.8147 $\pm$ 0.03
-& 0.9151 $\pm$ 0.02
-& 0.3578 $\pm$ 0.13
-& 0.9951 $\pm$ 0.01 \\
-dataset2
-& 0.7237 $\pm$ 0.05
-& 0.9140 $\pm$ 0.01
-& 0.9074 $\pm$ 0.01
-& 0.3190 $\pm$ 0.14
-& 0.9968 $\pm$ 0.01 \\
-dataset3
-& 0.7188 $\pm$ 0.05
-& 0.9144 $\pm$ 0.01
-& 0.9803 $\pm$ 0.01
-& 0.4029 $\pm$ 0.14
-& 0.9967 $\pm$ 0.01 \\
-\bottomrule
-\end{tabular}
-\end{threeparttable}
-\end{table*}
-\clearpage
-
-\begin{table*}[p]
-\centering
-\begin{threeparttable}
-
-\caption{Effect of cumulative training-data integration on thyroid nodule segmentation. Models trained on four progressively expanded configurations---dataset1 (TN3K), dataset2 (TN3K + ThyroidXL), dataset3 (TN3K + ThyroidXL + PKTN) and dataset4 (TN3K + ThyroidXL + PKTN + TN5K)---were evaluated on six test sets. Top, Dice coefficient (\%); bottom, 95th-percentile Hausdorff distance (HD95, mm). Values are means $\pm$ 95\% confidence intervals across five independent runs.}
-\label{tab:stacked_seg_performance}
-
-\footnotesize
-\setlength{\tabcolsep}{5.5pt}
-\renewcommand{\arraystretch}{1.08}
-
-\begin{tabular}{lcccccc}
-\toprule
-\textbf{Dataset}
-& \textbf{TN3K}
-& \textbf{ThyroidXL}
-& \textbf{PKTN}
-& \textbf{TN5K}
-& \textbf{ZJh-8K}
-& \textbf{RJH-7K} \\
-\midrule
-dataset1
-& 82.76 $\pm$ 3.54
-& 81.97 $\pm$ 2.63
-& 79.21 $\pm$ 2.71
-& 72.18 $\pm$ 5.08
-& 94.57 $\pm$ 0.43
-& 80.77 $\pm$ 0.44 \\
-dataset2
-& 81.63 $\pm$ 3.81
-& 86.84 $\pm$ 1.90
-& 81.73 $\pm$ 2.26
-& 71.07 $\pm$ 5.35
-& 94.85 $\pm$ 0.40
-& 82.38 $\pm$ 0.42 \\
-dataset3
-& 80.81 $\pm$ 3.82
-& 86.00 $\pm$ 2.31
-& 81.91 $\pm$ 2.26
-& 72.82 $\pm$ 4.91
-& 94.82 $\pm$ 0.39
-& 91.44 $\pm$ 0.15 \\
-dataset4
-& 81.86 $\pm$ 3.70
-& 86.97 $\pm$ 2.19
-& 83.28 $\pm$ 2.19
-& 82.57 $\pm$ 3.46
-& 94.77 $\pm$ 0.39
-& 91.46 $\pm$ 0.15 \\
-
-\midrule
-dataset1
-& 13.49 $\pm$ 3.83
-& 8.34 $\pm$ 2.34
-& 11.73 $\pm$ 3.07
-& 11.37 $\pm$ 3.49
-& 2.30 $\pm$ 0.47
-& 11.46 $\pm$ 0.50 \\
-dataset2
-& 15.92 $\pm$ 4.58
-& 4.99 $\pm$ 1.58
-& 9.72 $\pm$ 2.71
-& 13.64 $\pm$ 4.28
-& 1.98 $\pm$ 0.41
-& 9.65 $\pm$ 0.44 \\
-dataset3
-& 15.94 $\pm$ 4.34
-& 5.46 $\pm$ 1.62
-& 10.92 $\pm$ 3.52
-& 11.07 $\pm$ 3.28
-& 1.93 $\pm$ 0.38
-& 1.87 $\pm$ 0.07 \\
-dataset4
-& 17.00 $\pm$ 5.34
-& 4.74 $\pm$ 1.42
-& 8.89 $\pm$ 2.93
-& 4.64 $\pm$ 1.43
-& 2.07 $\pm$ 0.40
-& 1.88 $\pm$ 0.07 \\
-
-\bottomrule
-\end{tabular}
-\end{threeparttable}
-\end{table*}
-\clearpage
-
-\begin{table*}[p]
-\centering
-\begin{threeparttable}
-
-\caption{Effect of cumulative training-data integration on benign--malignant thyroid nodule classification. Models trained on three progressively expanded configurations---dataset1 (TN3K), dataset2 (TN3K + ThyroidXL) and dataset3 (TN3K + ThyroidXL + TN5K)---were evaluated on five test sets. Top, AUROC; bottom, AUPRC. Values are means $\pm$ 95\% confidence intervals across five independent runs.}
-\label{tab:stacked_cls_performance}
-
-\footnotesize
-\setlength{\tabcolsep}{5.5pt}
-\renewcommand{\arraystretch}{1.08}
-
-\begin{tabular}{lccccc}
-\toprule
-\textbf{Dataset}
-& \textbf{TN3K}
-& \textbf{ThyroidXL}
-& \textbf{TN5K}
-& \textbf{DDTI}
-& \textbf{ZJh-8K} \\
-\midrule
-dataset1
-& 0.7666 $\pm$ 0.03
-& 0.8713 $\pm$ 0.01
-& 0.8272 $\pm$ 0.02
-& 0.7244 $\pm$ 0.07
-& 0.9924 $\pm$ 0.01 \\
-dataset2
-& 0.7724 $\pm$ 0.04
-& 0.9254 $\pm$ 0.01
-& 0.8151 $\pm$ 0.02
-& 0.5762 $\pm$ 0.10
-& 0.9932 $\pm$ 0.01 \\
-dataset3
-& 0.7906 $\pm$ 0.03
-& 0.9288 $\pm$ 0.01
-& 0.9515 $\pm$ 0.01
-& 0.7623 $\pm$ 0.07
-& 0.9937 $\pm$ 0.01 \\
-\midrule
-dataset1
-& 0.6806 $\pm$ 0.06
-& 0.8147 $\pm$ 0.03
-& 0.9151 $\pm$ 0.02
-& 0.3578 $\pm$ 0.13
-& 0.9951 $\pm$ 0.01 \\
-dataset2
-& 0.7237 $\pm$ 0.05
-& 0.9140 $\pm$ 0.01
-& 0.9074 $\pm$ 0.01
-& 0.3190 $\pm$ 0.14
-& 0.9968 $\pm$ 0.01 \\
-dataset3
-& 0.7188 $\pm$ 0.05
-& 0.9144 $\pm$ 0.01
-& 0.9803 $\pm$ 0.01
-& 0.4029 $\pm$ 0.14
-& 0.9967 $\pm$ 0.01 \\
-\bottomrule
-\end{tabular}
 \end{threeparttable}
 \end{table*}
 \clearpage
