@@ -302,7 +302,8 @@ For annotation-based diagnostic-direction analysis, frame-level benign and malig
 
 
 \section{Data availability}
-The public datasets used in this study are available from their original sources, as cited in the Methods and Supplementary Table~\ref{tab:dataset_summary}. Institutional ultrasound images and reports contain clinical data and are not publicly released in raw form because of privacy and institutional governance restrictions. De-identified derived data, dataset splits and evaluation outputs can be made available from the corresponding authors upon reasonable request and subject to institutional approval.
+The public datasets used in this study are available from their original sources, as cited in the Methods and Supplementary Table~\ref{tab:dataset_summary}. Institutional ultrasound images and reports contain clinical data and are not publicly released in raw form because of privacy and institutional governance restrictions. De-identified derived data, dataset splits and evaluation outputs can be made available from the corresponding authors upon reasonable request and subject to institutional approval. 
+The NHCMISD dataset was collected from real world clinical ultrasound cases provided by the National Health Commission Medical Imaging Standard Database, for which the  co-author, Prof. Dexing Kong, has authorized access. All data usage complied with relevant institutional and regulatory requirements.
 
 
 
@@ -310,11 +311,15 @@ The public datasets used in this study are available from their original sources
 The source code, trained model checkpoints and report-generation templates will be released after institutional review. Until public release, code required to reproduce the reported analyses is available from the corresponding authors upon reasonable request.
 
 \section{Acknowledgements}
-The authors thank the clinicians, sonographers and data-management staff who contributed to ultrasound acquisition, annotation and clinical interpretation.
+This work was supported by the Zhejiang Provincial Natural Science Foundation of China under Grant No. LQN26F020029. This work was financially supported by the Natural Science Foundation of Guangdong Province under Grant 2024A1515010255. 
+
 
 \section{Author Contributions}
 
 H.G., S.C., B.W., Y.W., F.C. and G.L. conceived the study. H.G., S.C., B.W., Y.W., X.X. and M.M. developed the computational methods and experiments. G.Y., H.W., Q.L. and F.C. contributed clinical data curation, annotation and interpretation. S.W., D.K. and W.L. contributed statistical and methodological guidance. H.G. drafted the manuscript with input from all authors. W.L., F.C. and G.L. supervised the study. All authors reviewed and approved the manuscript.
+
+\section{Confilts}
+The authors has no confilts.
 
 \clearpage
 \begin{appendices}
@@ -803,7 +808,7 @@ Gemini-2.5-Pro~\cite{comanici_gemini_2025}
 \multirow{2}{*}{\textbf{Method}}
 & \multicolumn{2}{c}{\textbf{Lymph Node Metastasis}}
 & \multicolumn{2}{c}{\textbf{FTC/PTC subtype}} \\
-& AUROC & AUPRC & AUROC & AUPRC \\
+& AUROC $\uparrow$ & AUPRC $\uparrow$ & AUROC $\uparrow$ & AUPRC $\uparrow$ \\
 \midrule
 RepViT~\cite{wang2023repvit}
 & $0.7905 \pm 0.0676$
@@ -996,7 +1001,7 @@ Qwen3.5 Plus~\cite{yang_qwen3_2025}
 & 0.3623$\pm$0.0111
 & 0.2959$\pm$0.0095
 & 0.2427$\pm$0.0081
-& 0.3628$\pm$0.0040
+& \textbf{0.3628$\pm$0.0040}
 & 0.5147$\pm$0.0088 \\
 
 Claude-Sonnet-4.6
@@ -1033,12 +1038,12 @@ KMVE~\cite{li_ultrasound_2024}
 
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
-& \textbf{0.5961$\pm$0.0141}
-& \textbf{0.4839$\pm$0.0138}
-& \textbf{0.4033$\pm$0.0136}
-& \textbf{0.3405$\pm$0.0136}
-& \textbf{0.3646$\pm$0.0086}
-& \textbf{0.5450$\pm$0.0118} \\
+& \textbf{0.5924$\pm$0.0143}
+& \textbf{0.4806$\pm$0.0139}
+& \textbf{0.4006$\pm$0.0137}
+& \textbf{0.3381$\pm$0.0135}
+& 0.3627$\pm$0.0088
+& \textbf{0.5422$\pm$0.0122} \\
 
 \midrule
 
@@ -1103,12 +1108,12 @@ LLaVA-Med~\cite{li_llavamed_2023}
 
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
-& \textbf{0.6209$\pm$0.0178}
-& \textbf{0.5493$\pm$0.0164}
-& \textbf{0.4919$\pm$0.0159}
-& \textbf{0.4465$\pm$0.0159}
-& \textbf{0.3596$\pm$0.0102}
-& \textbf{0.5826$\pm$0.0123} \\
+& \textbf{0.6357$\pm$0.0171}
+& \textbf{0.5606$\pm$0.0157}
+& \textbf{0.5008$\pm$0.0151}
+& \textbf{0.4535$\pm$0.0151}
+& \textbf{0.3672$\pm$0.0099}
+& \textbf{0.5880$\pm$0.0120} \\
 
 \midrule
 
@@ -1181,12 +1186,12 @@ KMVE~\cite{li_ultrasound_2024}
 
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
-& \textbf{0.5134$\pm$0.0210}
-& \textbf{0.4201$\pm$0.0189}
-& \textbf{0.3495$\pm$0.0175}
-& \textbf{0.2942$\pm$0.0163}
-& 0.3332$\pm$0.0106
-& \textbf{0.5529$\pm$0.0140} \\
+& \textbf{0.5051$\pm$0.0228}
+& \textbf{0.4137$\pm$0.0206}
+& \textbf{0.3447$\pm$0.0188}
+& \textbf{0.2909$\pm$0.0174}
+& 0.3293$\pm$0.0119
+& \textbf{0.5480$\pm$0.0160} \\
 
 \bottomrule
 \end{tabular}
@@ -1286,12 +1291,12 @@ KMVE~\cite{li_ultrasound_2024}
 
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
-& 0.2100$\pm$0.0363
-& \textbf{0.6455$\pm$0.0326}
-& \textbf{0.5589$\pm$0.0428}
-& \textbf{0.9676$\pm$0.0053}
-& \textbf{0.5070$\pm$0.0166}
-& \textbf{0.5238$\pm$0.0212} \\
+& 0.2238$\pm$0.0377
+& \textbf{0.6238$\pm$0.0358}
+& \textbf{0.5467$\pm$0.0436}
+& \textbf{0.9691$\pm$0.0060}
+& \textbf{0.5016$\pm$0.0166}
+& \textbf{0.5189$\pm$0.0212} \\
 
 \midrule
 
@@ -1308,7 +1313,7 @@ GPT-4o~\cite{openai_gpt4_2024}
 
 GPT-5~\cite{openai2025gpt5systemcard}
 & 0.4133$\pm$0.0423
-& \textbf{0.6967$\pm$0.0492}
+& 0.6967$\pm$0.0492
 & 0.3749$\pm$0.0402
 & 0.6506$\pm$0.0038
 & 0.4504$\pm$0.0189
@@ -1356,12 +1361,12 @@ LLaVA-Med~\cite{li_llavamed_2023}
 
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
-& 0.4184$\pm$0.0434
-& 0.6761$\pm$0.0418
-& 0.3689$\pm$0.0394
-& 0.6467$\pm$0.0027
-& 0.5654$\pm$0.0221
-& \textbf{0.4465$\pm$0.0206} \\
+& 0.4858$\pm$0.0386
+& \textbf{0.7366$\pm$0.0355}
+& 0.3623$\pm$0.0358
+& 0.6416$\pm$0.0029
+& 0.5654$\pm$0.0217
+& \textbf{0.4407$\pm$0.0194} \\
 
 \midrule
 
@@ -1396,7 +1401,7 @@ Qwen3.5 Plus~\cite{yang_qwen3_2025}
 & 0.6433$\pm$0.0458
 & 0.4958$\pm$0.0471
 & 0.3707$\pm$0.0432
-& 0.9695$\pm$0.0067
+& \textbf{0.9695$\pm$0.0067}
 & \textbf{0.4823$\pm$0.0208}
 & 0.4487$\pm$0.0196 \\
 
@@ -1434,12 +1439,12 @@ KMVE~\cite{li_ultrasound_2024}
 
 \rowcolor{lightgray}
 \textbf{ThyroidXAgent}
-& 0.2767$\pm$0.0600
-& 0.5343$\pm$0.0443
-& \textbf{0.5093$\pm$0.0563}
-& \textbf{0.9734$\pm$0.0054}
-& 0.4641$\pm$0.0202
-& \textbf{0.4775$\pm$0.0253} \\
+& 0.2833$\pm$0.0600
+& 0.5820$\pm$0.0408
+& \textbf{0.4889$\pm$0.0570}
+& 0.9641$\pm$0.0090
+& 0.4564$\pm$0.0228
+& \textbf{0.4676$\pm$0.0268} \\
 
 \bottomrule
 \end{tabular}
@@ -1579,97 +1584,97 @@ ZJH-TS
 \rowcolor{gray!20}
 \multicolumn{7}{c}{\textbf{SMU-HMC Testset} ($n=400$)} \\
 Segmentation only
-& 0.0889$\pm$0.0095
-& 0.0684$\pm$0.0075
-& 0.0555$\pm$0.0062
-& 0.0453$\pm$0.0052
-& 0.1516$\pm$0.0048
-& 0.2597$\pm$0.0092 \\
-+ Classification
-& 0.1873$\pm$0.0172
-& 0.1431$\pm$0.0133
-& 0.1150$\pm$0.0106
-& 0.0932$\pm$0.0086
-& 0.1848$\pm$0.0074
-& 0.2875$\pm$0.0109 \\
-+ Captioning
-& 0.4524$\pm$0.0163
-& 0.3748$\pm$0.0151
-& 0.3202$\pm$0.0143
-& 0.2786$\pm$0.0140
-& 0.3064$\pm$0.0082
-& 0.4628$\pm$0.0126 \\
-+ Measurement (full)
-& 0.5961$\pm$0.0141
-& 0.4839$\pm$0.0138
-& 0.4033$\pm$0.0136
-& 0.3405$\pm$0.0136
-& 0.3646$\pm$0.0086
-& 0.5450$\pm$0.0118 \\
+& 0.0897$\pm$0.0095
+& 0.0692$\pm$0.0075
+& 0.0562$\pm$0.0063
+& 0.0459$\pm$0.0053
+& 0.1521$\pm$0.0047
+& 0.2603$\pm$0.0092 \\
+- Classification
+& 0.1877$\pm$0.0169
+& 0.1431$\pm$0.0130
+& 0.1148$\pm$0.0104
+& 0.0929$\pm$0.0085
+& 0.1849$\pm$0.0072
+& 0.2870$\pm$0.0106 \\
+- Captioning
+& 0.4503$\pm$0.0163
+& 0.3724$\pm$0.0150
+& 0.3179$\pm$0.0142
+& 0.2764$\pm$0.0139
+& 0.3052$\pm$0.0081
+& 0.4601$\pm$0.0126 \\
+- Measurement (full)
+& 0.5924$\pm$0.0143
+& 0.4806$\pm$0.0139
+& 0.4006$\pm$0.0137
+& 0.3381$\pm$0.0135
+& 0.3627$\pm$0.0088
+& 0.5422$\pm$0.0122 \\
 
 \midrule
 \rowcolor{gray!20}
 \multicolumn{7}{c}{\textbf{KMVE Testset} ($n=492$)} \\
 Segmentation only
-& 0.5958$\pm$0.0195
-& 0.5315$\pm$0.0189
-& 0.4791$\pm$0.0185
-& 0.4364$\pm$0.0189
-& 0.3578$\pm$0.0107
-& 0.5725$\pm$0.0127 \\
-+ Classification
-& 0.6195$\pm$0.0195
-& 0.5552$\pm$0.0189
-& 0.5022$\pm$0.0184
-& 0.4593$\pm$0.0185
-& 0.3694$\pm$0.0104
-& 0.5771$\pm$0.0128 \\
-+ Captioning
-& 0.6209$\pm$0.0183
-& 0.5493$\pm$0.0169
-& 0.4919$\pm$0.0159
-& 0.4465$\pm$0.0158
-& 0.3596$\pm$0.0103
-& 0.5826$\pm$0.0124 \\
-+ Measurement (full)
-& 0.6209$\pm$0.0183
-& 0.5493$\pm$0.0169
-& 0.4919$\pm$0.0159
-& 0.4465$\pm$0.0158
-& 0.3596$\pm$0.0103
-& 0.5826$\pm$0.0124 \\
+& 0.6130$\pm$0.0191
+& 0.5456$\pm$0.0186
+& 0.4907$\pm$0.0182
+& 0.4462$\pm$0.0186
+& 0.3658$\pm$0.0103
+& 0.5747$\pm$0.0126 \\
+- Classification
+& 0.6315$\pm$0.0189
+& 0.5637$\pm$0.0184
+& 0.5081$\pm$0.0180
+& 0.4633$\pm$0.0183
+& 0.3751$\pm$0.0102
+& 0.5799$\pm$0.0127 \\
+- Captioning
+& 0.6357$\pm$0.0172
+& 0.5606$\pm$0.0160
+& 0.5008$\pm$0.0152
+& 0.4535$\pm$0.0153
+& 0.3672$\pm$0.0099
+& 0.5880$\pm$0.0122 \\
+- Measurement (full)
+& 0.6357$\pm$0.0172
+& 0.5606$\pm$0.0160
+& 0.5008$\pm$0.0152
+& 0.4535$\pm$0.0153
+& 0.3672$\pm$0.0099
+& 0.5880$\pm$0.0122 \\
 
 \midrule
 \rowcolor{gray!20}
 \multicolumn{7}{c}{\textbf{ZJH-TS Testset} ($n=150$)} \\
 Segmentation only
-& 0.0979$\pm$0.0153
-& 0.0813$\pm$0.0127
-& 0.0686$\pm$0.0108
-& 0.0579$\pm$0.0093
-& 0.1511$\pm$0.0073
-& 0.3371$\pm$0.0128 \\
-+ Classification
-& 0.2516$\pm$0.0244
-& 0.2037$\pm$0.0195
-& 0.1686$\pm$0.0161
-& 0.1386$\pm$0.0135
-& 0.2081$\pm$0.0103
-& 0.4038$\pm$0.0136 \\
-+ Captioning
-& 0.4171$\pm$0.0244
-& 0.3468$\pm$0.0212
-& 0.2937$\pm$0.0192
-& 0.2494$\pm$0.0176
-& 0.2888$\pm$0.0106
-& 0.4951$\pm$0.0145 \\
-+ Measurement (full)
-& 0.5134$\pm$0.0210
-& 0.4201$\pm$0.0189
-& 0.3495$\pm$0.0175
-& 0.2942$\pm$0.0163
-& 0.3332$\pm$0.0106
-& 0.5529$\pm$0.0140 \\
+& 0.0964$\pm$0.0150
+& 0.0799$\pm$0.0123
+& 0.0674$\pm$0.0105
+& 0.0567$\pm$0.0091
+& 0.1500$\pm$0.0073
+& 0.3348$\pm$0.0129 \\
+- Classification
+& 0.2456$\pm$0.0246
+& 0.1990$\pm$0.0197
+& 0.1648$\pm$0.0163
+& 0.1356$\pm$0.0137
+& 0.2053$\pm$0.0105
+& 0.4003$\pm$0.0142 \\
+- Captioning
+& 0.4092$\pm$0.0252
+& 0.3409$\pm$0.0220
+& 0.2891$\pm$0.0197
+& 0.2461$\pm$0.0180
+& 0.2848$\pm$0.0115
+& 0.4903$\pm$0.0162 \\
+- Measurement (full)
+& 0.5051$\pm$0.0227
+& 0.4137$\pm$0.0205
+& 0.3447$\pm$0.0188
+& 0.2909$\pm$0.0174
+& 0.3293$\pm$0.0118
+& 0.5480$\pm$0.0158 \\
 \bottomrule
 \end{tabular}
 
