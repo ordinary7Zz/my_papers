@@ -340,11 +340,10 @@ The authors has no confilts.
 \subsubsection*{Supplementary figures}
 \suppcontentsline{fig:ThyroidXAgent_for_seg_and_cls}{Figure S1.}{ThyroidXAgent workflow for thyroid nodule segmentation and classification}
 \suppcontentsline{fig:RG_CaseReview}{Figure S2.}{Qualitative comparison of thyroid ultrasound report generation}
-\suppcontentsline{fig:BM_Case_Counts}{Figure S3.}{Class distributions across thyroid ultrasound datasets}
-\suppcontentsline{fig:Mask_Position_Size}{Figure S4.}{Cross-dataset distributions of lesion location and size}
-\suppcontentsline{fig:BM_cases}{Figure S5.}{Case-level radiomic and image-based explanations}
-\suppcontentsline{fig:report_generation_agent_trace}{Figure S6.}{Perception, planning and execution in the report-generation workflow}
-\suppcontentsline{fig:report_generation_review_evolution}{Figure S7.}{Interfaces for clinician review and feedback-based report generation}
+\suppcontentsline{fig:SegCls_statistics}{Figure S3.}{Class distributions and lesion characteristics across thyroid ultrasound datasets}
+\suppcontentsline{fig:BM_cases}{Figure S4.}{Case-level radiomic and image-based explanations}
+\suppcontentsline{fig:report_generation_agent_trace}{Figure S5.}{Perception, planning and execution in the report-generation workflow}
+\suppcontentsline{fig:report_generation_review_evolution}{Figure S6.}{Interfaces for clinician review and feedback-based report generation}
 
 \subsubsection*{Supplementary tables}
 \suppcontentsline{tab:dataset_summary}{Table S1.}{Composition of the multicentre thyroid ultrasound benchmark}
@@ -382,17 +381,9 @@ The authors has no confilts.
 
 \begin{figure}[p]
     \centering
-    \includegraphics[width=\textwidth,height=0.72\textheight,keepaspectratio]{imgs_sup/BM_Case_Counts.pdf}
-    \caption{Class distributions across thyroid ultrasound datasets. Bars show the numbers of benign and malignant images in TN3K, TN5K, ThyroidXL, DDTI and ZJH-8K on a logarithmic y axis, illustrating variation in cohort size and class balance.}
-    \label{fig:BM_Case_Counts}
-\end{figure}
-\clearpage
-
-\begin{figure}[p]
-    \centering
-    \includegraphics[width=\textwidth,height=0.72\textheight,keepaspectratio]{imgs_sup/Mask_Position_Size.pdf}
-    \caption{Cross-dataset distributions of lesion location and size. Left, two-dimensional kernel density estimates of normalized lesion-mask centroid positions. Right, relative lesion size, defined as mask area divided by image area. All size distributions share the same x-axis range, and all spatial maps use a common density scale.}
-    \label{fig:Mask_Position_Size}
+    \includegraphics[width=\textwidth,height=0.72\textheight,keepaspectratio]{imgs_sup/SegCls_statistics.pdf}
+    \caption{Class distributions and lesion characteristics across thyroid ultrasound datasets. Top, grouped bar chart comparing the numbers of benign and malignant images in TN3K, TN5K, ThyroidXL, DDTI and ZJH-8K on a logarithmic y axis, highlighting marked variation in cohort size and class balance across cohorts. Bottom, for each of the five datasets, two-dimensional kernel density estimates of normalized lesion-mask centroid positions (left) and relative lesion size distributions, defined as mask area divided by image area (right). All size distributions share a common x-axis range, and all spatial maps use a common density scale, enabling direct cross-dataset comparison of where lesions appear within the ultrasound frame and how large they tend to be.}
+    \label{fig:SegCls_statistics}
 \end{figure}
 \clearpage
 
