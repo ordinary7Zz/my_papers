@@ -210,7 +210,7 @@ Several limitations remain. The evaluations were retrospective, and prospective 
 \section{Methods}
 
 \subsection{Datasets and task definitions}
-For image segmentation and benign--malignant classification, OpenThyroidDB integrates seven public and institutional ultrasound sources comprising 38,576 images (18,277 training, 850 validation, 19,449 test; Supplementary Table~\ref{tab:dataset_summary}). TN3K~\cite{gong2021multi}, TN5K~\cite{zhang2025tn5000}, ThyroidXL~\cite{duong2025thyroidxl} and PKTN~\cite{sun2025clip} served as internal cohorts for nodule segmentation training; TN3K, TN5K and ThyroidXL additionally provided benign--malignant classification labels. DDTI~\cite{pedraza2015open}, RJH-7K~\cite{shusharina2021segmentation} and ZJH-8K (collected at Zhujiang Hospital, Southern Medical University) served as independent external test sets: DDTI for classification, RJH-7K for segmentation, and ZJH-8K for both tasks. To construct the expert pool, we merged training portions across datasets into stacked training sets, with the largest containing 18,277 images.
+For image segmentation and benign--malignant classification, OpenThyroidDB integrates seven public and institutional ultrasound sources comprising 38,576 images (18,277 training, 850 validation, 19,449 test; Supplementary Table~\ref{tab:dataset_summary}). TN3K~\cite{gong2021multi}, TN5K~\cite{zhang2025tn5000}, ThyroidXL~\cite{duong2025thyroidxl} and PKTN~\cite{sun2025clip} served as internal cohorts for nodule segmentation training; TN3K, TN5K and ThyroidXL additionally provided benign--malignant classification labels. DDTI~\cite{pedraza2015open}, RJH-7K~\cite{shusharina2021segmentation} and ZJH-8K (collected at Zhujiang Hospital, Southern Medical University) served as independent external test sets: DDTI for classification, RJH-7K for segmentation, and ZJH-8K for both tasks. To construct the expert pool, we merged training portions across datasets into stacked training sets, with the largest containing 18,277 images. The included cohorts differed markedly in sample size, class balance and lesion characteristics (Supplementary Fig.~\ref{fig:SegCls_statistics}).
 
 Two additional datasets were used for malignant-lesion stratification. The primary training data comprised the 4,756 malignant images from ZJH-8K, of which 20 cases (183 images) were held out for validation. For lateral lymph-node metastasis (LNM) prediction, 180 images from LymphUs Center~1~\cite{mohammadi2026lymphus,abbasian2023diagnosis} were additionally included as training data, and the 158 images from LymphUs Center~2 served as the independent external test set. LymphUs is a multicenter open-access database of patients with histologically confirmed papillary thyroid carcinoma, with binary labels indicating lateral lymph-node metastasis confirmed by fine-needle aspiration biopsy. Images were acquired at two clinical centres using different ultrasound platforms: Center~1 used a Samsung Medison RS80 scanner (Samsung Medison, Seoul, Korea) with a 5--12~MHz L5--12/60 linear array transducer, and Center~2 used a SuperSonic Imagine AixPlorer Ultimate scanner (SuperSonic Imagine, Aix-en-Provence, France) with a 4--15~MHz SL15--4 linear array transducer. For follicular (FTC) versus papillary (PTC) thyroid carcinoma subtype classification, the 200 public images released by Dai \textit{et al.}~\cite{dai2025improving} served as the external test set. Within the ZJH-8K malignant cohort, 533 cases (3,394 images) were classified as CN0 and 190 cases (1,362 images) as CN1 for lymph-node status, and 656 cases (4,312 images) were classic PTC and 67 cases (444 images) were follicular variant for subtype. Institutional labels were confirmed by post-surgical histopathology.
 
@@ -218,7 +218,7 @@ Two additional datasets were used for malignant-lesion stratification. The prima
 ThyroidXAgent decomposes each case into tool calls and structured intermediate outputs. The workflow contains an expert pool for image segmentation and classification, a radiomics branch, a tabular prediction branch, post hoc explanation modules, anatomical-context parsers, measurement tools and report-generation modules. The LLM router operates on structured summaries rather than raw ultrasound images. During inference, it receives candidate masks, class probabilities, confidence estimates, radiomic descriptors and metadata such as image resolution, device and data source. It emits a strict JSON decision that records the selected output, supporting evidence and uncertainty signals. These outputs are normalized into a case-level evidence store containing masks, measurements, class probabilities, radiomic descriptors, explanation objects, warnings and report clauses. The evidence store is used for final prediction, report assembly and clinician review, and clinician corrections can be written back to the same record for subsequent use.
 
 \subsection{Segmentation, classification and radiomics}
-ThyroidXAgent coordinates a heterogeneous expert pool, an LLM router and a radiomics branch for image segmentation and classification: the expert pool generates candidate masks and class probabilities, the router selects the most reliable candidate based on quality metrics and case-level metadata, and the radiomics branch provides an independent classification signal. For image segmentation and classification, the expert pool is designed as a heterogeneous ensemble rather than a single model to reduce sensitivity to dataset bias~\cite{torralba2011unbiased,liu2024decade} (Supplementary Fig.~\ref{fig:ThyroidXAgent_for_seg_and_cls}). Each expert typically uses a DINOv3-based backbone~\cite{simeoni2025dinov3} with a task-specific lightweight head, though task-specific external models can also be assembled for specialized classification targets. To encourage complementary generalization profiles, these experts were trained under varying configurations along three dimensions: stacked-training composition, input resolution (128, 224 and 448 pixels), and whether DINOv3 pretrained weights were loaded or the backbone was trained from scratch. For the segmentation branch, backbone dilation rates were additionally varied to produce experts with different receptive-field profiles. This heterogeneity exposes individual experts to progressively broader data distributions, so that the router can select the most reliable candidate for each case rather than relying on a single model's bias.
+ThyroidXAgent coordinates a heterogeneous expert pool, an LLM router and a radiomics branch for image segmentation and classification: the expert pool generates candidate masks and class probabilities, the router selects the most reliable candidate based on quality metrics and case-level metadata, and the radiomics branch provides an independent classification signal. For image segmentation and classification, the expert pool is designed as a heterogeneous ensemble rather than a single model to reduce sensitivity to dataset bias~\cite{torralba2011unbiased,liu2024decade} (Supplementary Fig.~\ref{fig:ThyroidXAgent_for_seg_and_cls}). Each expert typically uses a DINOv3-based backbone~\cite{simeoni2025dinov3} with a task-specific lightweight head, though task-specific external models can also be assembled for specialized classification targets. To encourage complementary generalization profiles, these experts were trained under varying configurations along three dimensions: stacked-training composition, input resolution (128, 224 and 448 pixels), and whether DINOv3 pretrained weights were loaded or the backbone was trained from scratch. For the segmentation branch, backbone dilation rates were additionally varied to produce experts with different receptive-field profiles. This heterogeneity exposes individual experts to progressively broader data distributions, so that the router can select the most reliable candidate for each case rather than relying on a single model's bias. The effect of these stacked-training configurations on cross-dataset performance is reported in Supplementary Table~\ref{tab:stacked_performance}.
 
 Within this pool, the segmentation branch uses a U-Net-style decoder with skip fusion to preserve fine boundary detail, and is optimized with a combined loss that balances pixel-level supervision with region-level overlap:
 \[
@@ -1031,7 +1031,8 @@ Tiger-Model~\cite{Dai2025NatCommunThyroidSubtype}
 
 \begin{table*}[p]
 \centering
-\caption{Performance of auxiliary tools in ThyroidXAgent. Held-out test results are reported for preprocessing tools, including image normalization, nodule-presence triage and anatomical-context parsing, and for executor-stage tools, including measurement support, gland localization, lymph-node screening, gland captioning and nodule-feature extraction. Anatomical-context parsing and nodule-feature extraction are additionally reported at the class level. For the binary margin and shape classifiers, AUROC and AUPRC are reported once across the paired class rows. AP, average precision; MAE, mean absolute error; MSE, mean squared error; MAPE, mean absolute percentage error.}
+\caption{
+Performance of auxiliary tools in ThyroidXAgent. Held-out test results are reported for preprocessing tools, including image normalization, nodule-presence triage and anatomical-context parsing, and for executor-stage tools, including measurement support, gland localization, lymph-node screening, gland captioning and nodule-feature extraction. Anatomical-context parsing and nodule-feature extraction are additionally reported at the class level. For the binary margin and shape classifiers, AUROC and AUPRC are reported once across the paired class rows. AP, average precision; MAE, mean absolute error; MSE, mean squared error; MAPE, mean absolute percentage error.}
 \label{tab:auxiliary_tools}
 \scriptsize
 \setlength{\tabcolsep}{2.3pt}
@@ -1039,71 +1040,201 @@ Tiger-Model~\cite{Dai2025NatCommunThyroidSubtype}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{|>{\centering\arraybackslash}p{0.105\textwidth}|>{\raggedright\arraybackslash}p{0.105\textwidth}|>{\raggedright\arraybackslash}p{0.13\textwidth}|>{\raggedright\arraybackslash}p{0.185\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.065\textwidth}|>{\centering\arraybackslash}p{0.085\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|}
 \hline
-\multicolumn{1}{|c|}{\textbf{Agent stage}} & \multicolumn{1}{c|}{\textbf{Tool group}} & \multicolumn{2}{c|}{\textbf{Tool}} & \multicolumn{2}{c|}{\textbf{Test set}} & \multicolumn{3}{c|}{\textbf{Primary result}} & \multicolumn{3}{c|}{\textbf{Secondary result}} \\
+\multicolumn{1}{|c|}{\textbf{Agent stage}}
+& \multicolumn{1}{c|}{\textbf{Tool group}}
+& \multicolumn{2}{c|}{\textbf{Tool}}
+& \multicolumn{2}{c|}{\textbf{Dataset}}
+& \multicolumn{3}{c|}{\textbf{Primary result}}
+& \multicolumn{3}{c|}{\textbf{Secondary result}} \\
 \hline
+
 \multirow{10}{=}{\centering Preprocessing}
-& Image normalization & \multicolumn{2}{l|}{Ultrasound ROI cropping} & \multicolumn{2}{c|}{\(n=49\)} & \multicolumn{3}{l|}{Dice, 0.9803; IoU, 0.9625} & \multicolumn{3}{l|}{Precision, 0.9902; recall, 0.9717; pixel accuracy, 0.9816} \\
+& Image normalization
+& \multicolumn{2}{l|}{Ultrasound ROI cropping}
+& \multicolumn{2}{c|}{\makecell{\(152/17/79\)\\(train/val/test)}}
+& \multicolumn{3}{l|}{Dice, 0.9822; IoU, 0.9658}
+& \multicolumn{3}{l|}{Precision, 0.9904; recall, 0.9749; pixel accuracy, 0.9829} \\
 \cline{2-12}
-& Case triage & \multicolumn{2}{l|}{Nodule-presence detection} & \multicolumn{2}{c|}{\(n=16{,}467\)} & \multicolumn{3}{l|}{Accuracy, 0.9830; F1, 0.9749} & \multicolumn{3}{l|}{AUROC, 0.9981; AP, 0.9961; specificity, 0.9821} \\
+
+& Case triage
+& \multicolumn{2}{l|}{Nodule-presence detection}
+& \multicolumn{2}{c|}{\makecell{\(82{,}312/10{,}982/16{,}467\)\\(train/val/test)}}
+& \multicolumn{3}{l|}{Accuracy, 0.9830; F1, 0.9749}
+& \multicolumn{3}{l|}{AUROC, 0.9981; AP, 0.9961; sensitivity, 0.9848; specificity, 0.9821} \\
 \cline{2-12}
+
 & \multicolumn{11}{c|}{\textbf{Anatomical context parsing}} \\
 \cline{2-12}
-& \multicolumn{1}{c|}{\textbf{Tool}} & \multicolumn{1}{c|}{\textbf{Class}} & \multicolumn{1}{c|}{\textbf{Train}} & \multicolumn{1}{c|}{\textbf{Val}} & \multicolumn{1}{c|}{\textbf{Test}} & \multicolumn{1}{c|}{\textbf{Total}} & \multicolumn{1}{c|}{\textbf{Precision}} & \multicolumn{1}{c|}{\textbf{Recall}} & \multicolumn{1}{c|}{\textbf{F1}} & \multicolumn{1}{c|}{\textbf{AUROC}} & \multicolumn{1}{c|}{\textbf{AUPRC}} \\
+
+& \multicolumn{1}{c|}{\textbf{Tool}}
+& \multicolumn{1}{c|}{\textbf{Class}}
+& \multicolumn{1}{c|}{\textbf{Train}}
+& \multicolumn{1}{c|}{\textbf{Val}}
+& \multicolumn{1}{c|}{\textbf{Test}}
+& \multicolumn{1}{c|}{\textbf{Total}}
+& \multicolumn{1}{c|}{\textbf{Precision}}
+& \multicolumn{1}{c|}{\textbf{Recall}}
+& \multicolumn{1}{c|}{\textbf{F1}}
+& \multicolumn{1}{c|}{\textbf{AUROC}}
+& \multicolumn{1}{c|}{\textbf{AUPRC}} \\
 \cline{2-12}
-& \multirow{6}{*}{\makecell[l]{Thyroid-region\\classification}} & Left-lobe lateral view & 780 & 110 & 159 & 1,049 & 0.6643 & 0.5975 & 0.6291 & 0.8521 & 0.7185 \\
+
+& \multirow{6}{*}{\makecell[l]{Thyroid-region\\classification}}
+& Left-lobe lateral view
+& 780 & 110 & 159 & 1,049
+& 0.6643 & 0.5975 & 0.6291 & 0.8521 & 0.7185 \\
 \cline{3-12}
-& & Right-lobe lateral view & 946 & 133 & 199 & 1,278 & 0.6460 & 0.7337 & 0.6871 & 0.8327 & 0.7368 \\
+
+& & Right-lobe lateral view
+& 946 & 133 & 199 & 1,278
+& 0.6460 & 0.7337 & 0.6871 & 0.8327 & 0.7368 \\
 \cline{3-12}
-& & Bilateral thyroid view & 120 & 19 & 30 & 169 & 0.8929 & 0.8333 & 0.8621 & 0.9896 & 0.8911 \\
+
+& & Bilateral thyroid view
+& 120 & 19 & 30 & 169
+& 0.8929 & 0.8333 & 0.8621 & 0.9896 & 0.8911 \\
 \cline{3-12}
-& & Left-lobe transverse view & 267 & 52 & 41 & 360 & 0.7045 & 0.7561 & 0.7294 & 0.9567 & 0.8198 \\
+
+& & Left-lobe transverse view
+& 267 & 52 & 41 & 360
+& 0.7045 & 0.7561 & 0.7294 & 0.9567 & 0.8198 \\
 \cline{3-12}
-& & Right-lobe transverse view & 272 & 61 & 79 & 412 & 0.8088 & 0.6962 & 0.7483 & 0.9553 & 0.8585 \\
+
+& & Right-lobe transverse view
+& 272 & 61 & 79 & 412
+& 0.8088 & 0.6962 & 0.7483 & 0.9553 & 0.8585 \\
 \cline{3-12}
-& & Neck region & 267 & 21 & 12 & 300 & 1.0000 & 0.9167 & 0.9565 & 0.9974 & 0.9524 \\
+
+& & Neck region
+& 267 & 21 & 12 & 300
+& 1.0000 & 0.9167 & 0.9565 & 0.9974 & 0.9524 \\
 \hline
+
 \multirow{20}{=}{\centering Executor}
-& Measurement support & \multicolumn{2}{l|}{Spacing prediction} & \multicolumn{2}{c|}{\(n=600\)} & \multicolumn{3}{l|}{MAE, 0.0131; \(R^2\), 0.8520} & \multicolumn{3}{l|}{MSE, \(5.66\times10^{-4}\); MAPE, 21.39\%} \\
+& Measurement support
+& \multicolumn{2}{l|}{Spacing prediction}
+& \multicolumn{2}{c|}{Test \(n=600\)}
+& \multicolumn{3}{l|}{MAE, 0.0131; \(R^2\), 0.8520}
+& \multicolumn{3}{l|}{MSE, \(5.66\times10^{-4}\); MAPE, 21.39\%} \\
 \cline{2-12}
-& Gland localization & \multicolumn{2}{l|}{Gland segmentation} & \multicolumn{2}{c|}{\(n=90\)} & \multicolumn{3}{l|}{Dice, 0.8006; IoU, 0.6866} & \multicolumn{3}{l|}{Precision, 0.8025; recall, 0.8339} \\
+
+& Gland localization
+& \multicolumn{2}{l|}{Gland segmentation}
+& \multicolumn{2}{c|}{Test \(n=90\)}
+& \multicolumn{3}{l|}{Dice, 0.8006; IoU, 0.6866}
+& \multicolumn{3}{l|}{Precision, 0.8025; recall, 0.8339} \\
 \cline{2-12}
-& Neck-region screening & \multicolumn{2}{l|}{Cervical lymph-node detection} & \multicolumn{2}{c|}{\(n=49\)} & \multicolumn{3}{l|}{Accuracy, 0.7959; F1, 0.7368} & \multicolumn{3}{l|}{AUROC, 0.8163} \\
+
+& Neck-region screening
+& \multicolumn{2}{l|}{Cervical lymph-node detection}
+& \multicolumn{2}{c|}{Test \(n=49\)}
+& \multicolumn{3}{l|}{Accuracy, 0.7959; F1, 0.7368}
+& \multicolumn{3}{l|}{AUROC, 0.8163} \\
 \cline{2-12}
-& Gland description & \multicolumn{2}{l|}{Gland captioning} & \multicolumn{2}{c|}{\(n=400\)} & \multicolumn{3}{l|}{BLEU-4, 0.5898; METEOR, 0.4582} & \multicolumn{3}{l|}{ROUGE$_L$, 0.7450; CIDEr, 2.7736} \\
+
+& Gland description
+& \multicolumn{2}{l|}{Gland captioning}
+& \multicolumn{2}{c|}{Test \(n=400\)}
+& \multicolumn{3}{l|}{BLEU-4, 0.5898; METEOR, 0.4582}
+& \multicolumn{3}{l|}{ROUGE$_L$, 0.7450; CIDEr, 2.7736} \\
 \cline{2-12}
+
 & \multicolumn{11}{c|}{\textbf{Nodule feature extraction}} \\
 \cline{2-12}
-& \multicolumn{1}{c|}{\textbf{Tool family}} & \multicolumn{1}{c|}{\textbf{Feature classifier}} & \multicolumn{1}{c|}{\textbf{Class}} & \multicolumn{1}{c|}{\textbf{Train}} & \multicolumn{1}{c|}{\textbf{Val}} & \multicolumn{1}{c|}{\textbf{Test}} & \multicolumn{1}{c|}{\textbf{Total}} & \multicolumn{1}{c|}{\textbf{Specificity}} & \multicolumn{1}{c|}{\textbf{Sensitivity}} & \multicolumn{1}{c|}{\textbf{AUROC}} & \multicolumn{1}{c|}{\textbf{AUPRC}} \\
+
+& \multicolumn{1}{c|}{\textbf{Tool family}}
+& \multicolumn{1}{c|}{\textbf{Feature classifier}}
+& \multicolumn{1}{c|}{\textbf{Class}}
+& \multicolumn{1}{c|}{\textbf{Train}}
+& \multicolumn{1}{c|}{\textbf{Val}}
+& \multicolumn{1}{c|}{\textbf{Test}}
+& \multicolumn{1}{c|}{\textbf{Total}}
+& \multicolumn{1}{c|}{\textbf{Specificity}}
+& \multicolumn{1}{c|}{\textbf{Sensitivity}}
+& \multicolumn{1}{c|}{\textbf{AUROC}}
+& \multicolumn{1}{c|}{\textbf{AUPRC}} \\
 \cline{2-12}
+
 & \multirow{14}{*}{\makecell[l]{Nodule-feature\\classification}}
-& \multirow{3}{*}{Composition} & Cystic & 1,877 & 234 & 234 & 2,345 & 0.8345 & 0.8571 & 0.9189 & 0.9127 \\
+& \multirow{3}{*}{Composition}
+& Cystic
+& 1,824 & 227 & 228 & 2,279
+& 0.8397 & 0.8553 & 0.9166 & 0.9073 \\
 \cline{4-12}
-& & & Mixed cystic and solid & 893 & 111 & 111 & 1,115 & 0.9122 & 0.4324 & 0.8272 & 0.5852 \\
+
+& & & Mixed cystic and solid
+& 883 & 108 & 110 & 1,101
+& 0.9358 & 0.3636 & 0.8257 & 0.5943 \\
 \cline{4-12}
-& & & Solid & 1,438 & 179 & 179 & 1,796 & 0.8421 & 0.7654 & 0.9038 & 0.8164 \\
+
+& & & Solid
+& 1,391 & 173 & 177 & 1,741
+& 0.8018 & 0.7966 & 0.9011 & 0.8033 \\
 \cline{3-12}
-& & \multirow{4}{*}{Echogenicity} & Anechoic & 1,745 & 218 & 218 & 2,181 & 0.8763 & 0.9167 & 0.9426 & 0.9029 \\
+
+& & \multirow{4}{*}{Echogenicity}
+& Anechoic
+& 1,691 & 212 & 213 & 2,116
+& 0.8603 & 0.8967 & 0.9397 & 0.9160 \\
 \cline{4-12}
-& & & Hyperechoic & 222 & 27 & 27 & 276 & 0.9873 & 0.2963 & 0.8368 & 0.4152 \\
+
+& & & Hyperechoic
+& 218 & 27 & 27 & 272
+& 0.9847 & 0.2593 & 0.8474 & 0.3591 \\
 \cline{4-12}
-& & & Hypoechoic & 1,453 & 181 & 181 & 1,815 & 0.8491 & 0.7127 & 0.8475 & 0.7788 \\
+
+& & & Hypoechoic
+& 1,416 & 173 & 173 & 1,762
+& 0.8173 & 0.6705 & 0.8391 & 0.7514 \\
 \cline{4-12}
-& & & Isoechoic & 601 & 75 & 75 & 751 & 0.9198 & 0.5467 & 0.8925 & 0.5531 \\
+
+& & & Isoechoic
+& 580 & 73 & 72 & 725
+& 0.9274 & 0.5417 & 0.8804 & 0.5440 \\
 \cline{3-12}
-& & \multirow{3}{*}{Echogenic foci} & Macrocalcifications & 1,187 & 148 & 148 & 1,483 & 0.8343 & 0.4595 & 0.6907 & 0.5456 \\
+
+& & \multirow{3}{*}{Echogenic foci}
+& Macrocalcifications
+& 1,165 & 145 & 146 & 1,456
+& 0.8107 & 0.4726 & 0.7279 & 0.5601 \\
 \cline{4-12}
-& & & None & 2,209 & 276 & 276 & 2,761 & 0.5342 & 0.7862 & 0.7311 & 0.7327 \\
+
+& & & None
+& 2,150 & 270 & 270 & 2,690
+& 0.5130 & 0.8037 & 0.7431 & 0.7483 \\
 \cline{4-12}
-& & & Punctate echogenic foci & 690 & 86 & 86 & 862 & 0.9127 & 0.2209 & 0.6735 & 0.2975 \\
+
+& & & Punctate echogenic foci
+& 668 & 83 & 84 & 835
+& 0.9423 & 0.1310 & 0.6411 & 0.2615 \\
 \cline{3-12}
-& & \multirow{2}{*}{Margin} & Ill-defined & 1,191 & 148 & 148 & 1,487 & 0.8510 & 0.7568 & \multirow{2}{*}{0.8721} & \multirow{2}{*}{0.8999} \\
+
+& & \multirow{2}{*}{Margin}
+& Ill-defined
+& 1,177 & 147 & 148 & 1,472
+& 0.8200 & 0.7432
+& \multirow{2}{*}{0.8702}
+& \multirow{2}{*}{0.8847} \\
 \cline{4-10}
-& & & Smooth & 1,664 & 208 & 208 & 2,080 & 0.7568 & 0.8510 &  &  \\
+
+& & & Smooth
+& 1,602 & 200 & 200 & 2,002
+& 0.7432 & 0.8200 & & \\
 \cline{3-12}
-& & \multirow{2}{*}{Shape} & Taller-than-wide & 84 & 10 & 10 & 104 & 0.9750 & 0.5000 & \multirow{2}{*}{0.9337} & \multirow{2}{*}{0.9911} \\
+
+& & \multirow{2}{*}{Shape}
+& Taller-than-wide
+& 81 & 10 & 9 & 100
+& 0.9872 & 0.5556
+& \multirow{2}{*}{0.9174}
+& \multirow{2}{*}{0.9899} \\
 \cline{4-10}
-& & & Wider-than-tall & 642 & 80 & 80 & 802 & 0.5000 & 0.9750 &  &  \\
+
+& & & Wider-than-tall
+& 602 & 79 & 78 & 759
+& 0.5556 & 0.9872 & & \\
 \hline
+
 \end{tabular}%
 }
 \end{table*}
@@ -1874,7 +2005,7 @@ Segmentation only
 \multicolumn{8}{l}{\textit{Segmentation --- Dice (\%) $\uparrow$}} \\
 \midrule
 dataset1
-& 82.76 $\pm$ 3.54
+& \textbf{82.76 $\pm$ 3.54}
 & 81.97 $\pm$ 2.63
 & 79.21 $\pm$ 2.71
 & 72.18 $\pm$ 5.08
@@ -1887,7 +2018,7 @@ dataset2
 & 81.73 $\pm$ 2.26
 & 71.07 $\pm$ 5.35
 & ---
-& 94.85 $\pm$ 0.40
+& \textbf{94.85 $\pm$ 0.40}
 & 82.38 $\pm$ 0.42 \\
 dataset3
 & 80.81 $\pm$ 3.82
@@ -1899,17 +2030,17 @@ dataset3
 & 91.44 $\pm$ 0.15 \\
 dataset4
 & 81.86 $\pm$ 3.70
-& 86.97 $\pm$ 2.19
-& 83.28 $\pm$ 2.19
-& 82.57 $\pm$ 3.46
+& \textbf{86.97 $\pm$ 2.19}
+& \textbf{83.28 $\pm$ 2.19}
+& \textbf{82.57 $\pm$ 3.46}
 & ---
 & 94.77 $\pm$ 0.39
-& 91.46 $\pm$ 0.15 \\
+& \textbf{91.46 $\pm$ 0.15} \\
 \midrule
 \multicolumn{8}{l}{\textit{Segmentation --- HD95 (mm) $\downarrow$}} \\
 \midrule
 dataset1
-& 13.49 $\pm$ 3.83
+& \textbf{13.49 $\pm$ 3.83}
 & 8.34 $\pm$ 2.34
 & 11.73 $\pm$ 3.07
 & 11.37 $\pm$ 3.49
@@ -1930,13 +2061,13 @@ dataset3
 & 10.92 $\pm$ 3.52
 & 11.07 $\pm$ 3.28
 & ---
-& 1.93 $\pm$ 0.38
-& 1.87 $\pm$ 0.07 \\
+& \textbf{1.93 $\pm$ 0.38}
+& \textbf{1.87 $\pm$ 0.07} \\
 dataset4
 & 17.00 $\pm$ 5.34
-& 4.74 $\pm$ 1.42
-& 8.89 $\pm$ 2.93
-& 4.64 $\pm$ 1.43
+& \textbf{4.74 $\pm$ 1.42}
+& \textbf{8.89 $\pm$ 2.93}
+& \textbf{4.64 $\pm$ 1.43}
 & ---
 & 2.07 $\pm$ 0.40
 & 1.88 $\pm$ 0.07 \\
@@ -1960,12 +2091,12 @@ dataset2
 & 0.9932 $\pm$ 0.01
 & --- \\
 dataset3
-& 0.7906 $\pm$ 0.03
-& 0.9288 $\pm$ 0.01
+& \textbf{0.7906 $\pm$ 0.03}
+& \textbf{0.9288 $\pm$ 0.01}
 & ---
-& 0.9515 $\pm$ 0.01
-& 0.7623 $\pm$ 0.07
-& 0.9937 $\pm$ 0.01
+& \textbf{0.9515 $\pm$ 0.01}
+& \textbf{0.7623 $\pm$ 0.07}
+& \textbf{0.9937 $\pm$ 0.01}
 & --- \\
 \midrule
 \multicolumn{8}{l}{\textit{Classification --- AUPRC $\uparrow$}} \\
@@ -1979,19 +2110,19 @@ dataset1
 & 0.9951 $\pm$ 0.01
 & --- \\
 dataset2
-& 0.7237 $\pm$ 0.05
+& \textbf{0.7237 $\pm$ 0.05}
 & 0.9140 $\pm$ 0.01
 & ---
 & 0.9074 $\pm$ 0.01
 & 0.3190 $\pm$ 0.14
-& 0.9968 $\pm$ 0.01
+& \textbf{0.9968 $\pm$ 0.01}
 & --- \\
 dataset3
 & 0.7188 $\pm$ 0.05
-& 0.9144 $\pm$ 0.01
+& \textbf{0.9144 $\pm$ 0.01}
 & ---
-& 0.9803 $\pm$ 0.01
-& 0.4029 $\pm$ 0.14
+& \textbf{0.9803 $\pm$ 0.01}
+& \textbf{0.4029 $\pm$ 0.14}
 & 0.9967 $\pm$ 0.01
 & --- \\
 \bottomrule
