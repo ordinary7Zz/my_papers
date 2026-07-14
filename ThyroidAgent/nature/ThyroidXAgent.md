@@ -60,9 +60,8 @@
 \affil[8]{College of Mathematical Medicine, Zhejiang Normal University, Jinhua, 321004, China}
 \affil[9]{Department of Thyroid Surgery, Zhujiang Hospital, Southern Medical University}
 
-\affil[*]{\textbf{Corresponding authors:} Qinghua Liu~(\href{mailto:louwei@zjnu.edu.cn}{louwei@zjnu.edu.cn}), Wei Lou~(\href{mailto:louwei@zjnu.edu.cn}{louwei@zjnu.edu.cn}), Fei Chen~(\href{mailto:gzchenfei@126.com}{gzchenfei@126.com}), and Guanbin Li~(\href{mailto:liguanbin@mail.sysu.edu.cn}{liguanbin@mail.sysu.edu.cn})}
+\affil[*]{\textbf{Corresponding authors:} Qinghua Liu~(\href{mailto:13760633321@163.com}{13760633321@163.com}), Wei Lou~(\href{mailto:louwei@zjnu.edu.cn}{louwei@zjnu.edu.cn}), Fei Chen~(\href{mailto:gzchenfei@126.com}{gzchenfei@126.com}), and Guanbin Li~(\href{mailto:liguanbin@mail.sysu.edu.cn}{liguanbin@mail.sysu.edu.cn})}
 \affil[$\dagger$]{These authors contributed equally to this work}
-
 
 
 \begin{abstract}
@@ -79,12 +78,12 @@ Thyroid ultrasound diagnosis depends on a sequence of lesion-level observations 
 
 Most thyroid ultrasound AI systems have focused on individual components of this workflow, including segmentation~\cite{gong2021multi,gong2023thyroid,sun2025clip}, classification~\cite{gong2022less,Peng2021LancetDigitalHealthThyNet,Chen2022RadiologyTIRADS,Yao2025NPJDigitMedThyGPT}, and report generation~\cite{li_ultrasound_2024,Tanno2025ClinicianVLM,li_towards_2025}. Multicenter systems \cite{Peng2021LancetDigitalHealthThyNet,Wang2024LancetDigitalHealthFNAB} and feature-aligned multimodal models \cite{Chen2022RadiologyTIRADS,Yao2025NPJDigitMedThyGPT,Tanno2025ClinicianVLM} have connected image predictions to risk descriptors \cite{Chen2022RadiologyTIRADS,Yao2025NPJDigitMedThyGPT} or management recommendations \cite{Peng2021LancetDigitalHealthThyNet,Yao2025NPJDigitMedThyGPT}. Recent studies have extended thyroid AI to fine-needle aspiration cytology \cite{Wang2024LancetDigitalHealthFNAB}, lateral lymph-node metastasis prediction \cite{Shen2025NatCommunLLNM} and rare thyroid cancer subtype classification \cite{Dai2025NatCommunThyroidSubtype}. Many systems still present their outputs as endpoints \cite{Chen2022HumanCenteredXAI,Tikhomirov2024LostCognitive}: a mask, probability, label or report-like text. The intermediate evidence that supports these outputs is often unavailable for clinical review \cite{Chen2022HumanCenteredXAI,Wekenborg2025RealWorldHAI}, correction \cite{Wekenborg2025RealWorldHAI,Giddings2024ClinicianPatientInteraction} or reuse across downstream tasks \cite{Chen2022HumanCenteredXAI,Tikhomirov2024LostCognitive}. This endpoint-oriented design makes it difficult to determine whether an AI result is supported by appropriate lesion localization, measurement, sonographic features and report statements.
 
-This limitation reflects a broader challenge in medical AI. High-impact clinical AI studies increasingly emphasize workflow integration \cite{Vasey2022NatMedDECIDEAI,Wekenborg2025RealWorldHAI}, human--AI collaboration \cite{Topol2019NatMedHighPerformance,Patel2019HumanMachinePartnership,Leibig2022RadiologistsAI,Yu2024AIAssistanceRadiologists,Chen2024WorkloadCollaboration,Everett2026ToolTeammate,Strong2026HumanAICollaboration}, transparent reporting \cite{Liu2020NatMedCONSORTAI} and evidence beyond retrospective performance \cite{Wiens2019NatMedDoNoHarm,Topol2019NatMedHighPerformance,Rajpurkar2022NatMedAIHealth,Vasey2022NatMedDECIDEAI}. The cognitive consequences of AI-supported clinical work \cite{Tikhomirov2024LostCognitive}, clinician interaction with algorithmic recommendations \cite{Giddings2024ClinicianPatientInteraction} and the transition of AI from a tool to a clinical teammate \cite{Zou2025LancetAgenticTeammates,Everett2026ToolTeammate} have also become central considerations. Generalist medical AI \cite{Moor2023NatureGMAI,Kohane2024InjectingAI,Katz2024GPTResidents,Zhou2026NEJMAIMedVersa} and multimodal foundation models \cite{Moor2023NatureGMAI,Zhou2026NEJMAIMedVersa,Tu2025ConversationalAI,McDuff2025DifferentialDiagnosis} extend this ambition to flexible inputs and outputs across tasks. For thyroid ultrasound, however, generality must be connected to specialty-specific requirements: lesion-level measurement \cite{Alexander2022Lancet,Tessler2017ACRTIRADS}, sonographic feature attribution \cite{Tessler2017ACRTIRADS,Chen2022RadiologyTIRADS}, anatomical context \cite{Grani2024NatRevEndocrinol}, guideline-aligned management \cite{Alexander2022Lancet,Tessler2017ACRTIRADS,Peng2021LancetDigitalHealthThyNet} and auditable reporting \cite{Chen2022HumanCenteredXAI,Tanno2025ClinicianVLM,Wekenborg2025RealWorldHAI}. We therefore treat the case-level evidence record, rather than a single prediction endpoint, as the central object of AI assistance.
+This limitation reflects a broader challenge in medical AI. High-impact clinical AI studies increasingly emphasize workflow integration \cite{Vasey2022NatMedDECIDEAI,Wekenborg2025RealWorldHAI,dreyer2025mechanistic}, human--AI collaboration \cite{Topol2019NatMedHighPerformance,Patel2019HumanMachinePartnership,Leibig2022RadiologistsAI,Yu2024AIAssistanceRadiologists,Chen2024WorkloadCollaboration,Everett2026ToolTeammate,Strong2026HumanAICollaboration}, and evidence beyond retrospective performance \cite{Wiens2019NatMedDoNoHarm,Topol2019NatMedHighPerformance,Rajpurkar2022NatMedAIHealth,Vasey2022NatMedDECIDEAI}. The cognitive consequences of AI-supported clinical work \cite{Tikhomirov2024LostCognitive}, clinician interaction with algorithmic recommendations \cite{Giddings2024ClinicianPatientInteraction} and the transition of AI from a tool to a clinical teammate \cite{Zou2025LancetAgenticTeammates,Everett2026ToolTeammate} have also become central considerations. Generalist medical AI \cite{Moor2023NatureGMAI,Kohane2024InjectingAI,Katz2024GPTResidents,Zhou2026NEJMAIMedVersa} and multimodal foundation models \cite{Moor2023NatureGMAI,Zhou2026NEJMAIMedVersa,Tu2025ConversationalAI,McDuff2025DifferentialDiagnosis,deltadahl2025deep,pontikos2025next} extend this ambition to flexible inputs and outputs across tasks. For thyroid ultrasound, however, generality must be connected to specialty-specific requirements: lesion-level measurement \cite{Alexander2022Lancet,Tessler2017ACRTIRADS}, sonographic feature attribution \cite{Tessler2017ACRTIRADS,Chen2022RadiologyTIRADS}, anatomical context \cite{Grani2024NatRevEndocrinol}, guideline-aligned management \cite{Alexander2022Lancet,Tessler2017ACRTIRADS,Peng2021LancetDigitalHealthThyNet} and auditable reporting \cite{Chen2022HumanCenteredXAI,Tanno2025ClinicianVLM,Wekenborg2025RealWorldHAI}. We therefore treat the case-level evidence record, rather than a single prediction endpoint, as the central object of AI assistance.
 
 Agent-based workflows \cite{Qiu2024NatMachIntellAgenticSystems,Zou2025LancetAgenticTeammates,Moritz2025NatBMECoordinatedAgents,Ferber2026AutonomousAgents,Collaco2026AgenticAIReview,kong2025ai} provide one way to implement this evidence-centerd formulation. In this setting, the agent's role is coordination rather than direct image interpretation \cite{Qiu2024NatMachIntellAgenticSystems,Zou2025LancetAgenticTeammates,Moritz2025NatBMECoordinatedAgents}: it acts as a workflow controller that plans case-specific analysis \cite{wang_plan-and-solve_2023,Schmidgall2026AgentClinic,Liu2026AgentBenchmark}, routes inputs to specialized tools \cite{yao_react:_2022,Moritz2025NatBMECoordinatedAgents,Ferber2026AutonomousAgents}, maintains intermediate state \cite{Tian2026AutonomousWorkflow} and exposes structured evidence for human review \cite{Chen2022HumanCenteredXAI,Wekenborg2025RealWorldHAI,Zou2025LancetAgenticTeammates}. Medical-agent benchmarks increasingly emphasize these capabilities in interactive settings \cite{Jiang2025NEJMAIMedAgentBench,Schmidgall2026AgentClinic,Liu2026AgentBenchmark} that require retrieval, action execution and workflow-level reasoning \cite{yao_react:_2022,Jiang2025NEJMAIMedAgentBench,Tian2026AutonomousWorkflow}. For thyroid ultrasound, the relevant evidence objects include images, lesion masks and measurements \cite{gong2021multi,gong2023thyroid,zhang2025tn5000}, radiomic descriptors and risk estimates \cite{van2017computational,Chen2022RadiologyTIRADS,Yao2025NPJDigitMedThyGPT}, report clauses \cite{rebuff_data2text_2020,li_ultrasound_2024,Tanno2025ClinicianVLM}, uncertainty signals \cite{farquhar2024detecting} and clinician corrections \cite{Yu2024AIAssistanceRadiologists,Chen2024WorkloadCollaboration,Wekenborg2025RealWorldHAI}. The agent is therefore useful insofar as it can coordinate these objects into an auditable clinical workflow.
 
-Here we present ThyroidXAgent, a clinician-interactive agent for evidence-grounded thyroid ultrasound diagnosis and reporting. ThyroidXAgent orchestrated a toolbox of segmentation models, image classifiers and radiomics tools. For each case, a planning-and-routing layer selected the appropriate tools, combined their outputs into an auditable evidence record and presented the results for clinician review and correction.
-We evaluate this workflow across nodule segmentation, benign--malignant classification, malignant-lesion stratification and report generation. We also introduce ThyClinScore, a lesion-level clinical semantic metric for evaluating whether generated reports preserve clinically relevant evidence. Across these settings, ThyroidXAgent improved cross-dataset performance, generated task-specific radiomic attribution patterns, reduced segmentation and report-writing time in reader studies and preserved editable evidence traces.
+Here we present ThyroidXAgent, a clinician-interactive agentic system that reframes thyroid ultrasound AI around an auditable case-level evidence record rather than a collection of isolated prediction endpoints. Instead of directly interpreting ultrasound images with a general-purpose multimodal model, ThyroidXAgent acts as a workflow controller that plans case-specific analyses, routes inputs to specialized tools and maintains structured intermediate evidence, including lesion masks, measurements, class probabilities, radiomic descriptors, uncertainty signals and report clauses. These evidence objects remain inspectable and editable by clinicians, and corrections can be propagated to subsequent analysis and reporting steps. We evaluate this formulation across nodule segmentation, benign--malignant classification, malignant-lesion stratification and case-level report generation using 40 heterogeneous multicentre datasets and clinician reader studies. We further introduce ThyClinScore, a lesion-level semantic metric that evaluates whether generated reports preserve clinically relevant evidence rather than surface-level wording alone. ThyroidXAgent improved cross-dataset segmentation and classification, supported task-specific reuse of shared diagnostic tools, produced more clinically consistent reports and reduced clinician workload while retaining an editable evidence trace. Together, these results establish evidence-centred orchestration as an alternative to both standalone predictive models and unconstrained end-to-end medical agents.
+
 
 \begin{figure}[p]
     \centering
@@ -197,13 +196,16 @@ Finally, we assessed human--AI cooperation in a cross-over reader study. Two phy
 
 \section{Discussion}
 
-This study evaluated thyroid ultrasound AI as an auditable case-level evidence workflow. The central contribution is the organization of segmentation, classification, radiomics, measurement and report generation into a clinician-supervised process in which intermediate outputs remain visible and editable. Across heterogeneous datasets, ThyroidXAgent improved nodule segmentation and benign--malignant classification, supported adaptation to lateral lymph-node metastasis and FTC/PTC subtype prediction, and improved evidence-grounded report generation. In reader studies, AI assistance reduced segmentation and reporting time while preserving masks, measurements, attribution signals and report statements that clinicians could inspect and correct.
+This study reframes thyroid ultrasound AI as an auditable case-level evidence workflow rather than a collection of isolated prediction tasks. The principal contribution of ThyroidXAgent is not a new standalone segmentation, classification or report-generation model, but a shared evidence architecture in which lesion masks, measurements, probabilities, radiomic descriptors, uncertainty signals and report clauses remain visible, editable and reusable across the diagnostic process. Across heterogeneous datasets, this formulation improved nodule segmentation and benign--malignant classification, supported adaptation to additional malignant-lesion tasks, enhanced evidence-grounded reporting and reduced clinician workload. Auditability is therefore embedded in the workflow itself rather than appended retrospectively to a final prediction.
 
-These results clarify the role of agentic AI in this setting. ThyroidXAgent does not rely on a general-purpose vision-language model to interpret ultrasound images directly. Instead, the agent functions as a workflow controller operating on structured evidence: it plans case-specific analysis, routes inputs to specialized tools, maintains case state, integrates model outputs and exposes intermediate findings for clinical review. This division of labour is important for medical imaging. Image interpretation and measurement remain assigned to task-specific models, whereas the agent provides routing, evidence management and interaction across tasks. The value of the agent therefore lies less in open-ended autonomy than in making the diagnostic workflow traceable, correctable and reusable.
+ThyroidXAgent also defines a constrained and clinically practical role for agentic AI. Rather than asking a general-purpose vision--language model to interpret ultrasound images directly, the agent plans case-specific analyses, routes inputs to specialized tools, maintains case state and exposes intermediate results for review. Image interpretation and quantitative measurement remain assigned to task-specific models, whereas the agent provides coordination and evidence management across them. This division of labour extends emerging medical-agent frameworks centred on planning, tool use and coordinated clinical workflows~\cite{Qiu2024NatMachIntellAgenticSystems,Zou2025LancetAgenticTeammates,Moritz2025NatBMECoordinatedAgents}. Its value lies less in unrestricted autonomy than in making heterogeneous model outputs coherent, traceable and correctable.
 
-The report-generation results further support this evidence-centerd formulation. Thyroid ultrasound reports contain lesion-level clinical facts, including location, size, echogenicity, vascularity, morphology and risk impression. Evidence-grounded report assembly constrains report text to structured observations stored in the case record, reducing reliance on unconstrained language generation. ThyClinScore complements this design by evaluating reports as lesion-level clinical semantic objects. Conventional natural-language generation metrics reward wording overlap, but reports with similar phrasing can disagree on clinically important attributes. ThyClinScore addresses this limitation by structuring reports, matching lesion entries and scoring clinically meaningful attributes. Its correlation with a location-aware LLM judge supports its use as a complementary metric, although expert adjudication remains necessary before such metrics can substitute for clinical review.
+The shared evidence record further distinguishes ThyroidXAgent from a conventional fixed pipeline. A corrected lesion mask can be propagated to measurement, radiomics, classification and reporting, while anatomical context, malignancy estimates and lesion descriptors can be reused when constructing the diagnostic impression. The same evidence-producing tools could consequently be redirected towards lymph-node metastasis prediction and thyroid carcinoma subtype classification without rebuilding the complete workflow. Report generation provides a particularly stringent demonstration of this design: rather than producing unconstrained free text, ThyroidXAgent assembles report statements from structured clinical evidence. ThyClinScore complements this approach by evaluating lesion matching, clinically relevant attributes and report completeness, thereby capturing errors in location, size or morphology that may be missed by conventional lexical-overlap metrics.
 
-Several limitations remain. The evaluations are retrospective, and although multiple external cohorts were included, prospective deployment in real ultrasound reporting environments is still required. The reader studies involved a limited number of physicians and should be interpreted as workflow feasibility and efficiency studies rather than definitive evidence of clinical effectiveness. Future studies should include physicians with different experience levels, multiple institutions and realistic reporting settings. The quality of ThyroidXAgent depends on the generalization quality of its component tools, but this can be easily solved with the clinicians in the loop pipeline, or the generalized tool design~\cite{gong2025domain,gong2026intermediate}; routing cannot fully compensate for poor segmentation, biased training data or incomplete metadata, which remain central concerns for responsible medical AI \cite{Wiens2019NatMedDoNoHarm,Obermeyer2019ScienceBias}. The report-generation module is intentionally conservative and template-based, which reduces hallucination risk but may limit linguistic flexibility and local reporting-style adaptation. Finally, the framework stores clinician corrections as reusable evidence, but continual learning in clinical practice will require governance for data quality, privacy, versioning, model drift and regulatory review. These limitations define the next step: prospective, multi-center evaluation of auditable thyroid ultrasound AI as a clinician-supervised evidence workflow rather than a standalone diagnostic product.
+The reader studies indicate that this evidence-centred formulation can support human--AI cooperation without requiring clinicians to accept an opaque recommendation. AI assistance reduced segmentation and reporting time while preserving meaningful points of clinical control, including lesion-boundary correction, evidence inspection and report editing. These findings should not be interpreted as evidence for replacing clinical judgement. Instead, they suggest that agentic systems can reduce repetitive work while keeping consequential intermediate outputs available for verification and correction. The effectiveness of such systems will ultimately depend not only on predictive accuracy, but also on whether clinicians can identify errors, understand their downstream consequences and efficiently intervene.
+
+Several limitations remain. The evaluations were retrospective, and prospective multicentre studies are needed under real acquisition conditions, changing scanner settings and institution-specific reporting practices. The reader studies included a limited number of physicians and primarily assessed workflow feasibility and efficiency rather than patient-level clinical benefit. ThyroidXAgent also remains dependent on the validity and calibration of its component tools: routing cannot compensate for systematically biased segmentation, incomplete metadata or poorly generalized classifiers, although visible intermediate evidence may make these failures easier to detect~\cite{Wiens2019NatMedDoNoHarm,Obermeyer2019ScienceBias}. More generalizable tool design may further improve cross-domain robustness~\cite{gong2025domain,gong2026intermediate}. Finally, the template-based reporting strategy may require local adaptation, and learning from clinician corrections will require governance for data quality, privacy, provenance, model versioning and distribution shift. Future work should therefore determine whether evidence-level corrections improve downstream clinical decisions prospectively and whether the shared evidence architecture can support additional imaging tasks without sacrificing reliability or interpretability.
+
 
 \section{Methods}
 
@@ -311,12 +313,24 @@ The NHCMISD dataset was collected from real world clinical ultrasound cases prov
 The source code, trained model checkpoints and report-generation templates will be released after institutional review. Until public release, code required to reproduce the reported analyses is available from the corresponding authors upon reasonable request.
 
 \section{Acknowledgements}
-This work was supported by the Zhejiang Provincial Natural Science Foundation of China under Grant No. LQN26F020029. This work was financially supported by the Natural Science Foundation of Guangdong Province under Grant 2024A1515010255. 
+This work was supported in part by the National Natural Science Foundation of China (Grant No. 62322608), the Zhejiang Provincial Natural Science Foundation of China (Grant No. LQN26F020029), and the Natural Science Foundation of Guangdong Province (Grant No. 2024A1515010255).
 
 
-\section{Author Contributions}
+\section{Author contributions}
 
-H.G., S.C., B.W., Y.W., F.C. and G.L. conceived the study. H.G., S.C., B.W., Y.W., X.X. and M.M. developed the computational methods and experiments. G.Y., H.W., Q.L. and F.C. contributed clinical data curation, annotation and interpretation. S.W., D.K. and W.L. contributed statistical and methodological guidance. H.G. drafted the manuscript with input from all authors. W.L., F.C. and G.L. supervised the study. All authors reviewed and approved the manuscript.
+\begin{itemize}
+    \item \textbf{Conceptualization:} H.G. and G.L.
+    \item \textbf{System development:} S.C., B.W. and X.X.
+    \item \textbf{Computational evaluation:} S.C., B.W. and S.W.
+    \item \textbf{Reader study:} H.W., Q.L. and F.C.
+    \item \textbf{Data curation and organization:} Y.W., G.Y., H.W., M.M., D.K., Q.L., W.L. and F.C.
+    \item \textbf{Writing---original draft:} H.G., Y.W., S.C. and B.W.
+    \item \textbf{Writing---review and editing:} All authors.
+    \item \textbf{Supervision:} Q.L., W.L., F.C. and G.L.
+\end{itemize}
+
+All authors reviewed and approved the final manuscript.
+
 
 \section{Confilts}
 The authors has no confilts.
@@ -454,87 +468,244 @@ ZJH-8K & \makecell[c]{Segmentation,\\Classification} & \makecell[l]{Zhujiang Hos
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}llllllll@{}}
 \toprule
-\textbf{Dataset} & \textbf{Images} & \textbf{Train} & \textbf{Test} & \textbf{File Format} & \textbf{Task} & \textbf{Location} & \textbf{Ultrasonic Imaging Device} \\
+\textbf{Dataset} &
+\textbf{Dataset Size} &
+\textbf{Development/Validation} &
+\textbf{Evaluation} &
+\textbf{File Format} &
+\textbf{Task} &
+\textbf{Location} &
+\textbf{Ultrasonic Imaging Device} \\
 \midrule
 
-TGVideo~\cite{wunderling2017comparison} & 15,186 (16 cases) & 15,186 & N/A &
-\begin{tabular}[c]{@{}l@{}}Image: DICOM\\Mask: DICOM\end{tabular} &
+TGVideo~\cite{wunderling2017comparison} &
+15,186 (16 cases) &
+15,186 &
+N/A &
+\begin{tabular}[c]{@{}l@{}}
+Image: DICOM\\
+Mask: DICOM
+\end{tabular} &
 Segmentation &
 Germany &
 GE Logiq E9 \\
 
 \midrule
-DDTI~\cite{pedraza2015open} & 637 & N/A & 637 &
-\begin{tabular}[c]{@{}l@{}}Image: PNG\\Mask: PNG\\Label: CSV\end{tabular} &
-\begin{tabular}[c]{@{}l@{}}Segmentation\\Classification\end{tabular} &
+DDTI~\cite{pedraza2015open} &
+637 &
+N/A &
+637 &
+\begin{tabular}[c]{@{}l@{}}
+Image: PNG\\
+Mask: PNG\\
+Label: CSV
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+Segmentation\\
+Classification
+\end{tabular} &
 Colombia &
-\begin{tabular}[c]{@{}l@{}}TOSHIBA Nemio 30\\TOSHIBA Nemio MX\end{tabular} \\
+\begin{tabular}[c]{@{}l@{}}
+TOSHIBA Nemio 30\\
+TOSHIBA Nemio MX
+\end{tabular} \\
 
 \midrule
-TN3K~\cite{gong2021multi,gong2022less,gong2023thyroid} & 3,493 & 2,879 & 614 &
-\begin{tabular}[c]{@{}l@{}}Image: JPG\\Mask: JPG\\Label: CSV\end{tabular} &
-\begin{tabular}[c]{@{}l@{}}Segmentation\\Classification\end{tabular} &
+TN3K~\cite{gong2021multi,gong2022less,gong2023thyroid} &
+3,493 &
+2,879 &
+614 &
+\begin{tabular}[c]{@{}l@{}}
+Image: JPG\\
+Mask: JPG\\
+Label: CSV
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+Segmentation\\
+Classification
+\end{tabular} &
 Guangzhou, China &
-\begin{tabular}[c]{@{}l@{}}GE Logiq E9\\ARIETTA 850\\RESONA 70B\end{tabular} \\
+\begin{tabular}[c]{@{}l@{}}
+GE Logiq E9\\
+ARIETTA 850\\
+RESONA 70B
+\end{tabular} \\
 
 \midrule
-24-TMI~\cite{li_ultrasound_2024} &
-\begin{tabular}[c]{@{}l@{}}2,460 cases\\4,920 images\end{tabular} &
-3,934 & 986 &
-JPEG &
-Report Generation &
+TN5K~\cite{zhang2025tn5000} &
+5,000 &
+4,000 &
+1,000 &
+\begin{tabular}[c]{@{}l@{}}
+Image: JPG\\
+Label: XML
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+Detection\\
+Classification
+\end{tabular} &
 Beijing, China &
-N/A \\
+\begin{tabular}[c]{@{}l@{}}
+GE Logiq E9\\
+GE S7
+\end{tabular} \\
 
 \midrule
-TN5K~\cite{zhang2025tn5000} & 5,000 & 4,000 & 1,000 &
-\begin{tabular}[c]{@{}l@{}}Image: JPG\\Label: XML\end{tabular} &
-\begin{tabular}[c]{@{}l@{}}Detection\\Classification\end{tabular} &
-Beijing, China &
-\begin{tabular}[c]{@{}l@{}}GE Logiq E9\\GE S7\end{tabular} \\
-
-\midrule
-ThyUS2Path~\cite{hou2024ultrasonography} & 8,508 & 5,457 & 3,051 &
-\begin{tabular}[c]{@{}l@{}}Image: JPG\\Label: CSV\end{tabular} &
+ThyUS2Path~\cite{hou2024ultrasonography} &
+8,508 &
+5,457 &
+3,051 &
+\begin{tabular}[c]{@{}l@{}}
+Image: JPG\\
+Label: CSV
+\end{tabular} &
 Classification &
 Zhejiang, China &
 Esaote MyLab (Portable) \\
 
 \midrule
 Cine-clip~\cite{stanford2024thyroid} &
-\begin{tabular}[c]{@{}l@{}}17,412 frames\\192 cases\\avg. 90 frames/case\end{tabular} &
-N/A & N/A &
-\begin{tabular}[c]{@{}l@{}}Image: HDF5\\Label: CSV\end{tabular} &
-\begin{tabular}[c]{@{}l@{}}Segmentation\\Classification\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+17,412 frames\\
+192 cases\\
+avg. 90 frames/case
+\end{tabular} &
+N/A &
+N/A &
+\begin{tabular}[c]{@{}l@{}}
+Image: HDF5\\
+Label: CSV
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+Segmentation\\
+Classification
+\end{tabular} &
 California, USA &
 N/A \\
 
 \midrule
 AHU~\cite{yang2025annotated} &
-\begin{tabular}[c]{@{}l@{}}1,833 cases\\125,896 images\end{tabular} &
-N/A & N/A &
-\begin{tabular}[c]{@{}l@{}}Image: JPG\\Label: Folder-level\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+1,833 cases\\
+125,896 images
+\end{tabular} &
+N/A &
+N/A &
+\begin{tabular}[c]{@{}l@{}}
+Image: JPG\\
+Label: Folder-level
+\end{tabular} &
 Classification &
 China (web scraping) &
 Heterogeneous \\
 
 \midrule
-ThyroidXL~\cite{duong2025thyroidxl} & 11,635 & 9,541 & 2,094 &
-\begin{tabular}[c]{@{}l@{}}Image: PNG\\Mask: PNG\\Label: TXT\end{tabular} &
-\begin{tabular}[c]{@{}l@{}}Segmentation\\Classification\\Detection\end{tabular} &
+ThyroidXL~\cite{duong2025thyroidxl} &
+11,635 &
+9,541 &
+2,094 &
+\begin{tabular}[c]{@{}l@{}}
+Image: PNG\\
+Mask: PNG\\
+Label: TXT
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+Segmentation\\
+Classification\\
+Detection
+\end{tabular} &
 Vietnam &
 Hitachi Aloka Arietta V70 \\
 
 \midrule
-PKTN~\cite{sun2025clip} & 1,005 & N/A & N/A &
-\begin{tabular}[c]{@{}l@{}}Image: JPG\\Mask: JPG\end{tabular} &
+PKTN~\cite{sun2025clip} &
+1,005 &
+N/A &
+N/A &
+\begin{tabular}[c]{@{}l@{}}
+Image: JPG\\
+Mask: JPG
+\end{tabular} &
 Segmentation &
 Beijing, China &
 N/A \\
 
 \midrule
-TNVideo & 148 cases & N/A & N/A & N/A &
-\begin{tabular}[c]{@{}l@{}}Segmentation\\Finding\end{tabular} &
+KMVE~\cite{li_ultrasound_2024} &
+\begin{tabular}[c]{@{}l@{}}
+2,457 cases\\
+4,914 image assignments
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+1,719 training cases\\
+246 validation cases
+\end{tabular} &
+492 test cases &
+\begin{tabular}[c]{@{}l@{}}
+Image: JPEG\\
+Report: JSON
+\end{tabular} &
+Report Generation &
+Beijing, China &
+N/A \\
+
+\midrule
+SMU-HMC &
+\begin{tabular}[c]{@{}l@{}}
+23,955 reports\\
+248,194 images
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+23,555 reports\\
+242,210 images
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+400 reports\\
+5,984 images
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+Image: PNG\\
+Report: JSON
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+Report Generation\\
+Component Development
+\end{tabular} &
+Guangzhou, China &
+Heterogeneous \\
+
+\midrule
+ZJH-TS &
+\begin{tabular}[c]{@{}l@{}}
+353 reports\\
+4,471 images
+\end{tabular} &
+N/A &
+\begin{tabular}[c]{@{}l@{}}
+150 reports\\
+2,034 images
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+Image: PNG\\
+Report: JSON
+\end{tabular} &
+\begin{tabular}[c]{@{}l@{}}
+Report Generation\\
+External Validation
+\end{tabular} &
+Guangzhou, China &
+Heterogeneous \\
+
+\midrule
+TNVideo &
+148 cases &
+N/A &
+145 labelled cases &
+Video: AVI &
+\begin{tabular}[c]{@{}l@{}}
+Segmentation\\
+Reader Study
+\end{tabular} &
 Guangzhou, China &
 N/A \\
 
@@ -1136,12 +1307,12 @@ Gemini2.5 Pro~\cite{comanici_gemini_2025}
 & 0.2536$\pm$0.0091 \\
 
 Qwen3.5 Plus~\cite{yang_qwen3_2025}
-& 0.5015$\pm$0.0191
-& 0.4023$\pm$0.0167
-& 0.3254$\pm$0.0148
-& 0.2639$\pm$0.0131
-& \textbf{0.3551$\pm$0.0074}
-& 0.5372$\pm$0.0122 \\
+& 0.4964$\pm$0.0182
+& 0.3965$\pm$0.0162
+& 0.3196$\pm$0.0145
+& 0.2581$\pm$0.0131
+& \textbf{0.3508$\pm$0.0076}
+& 0.5314$\pm$0.0125 \\
 
 Claude-Sonnet-4.6
 & 0.4480$\pm$0.0181
@@ -1389,12 +1560,12 @@ Gemini2.5 Pro~\cite{comanici_gemini_2025}
 & 0.3557$\pm$0.0244 \\
 
 Qwen3.5 Plus~\cite{yang_qwen3_2025}
-& 0.6433$\pm$0.0458
-& 0.4958$\pm$0.0471
-& 0.3707$\pm$0.0432
-& \textbf{0.9695$\pm$0.0067}
-& \textbf{0.4823$\pm$0.0208}
-& 0.4487$\pm$0.0196 \\
+& 0.5781$\pm$0.0558
+& 0.5464$\pm$0.0465
+& 0.3902$\pm$0.0485
+& 0.9575$\pm$0.0086
+& \textbf{0.4767$\pm$0.0219}
+& 0.4520$\pm$0.0220 \\
 
 Claude-Sonnet-4.6
 & 0.6186$\pm$0.0571
@@ -1433,7 +1604,7 @@ KMVE~\cite{li_ultrasound_2024}
 & 0.2833$\pm$0.0600
 & 0.5820$\pm$0.0408
 & \textbf{0.4889$\pm$0.0570}
-& 0.9641$\pm$0.0090
+& \textbf{0.9641$\pm$0.0090}
 & 0.4564$\pm$0.0228
 & \textbf{0.4676$\pm$0.0268} \\
 
