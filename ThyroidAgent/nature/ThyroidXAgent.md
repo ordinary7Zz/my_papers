@@ -371,6 +371,12 @@ The authors has no confilts.
 \suppcontentsline{tab:static_rule_controller_radar_metrics}{Table S9.}{Static-pipeline performance used in report-generation radar plots}
 \suppcontentsline{tab:report_generation_tool_ablation}{Table S10.}{Ablation of agent--tool integration for report generation}
 \suppcontentsline{tab:stacked_performance}{Table S11.}{Effect of cumulative training-data integration on segmentation and classification}
+\suppcontentsline{tab:gland_dice}{Table S12.}{Per-centre Dice for thyroid gland segmentation on NHC-MISD-TUS}
+\suppcontentsline{tab:gland_hd95}{Table S13.}{Per-centre HD95 for thyroid gland segmentation on NHC-MISD-TUS}
+\suppcontentsline{tab:nodule_dice}{Table S14.}{Per-centre Dice for thyroid nodule segmentation on NHC-MISD-TUS}
+\suppcontentsline{tab:nodule_hd95}{Table S15.}{Per-centre HD95 for thyroid nodule segmentation on NHC-MISD-TUS}
+\suppcontentsline{tab:binary_auroc}{Table S16.}{Per-centre AUROC for benign versus malignant classification on NHC-MISD-TUS}
+\suppcontentsline{tab:binary_auprc}{Table S17.}{Per-centre AUPRC for benign versus malignant classification on NHC-MISD-TUS}
 
 
 % ================================================================
@@ -2175,6 +2181,11 @@ dataset3
 }
 \end{table*}
 \clearpage
+
+% ================================================================
+% Per-centre performance on NHC-MISD-TUS external test set
+% ================================================================
+\input{imgs_sup/per_center_tables.tex}
 
 \end{appendices}
 
