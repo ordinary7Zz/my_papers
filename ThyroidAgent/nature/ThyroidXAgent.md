@@ -1031,35 +1031,58 @@ Tiger-Model~\cite{Dai2025NatCommunThyroidSubtype}
 
 \begin{table*}[p]
 \centering
-\caption{
-Performance of auxiliary tools in ThyroidXAgent. Held-out test results are reported for preprocessing tools, including image normalization, nodule-presence triage and anatomical-context parsing, and for executor-stage tools, including measurement support, gland localization, lymph-node screening, gland captioning and nodule-feature extraction. Anatomical-context parsing and nodule-feature extraction are additionally reported at the class level. For the binary margin and shape classifiers, AUROC and AUPRC are reported once across the paired class rows. AP, average precision; MAE, mean absolute error; MSE, mean squared error; MAPE, mean absolute percentage error.}
+\caption{Performance of auxiliary tools in ThyroidXAgent. Held-out test results are reported for preprocessing tools, including image normalization, nodule-presence triage and anatomical-context parsing, and for executor-stage tools, including measurement support, gland localization, lymph-node screening, gland captioning and nodule-feature extraction. Anatomical-context parsing and nodule-feature extraction are additionally reported at the class level. For the binary margin and shape classifiers, AUROC and AUPRC are reported once across the paired class rows. AP, average precision; MAE, mean absolute error; MSE, mean squared error; MAPE, mean absolute percentage error.}
 \label{tab:auxiliary_tools}
 \scriptsize
 \setlength{\tabcolsep}{2.3pt}
 \renewcommand{\arraystretch}{1.08}
+
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{|>{\centering\arraybackslash}p{0.105\textwidth}|>{\raggedright\arraybackslash}p{0.105\textwidth}|>{\raggedright\arraybackslash}p{0.13\textwidth}|>{\raggedright\arraybackslash}p{0.185\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.045\textwidth}|>{\centering\arraybackslash}p{0.065\textwidth}|>{\centering\arraybackslash}p{0.085\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|>{\centering\arraybackslash}p{0.078\textwidth}|}
+\begin{tabular}{
+|>{\centering\arraybackslash}p{0.100\textwidth}
+|>{\raggedright\arraybackslash}p{0.105\textwidth}
+|>{\raggedright\arraybackslash}p{0.130\textwidth}
+|>{\raggedright\arraybackslash}p{0.140\textwidth}
+|>{\centering\arraybackslash}p{0.060\textwidth}
+|>{\centering\arraybackslash}p{0.055\textwidth}
+|>{\centering\arraybackslash}p{0.055\textwidth}
+|>{\centering\arraybackslash}p{0.070\textwidth}
+|>{\centering\arraybackslash}p{0.080\textwidth}
+|>{\centering\arraybackslash}p{0.075\textwidth}
+|>{\centering\arraybackslash}p{0.075\textwidth}
+|>{\centering\arraybackslash}p{0.075\textwidth}|}
+
 \hline
 \multicolumn{1}{|c|}{\textbf{Agent stage}}
+& \multicolumn{11}{c|}{\textbf{Preprocessing tools}} \\
+\hline
+
+\multicolumn{1}{|c|}{}
 & \multicolumn{1}{c|}{\textbf{Tool group}}
 & \multicolumn{2}{c|}{\textbf{Tool}}
-& \multicolumn{2}{c|}{\textbf{Dataset}}
-& \multicolumn{3}{c|}{\textbf{Primary result}}
+& \multicolumn{1}{c|}{\textbf{Train}}
+& \multicolumn{1}{c|}{\textbf{Val}}
+& \multicolumn{1}{c|}{\textbf{Test}}
+& \multicolumn{2}{c|}{\textbf{Primary result}}
 & \multicolumn{3}{c|}{\textbf{Secondary result}} \\
 \hline
 
 \multirow{10}{=}{\centering Preprocessing}
 & Image normalization
 & \multicolumn{2}{l|}{Ultrasound ROI cropping}
-& \multicolumn{2}{c|}{\makecell{\(152/17/79\)\\(train/val/test)}}
-& \multicolumn{3}{l|}{Dice, 0.9822; IoU, 0.9658}
+& 152
+& 17
+& 79
+& \multicolumn{2}{l|}{Dice, 0.9822; IoU, 0.9658}
 & \multicolumn{3}{l|}{Precision, 0.9904; recall, 0.9749; pixel accuracy, 0.9829} \\
 \cline{2-12}
 
 & Case triage
 & \multicolumn{2}{l|}{Nodule-presence detection}
-& \multicolumn{2}{c|}{\makecell{\(82{,}312/10{,}982/16{,}467\)\\(train/val/test)}}
-& \multicolumn{3}{l|}{Accuracy, 0.9830; F1, 0.9749}
+& 82,312
+& 10,982
+& 16,467
+& \multicolumn{2}{l|}{Accuracy, 0.9830; F1, 0.9749}
 & \multicolumn{3}{l|}{AUROC, 0.9981; AP, 0.9961; sensitivity, 0.9848; specificity, 0.9821} \\
 \cline{2-12}
 
@@ -1110,32 +1133,54 @@ Performance of auxiliary tools in ThyroidXAgent. Held-out test results are repor
 & 1.0000 & 0.9167 & 0.9565 & 0.9974 & 0.9524 \\
 \hline
 
+\multicolumn{1}{|c|}{\textbf{Agent stage}}
+& \multicolumn{11}{c|}{\textbf{Executor-stage tools}} \\
+\hline
+
+\multicolumn{1}{|c|}{}
+& \multicolumn{1}{c|}{\textbf{Tool group}}
+& \multicolumn{2}{c|}{\textbf{Tool}}
+& \multicolumn{1}{c|}{\textbf{Train}}
+& \multicolumn{1}{c|}{\textbf{Val}}
+& \multicolumn{1}{c|}{\textbf{Test}}
+& \multicolumn{2}{c|}{\textbf{Primary result}}
+& \multicolumn{3}{c|}{\textbf{Secondary result}} \\
+\hline
+
 \multirow{20}{=}{\centering Executor}
 & Measurement support
 & \multicolumn{2}{l|}{Spacing prediction}
-& \multicolumn{2}{c|}{Test \(n=600\)}
-& \multicolumn{3}{l|}{MAE, 0.0131; \(R^2\), 0.8520}
+& 5,288
+& 661
+& 662
+& \multicolumn{2}{l|}{MAE, 0.0131; \(R^2\), 0.8520}
 & \multicolumn{3}{l|}{MSE, \(5.66\times10^{-4}\); MAPE, 21.39\%} \\
 \cline{2-12}
 
 & Gland localization
 & \multicolumn{2}{l|}{Gland segmentation}
-& \multicolumn{2}{c|}{Test \(n=90\)}
-& \multicolumn{3}{l|}{Dice, 0.8006; IoU, 0.6866}
+& 335
+& --
+& 90
+& \multicolumn{2}{l|}{Dice, 0.8006; IoU, 0.6866}
 & \multicolumn{3}{l|}{Precision, 0.8025; recall, 0.8339} \\
 \cline{2-12}
 
 & Neck-region screening
 & \multicolumn{2}{l|}{Cervical lymph-node detection}
-& \multicolumn{2}{c|}{Test \(n=49\)}
-& \multicolumn{3}{l|}{Accuracy, 0.7959; F1, 0.7368}
+& 251
+& --
+& 49
+& \multicolumn{2}{l|}{Accuracy, 0.7959; F1, 0.7368}
 & \multicolumn{3}{l|}{AUROC, 0.8163} \\
 \cline{2-12}
 
 & Gland description
 & \multicolumn{2}{l|}{Gland captioning}
-& \multicolumn{2}{c|}{Test \(n=400\)}
-& \multicolumn{3}{l|}{BLEU-4, 0.5898; METEOR, 0.4582}
+& 22,782
+& 200
+& 612
+& \multicolumn{2}{l|}{BLEU-4, 0.5898; METEOR, 0.4582}
 & \multicolumn{3}{l|}{ROUGE$_L$, 0.7450; CIDEr, 2.7736} \\
 \cline{2-12}
 
