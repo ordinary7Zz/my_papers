@@ -1,0 +1,273 @@
+<style>
+  .fig-grid { display:grid; grid-template-columns:1fr; gap:20px; }
+  .choice-card { border:1px solid #d8e0ea; border-radius:18px; background:#fff; overflow:hidden; box-shadow:0 8px 24px rgba(16,24,40,.06); cursor:pointer; }
+  .choice-card.selected { outline:3px solid #3b82f6; }
+  .choice-head { display:flex; align-items:center; justify-content:space-between; padding:16px 18px 8px; }
+  .choice-title { font-size:20px; font-weight:700; color:#162033; }
+  .choice-badge { font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:6px 10px; border-radius:999px; }
+  .badge-rec { background:#e8f7ee; color:#1f7a43; }
+  .badge-alt { background:#eef2ff; color:#4454c4; }
+  .choice-desc { padding:0 18px 14px; color:#56637a; line-height:1.65; }
+  .svg-wrap { padding:0 12px 10px; }
+  .notes { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:0 18px 18px; }
+  .note { background:#f7f9fc; border:1px solid #e7ecf4; border-radius:12px; padding:10px 12px; }
+  .note strong { display:block; color:#15233b; margin-bottom:4px; }
+  .legend { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 18px; }
+  .tag { display:inline-flex; align-items:center; gap:6px; padding:7px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+</style>
+
+<h2>Fig 1 结构草图（面向投稿版观感）</h2>
+<p class="subtitle">我按你的要求做了两版：都改成了 <strong>dual-path cascade</strong>，同时把 <strong>LLM 降到末端</strong>、把 <strong>radiomics judge</strong> 提到关键位置。优先看整体规整度、视觉重心和论文感。</p>
+
+<div class="legend">
+  <span class="tag" style="background:#e8f7ee;color:#1d7a43"><span class="dot" style="background:#55b67b"></span>Path A</span>
+  <span class="tag" style="background:#fff2e8;color:#a95d16"><span class="dot" style="background:#f0a35e"></span>Path B</span>
+  <span class="tag" style="background:#e8f1ff;color:#2456b8"><span class="dot" style="background:#5b8def"></span>Radiomics judge</span>
+  <span class="tag" style="background:#f2ebff;color:#7147bf"><span class="dot" style="background:#9a76e8"></span>LLM only at hardest disputes</span>
+</div>
+
+<div class="fig-grid">
+  <div class="choice-card" data-choice="A" onclick="toggleSelect(this)">
+    <div class="choice-head">
+      <div class="choice-title">A. Balanced split-lane layout</div>
+      <span class="choice-badge badge-rec">推荐</span>
+    </div>
+    <div class="choice-desc">更像正式论文图：左侧是并行专家池，中间是共识检查，右侧把 Path A / Path B 做成上下两条稳定车道，视觉重心清晰，最适合后续直接细化成最终版。</div>
+    <div class="svg-wrap">
+      <svg viewBox="0 0 1600 760" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowA" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#6c7a92"/>
+          </marker>
+          <filter id="shadowA" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#9db0cc" flood-opacity="0.18"/>
+          </filter>
+          <style>
+            .title{font:700 22px Inter,Arial,sans-serif;fill:#15233b}
+            .small{font:600 14px Inter,Arial,sans-serif;fill:#5f6f87}
+            .label{font:700 20px Inter,Arial,sans-serif;fill:#16233b}
+            .body{font:600 15px Inter,Arial,sans-serif;fill:#22324d}
+            .tiny{font:500 12px Inter,Arial,sans-serif;fill:#6b7a8f}
+            .chip{fill:#ffffff;stroke:#cdd6e4;stroke-width:1.4}
+            .card{fill:#ffffff;stroke:#d6ddea;stroke-width:1.5}
+            .laneA{fill:#ecf8f0;stroke:#89d2a1;stroke-width:1.6}
+            .laneB{fill:#fff4ea;stroke:#f2b37e;stroke-width:1.6}
+            .judge{fill:#eaf1ff;stroke:#78a4f5;stroke-width:1.8}
+            .purple{fill:#f3edff;stroke:#ad93f2;stroke-width:1.6}
+            .green{fill:#ffffff;stroke:#78c494;stroke-width:1.8}
+            .orange{fill:#ffffff;stroke:#f1aa67;stroke-width:1.8}
+            .out{fill:#f8fafc;stroke:#cdd6e4;stroke-width:1.6}
+          </style>
+        </defs>
+
+        <rect x="18" y="18" width="1564" height="724" rx="22" fill="#ffffff" stroke="#e3e8f0"/>
+
+        <text x="42" y="54" class="title">Fig. 1 draft — Dual-path cascade overview</text>
+        <text x="42" y="82" class="small">Independent classifiers decide whether the case uses a consensus shortcut (Path A) or dispute-resolution cascade (Path B).</text>
+
+        <rect x="42" y="232" width="170" height="120" rx="20" fill="#0f1722" stroke="#35507a" stroke-width="2.2" filter="url(#shadowA)"/>
+        <rect x="56" y="246" width="142" height="92" rx="14" fill="#263446"/>
+        <path d="M60 304 C86 252, 137 250, 160 290 C170 309, 146 334, 122 330 C95 327, 79 321, 60 304 Z" fill="#d7dbe3" opacity="0.88"/>
+        <text x="127" y="376" text-anchor="middle" class="label">Input US image</text>
+
+        <line x1="212" y1="292" x2="258" y2="292" stroke="#6c7a92" stroke-width="4" marker-end="url(#arrowA)"/>
+
+        <rect x="272" y="134" width="432" height="284" rx="24" fill="#fbfcfe" stroke="#cfd8e5" stroke-width="1.8" filter="url(#shadowA)"/>
+        <text x="296" y="168" class="label">Parallel expert pool</text>
+
+        <rect x="294" y="186" width="388" height="106" rx="18" fill="#f7fbf8" stroke="#cde8d7"/>
+        <text x="314" y="212" class="body">Segmentation experts</text>
+        <rect class="chip" x="314" y="228" width="110" height="28" rx="14"/><text x="369" y="247" text-anchor="middle" class="tiny">DINOv3-UNet 128</text>
+        <rect class="chip" x="434" y="228" width="110" height="28" rx="14"/><text x="489" y="247" text-anchor="middle" class="tiny">DINOv3-UNet 224</text>
+        <rect class="chip" x="554" y="228" width="110" height="28" rx="14"/><text x="609" y="247" text-anchor="middle" class="tiny">DINOv3-UNet 448</text>
+        <rect class="chip" x="314" y="264" width="86" height="28" rx="14"/><text x="357" y="283" text-anchor="middle" class="tiny">TransUNet</text>
+        <rect class="chip" x="408" y="264" width="82" height="28" rx="14"/><text x="449" y="283" text-anchor="middle" class="tiny">MedSegX</text>
+        <rect class="chip" x="498" y="264" width="82" height="28" rx="14"/><text x="539" y="283" text-anchor="middle" class="tiny">MedSAM2</text>
+        <rect class="chip" x="588" y="264" width="76" height="28" rx="14"/><text x="626" y="283" text-anchor="middle" class="tiny">UltraFedFM</text>
+
+        <rect x="294" y="312" width="388" height="84" rx="18" fill="#f9fafc" stroke="#d8e0ea"/>
+        <text x="314" y="338" class="body">Independent classification experts</text>
+        <rect class="chip" x="314" y="352" width="116" height="28" rx="14"/><text x="372" y="371" text-anchor="middle" class="tiny">DINOv3-Multitask</text>
+        <rect class="chip" x="440" y="352" width="98" height="28" rx="14"/><text x="489" y="371" text-anchor="middle" class="tiny">MedSigLIP</text>
+        <rect class="chip" x="548" y="352" width="100" height="28" rx="14"/><text x="598" y="371" text-anchor="middle" class="tiny">BiomedCLIP</text>
+        <text x="654" y="371" class="tiny">mask-free malignancy probabilities</text>
+
+        <line x1="704" y1="292" x2="758" y2="292" stroke="#6c7a92" stroke-width="4" marker-end="url(#arrowA)"/>
+
+        <rect x="772" y="232" width="196" height="120" rx="22" fill="#f8fafc" stroke="#cfd8e5" stroke-width="1.8" filter="url(#shadowA)"/>
+        <text x="870" y="274" text-anchor="middle" class="label">Consensus check</text>
+        <text x="870" y="304" text-anchor="middle" class="body">Do 3 cls argmax agree?</text>
+        <text x="870" y="328" text-anchor="middle" class="tiny">Route each case to Path A or Path B</text>
+
+        <rect x="1002" y="96" width="548" height="206" rx="28" class="laneA"/>
+        <text x="1030" y="132" class="label" fill="#17693c">Path A · consensus shortcut</text>
+        <text x="1030" y="156" class="tiny">Use consensus label as anchor; bypass AutoGluon and LLM</text>
+
+        <rect x="1030" y="184" width="118" height="58" rx="16" class="green"/><text x="1089" y="207" text-anchor="middle" class="body">Consensus</text><text x="1089" y="227" text-anchor="middle" class="tiny">anchor</text>
+        <rect x="1180" y="184" width="132" height="58" rx="16" class="green"/><text x="1246" y="207" text-anchor="middle" class="body">SegSelect</text><text x="1246" y="227" text-anchor="middle" class="tiny">anchor-guided</text>
+        <rect x="1344" y="184" width="86" height="58" rx="16" class="green"/><text x="1387" y="218" text-anchor="middle" class="body">CCA</text>
+        <line x1="968" y1="266" x2="1030" y2="213" stroke="#5ea979" stroke-width="3.5" marker-end="url(#arrowA)"/>
+        <line x1="1148" y1="213" x2="1180" y2="213" stroke="#5ea979" stroke-width="3.5" marker-end="url(#arrowA)"/>
+        <line x1="1312" y1="213" x2="1344" y2="213" stroke="#5ea979" stroke-width="3.5" marker-end="url(#arrowA)"/>
+
+        <rect x="1002" y="340" width="548" height="300" rx="28" class="laneB"/>
+        <text x="1030" y="378" class="label" fill="#9a5615">Path B · dispute-resolution cascade</text>
+        <text x="1030" y="402" class="tiny">Judge-guided pre-filtering, mask selection, and reconciliation</text>
+
+        <rect x="1032" y="442" width="150" height="86" rx="18" class="judge" filter="url(#shadowA)"/>
+        <path d="M1107 456 L1142 470 L1134 510 C1126 524 1115 534 1107 538 C1099 534 1088 524 1080 510 L1072 470 Z" fill="#6d97ef" opacity="0.18"/>
+        <path d="M1107 462 L1136 474 L1129 507 C1122 518 1114 526 1107 530 C1100 526 1092 518 1085 507 L1078 474 Z" fill="#6d97ef" opacity="0.38"/>
+        <text x="1107" y="492" text-anchor="middle" class="body">GT-trained</text>
+        <text x="1107" y="512" text-anchor="middle" class="body">radiomics judge</text>
+        <text x="1107" y="550" text-anchor="middle" class="tiny">assess seg quality + independent cls signal</text>
+
+        <rect x="1210" y="446" width="118" height="54" rx="16" class="orange"/><text x="1269" y="468" text-anchor="middle" class="body">Pre-filter</text><text x="1269" y="487" text-anchor="middle" class="tiny">cosine + conf.</text>
+        <rect x="1360" y="446" width="118" height="54" rx="16" class="orange"/><text x="1419" y="468" text-anchor="middle" class="body">SegSelect</text><text x="1419" y="487" text-anchor="middle" class="tiny">judge-guided</text>
+        <rect x="1210" y="534" width="96" height="54" rx="16" class="orange"/><text x="1258" y="566" text-anchor="middle" class="body">CCA</text>
+        <rect x="1332" y="534" width="126" height="54" rx="16" class="orange"/><text x="1395" y="556" text-anchor="middle" class="body">AutoGluon</text><text x="1395" y="575" text-anchor="middle" class="tiny">radiomics cls</text>
+        <rect x="1478" y="534" width="60" height="54" rx="16" class="purple"/><text x="1508" y="555" text-anchor="middle" class="body">Rule</text><text x="1508" y="575" text-anchor="middle" class="tiny">/LLM</text>
+        <text x="1508" y="608" text-anchor="middle" class="tiny">LLM only for hardest disputes</text>
+
+        <line x1="968" y1="318" x2="1032" y2="485" stroke="#d89052" stroke-width="3.5" marker-end="url(#arrowA)"/>
+        <line x1="1182" y1="473" x2="1210" y2="473" stroke="#5b8def" stroke-width="3.5" marker-end="url(#arrowA)"/>
+        <line x1="1182" y1="495" x2="1332" y2="561" stroke="#5b8def" stroke-width="3.5" marker-end="url(#arrowA)"/>
+        <line x1="1328" y1="473" x2="1360" y2="473" stroke="#d89052" stroke-width="3.5" marker-end="url(#arrowA)"/>
+        <line x1="1419" y1="500" x2="1268" y2="534" stroke="#d89052" stroke-width="3.5" marker-end="url(#arrowA)"/>
+        <line x1="1306" y1="561" x2="1332" y2="561" stroke="#d89052" stroke-width="3.5" marker-end="url(#arrowA)"/>
+        <line x1="1458" y1="561" x2="1478" y2="561" stroke="#8d73df" stroke-width="3.5" marker-end="url(#arrowA)"/>
+
+        <rect x="1462" y="184" width="94" height="74" rx="18" class="out"/>
+        <text x="1509" y="212" text-anchor="middle" class="body">Final</text><text x="1509" y="234" text-anchor="middle" class="body">mask</text><text x="1509" y="256" text-anchor="middle" class="tiny">+ label</text>
+        <line x1="1430" y1="213" x2="1462" y2="221" stroke="#5ea979" stroke-width="3.5" marker-end="url(#arrowA)"/>
+        <line x1="1538" y1="561" x2="1509" y2="258" stroke="#c98448" stroke-width="3.5" marker-end="url(#arrowA)"/>
+      </svg>
+    </div>
+    <div class="notes">
+      <div class="note"><strong>优点</strong>上下双路径像“高速分流”，投稿图观感最稳，信息重心非常清楚。</div>
+      <div class="note"><strong>方法对齐</strong>最符合正文里的 “parallel pool → consensus check → Path A/B”。</div>
+      <div class="note"><strong>后续细化</strong>最容易继续做成论文终稿 PDF / SVG。</div>
+    </div>
+  </div>
+
+  <div class="choice-card" data-choice="B" onclick="toggleSelect(this)">
+    <div class="choice-head">
+      <div class="choice-title">B. Compact cascade board</div>
+      <span class="choice-badge badge-alt">备选</span>
+    </div>
+    <div class="choice-desc">更紧凑、海报感更强：把共识检查做成中心开关，Path A 在上方快速闭环，Path B 在下方展开为完整裁决链。观感更“设计化”，但正式论文里可读性略弱于 A。</div>
+    <div class="svg-wrap">
+      <svg viewBox="0 0 1600 760" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowB" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#6c7a92"/>
+          </marker>
+          <filter id="shadowB" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#9db0cc" flood-opacity="0.18"/>
+          </filter>
+          <style>
+            .title{font:700 22px Inter,Arial,sans-serif;fill:#15233b}
+            .small{font:600 14px Inter,Arial,sans-serif;fill:#5f6f87}
+            .label{font:700 20px Inter,Arial,sans-serif;fill:#16233b}
+            .body{font:600 15px Inter,Arial,sans-serif;fill:#22324d}
+            .tiny{font:500 12px Inter,Arial,sans-serif;fill:#6b7a8f}
+            .chip{fill:#ffffff;stroke:#cdd6e4;stroke-width:1.4}
+            .card{fill:#ffffff;stroke:#d6ddea;stroke-width:1.5}
+            .laneA{fill:#eef8f1;stroke:#8bd1a2;stroke-width:1.6}
+            .laneB{fill:#fff4e9;stroke:#f0b37d;stroke-width:1.6}
+            .judge{fill:#eaf1ff;stroke:#78a4f5;stroke-width:1.8}
+            .purple{fill:#f3edff;stroke:#ad93f2;stroke-width:1.6}
+            .green{fill:#ffffff;stroke:#78c494;stroke-width:1.8}
+            .orange{fill:#ffffff;stroke:#f1aa67;stroke-width:1.8}
+            .out{fill:#f8fafc;stroke:#cdd6e4;stroke-width:1.6}
+          </style>
+        </defs>
+
+        <rect x="18" y="18" width="1564" height="724" rx="22" fill="#ffffff" stroke="#e3e8f0"/>
+        <text x="42" y="54" class="title">Alternative composition — compact central switch</text>
+        <text x="42" y="82" class="small">A more poster-like composition with stronger visual styling and a more compact central decision hub.</text>
+
+        <rect x="44" y="278" width="156" height="112" rx="20" fill="#0f1722" stroke="#35507a" stroke-width="2.2" filter="url(#shadowB)"/>
+        <rect x="58" y="292" width="128" height="84" rx="14" fill="#2a384a"/>
+        <path d="M64 336 C84 302, 128 302, 146 326 C158 342, 142 364, 120 362 C101 361, 82 355, 64 336 Z" fill="#d9dde6" opacity="0.9"/>
+        <text x="122" y="416" text-anchor="middle" class="label">Input</text>
+        <line x1="200" y1="334" x2="266" y2="334" stroke="#6c7a92" stroke-width="4" marker-end="url(#arrowB)"/>
+
+        <rect x="278" y="144" width="520" height="382" rx="28" fill="#fbfcfe" stroke="#cfd8e5" stroke-width="1.8" filter="url(#shadowB)"/>
+        <text x="304" y="180" class="label">Hybrid expert pool</text>
+        <text x="304" y="204" class="tiny">Segmentation row on top, independent classification row below</text>
+
+        <rect x="304" y="222" width="468" height="132" rx="20" fill="#f7fbf8" stroke="#cde8d7"/>
+        <text x="326" y="250" class="body">Segmentation experts</text>
+        <rect class="chip" x="326" y="266" width="118" height="30" rx="15"/><text x="385" y="286" text-anchor="middle" class="tiny">DINOv3-UNet 128</text>
+        <rect class="chip" x="454" y="266" width="118" height="30" rx="15"/><text x="513" y="286" text-anchor="middle" class="tiny">DINOv3-UNet 224</text>
+        <rect class="chip" x="582" y="266" width="118" height="30" rx="15"/><text x="641" y="286" text-anchor="middle" class="tiny">DINOv3-UNet 448</text>
+        <rect class="chip" x="326" y="308" width="92" height="28" rx="14"/><text x="372" y="327" text-anchor="middle" class="tiny">TransUNet</text>
+        <rect class="chip" x="430" y="308" width="82" height="28" rx="14"/><text x="471" y="327" text-anchor="middle" class="tiny">MedSegX</text>
+        <rect class="chip" x="524" y="308" width="82" height="28" rx="14"/><text x="565" y="327" text-anchor="middle" class="tiny">MedSAM2</text>
+        <rect class="chip" x="618" y="308" width="86" height="28" rx="14"/><text x="661" y="327" text-anchor="middle" class="tiny">UltraFedFM</text>
+
+        <rect x="304" y="376" width="468" height="118" rx="20" fill="#f9fafc" stroke="#d8e0ea"/>
+        <text x="326" y="404" class="body">Independent classification experts</text>
+        <rect class="chip" x="326" y="426" width="126" height="30" rx="15"/><text x="389" y="446" text-anchor="middle" class="tiny">DINOv3-Multitask</text>
+        <rect class="chip" x="462" y="426" width="110" height="30" rx="15"/><text x="517" y="446" text-anchor="middle" class="tiny">MedSigLIP</text>
+        <rect class="chip" x="582" y="426" width="110" height="30" rx="15"/><text x="637" y="446" text-anchor="middle" class="tiny">BiomedCLIP</text>
+        <text x="326" y="478" class="tiny">Three mask-free predictions drive the downstream switch.</text>
+
+        <line x1="798" y1="334" x2="876" y2="334" stroke="#6c7a92" stroke-width="4" marker-end="url(#arrowB)"/>
+
+        <rect x="890" y="278" width="188" height="112" rx="56" fill="#f8fafc" stroke="#cfd8e5" stroke-width="1.8" filter="url(#shadowB)"/>
+        <text x="984" y="322" text-anchor="middle" class="label">Consensus</text>
+        <text x="984" y="350" text-anchor="middle" class="body">switch</text>
+
+        <path d="M1078 320 C1122 320, 1142 220, 1180 220" fill="none" stroke="#67b884" stroke-width="4" marker-end="url(#arrowB)"/>
+        <path d="M1078 348 C1122 348, 1134 530, 1180 530" fill="none" stroke="#d79154" stroke-width="4" marker-end="url(#arrowB)"/>
+
+        <rect x="1180" y="126" width="360" height="154" rx="26" class="laneA"/>
+        <text x="1206" y="164" class="label" fill="#17693c">Path A</text>
+        <text x="1206" y="188" class="tiny">Consensus anchor → SegSelect → CCA → output</text>
+        <rect x="1206" y="204" width="92" height="46" rx="14" class="green"/><text x="1252" y="232" text-anchor="middle" class="body">Anchor</text>
+        <rect x="1320" y="204" width="96" height="46" rx="14" class="green"/><text x="1368" y="232" text-anchor="middle" class="body">SegSelect</text>
+        <rect x="1438" y="204" width="74" height="46" rx="14" class="green"/><text x="1475" y="232" text-anchor="middle" class="body">CCA</text>
+        <line x1="1298" y1="227" x2="1320" y2="227" stroke="#67b884" stroke-width="3.5" marker-end="url(#arrowB)"/>
+        <line x1="1416" y1="227" x2="1438" y2="227" stroke="#67b884" stroke-width="3.5" marker-end="url(#arrowB)"/>
+
+        <rect x="1108" y="414" width="432" height="232" rx="26" class="laneB"/>
+        <text x="1134" y="452" class="label" fill="#9a5615">Path B</text>
+        <text x="1134" y="476" class="tiny">Judge-guided filtering, mask selection, and final reconciliation</text>
+
+        <rect x="1136" y="500" width="138" height="82" rx="18" class="judge" filter="url(#shadowB)"/>
+        <text x="1205" y="532" text-anchor="middle" class="body">Radiomics judge</text>
+        <text x="1205" y="554" text-anchor="middle" class="tiny">seg quality + cls signal</text>
+        <rect x="1292" y="500" width="98" height="46" rx="14" class="orange"/><text x="1341" y="528" text-anchor="middle" class="body">Pre-filter</text>
+        <rect x="1406" y="500" width="98" height="46" rx="14" class="orange"/><text x="1455" y="528" text-anchor="middle" class="body">SegSelect</text>
+        <rect x="1292" y="566" width="74" height="46" rx="14" class="orange"/><text x="1329" y="594" text-anchor="middle" class="body">CCA</text>
+        <rect x="1382" y="566" width="102" height="46" rx="14" class="orange"/><text x="1433" y="594" text-anchor="middle" class="body">AutoGluon</text>
+        <rect x="1498" y="566" width="42" height="46" rx="14" class="purple"/><text x="1519" y="593" text-anchor="middle" class="body">LLM</text>
+        <text x="1519" y="632" text-anchor="middle" class="tiny">hardest disputes only</text>
+        <line x1="1274" y1="523" x2="1292" y2="523" stroke="#5b8def" stroke-width="3.5" marker-end="url(#arrowB)"/>
+        <line x1="1274" y1="554" x2="1382" y2="589" stroke="#5b8def" stroke-width="3.5" marker-end="url(#arrowB)"/>
+        <line x1="1390" y1="523" x2="1406" y2="523" stroke="#d79154" stroke-width="3.5" marker-end="url(#arrowB)"/>
+        <line x1="1455" y1="546" x2="1329" y2="566" stroke="#d79154" stroke-width="3.5" marker-end="url(#arrowB)"/>
+        <line x1="1366" y1="589" x2="1382" y2="589" stroke="#d79154" stroke-width="3.5" marker-end="url(#arrowB)"/>
+        <line x1="1484" y1="589" x2="1498" y2="589" stroke="#8d73df" stroke-width="3.5" marker-end="url(#arrowB)"/>
+
+        <rect x="1472" y="300" width="84" height="74" rx="18" class="out"/>
+        <text x="1514" y="328" text-anchor="middle" class="body">Final</text>
+        <text x="1514" y="350" text-anchor="middle" class="tiny">mask + label</text>
+        <path d="M1512 250 C1514 270, 1514 278, 1514 300" fill="none" stroke="#67b884" stroke-width="3.5" marker-end="url(#arrowB)"/>
+        <path d="M1519 612 C1519 648, 1492 648, 1498 374" fill="none" stroke="#d79154" stroke-width="3.5" marker-end="url(#arrowB)"/>
+      </svg>
+    </div>
+    <div class="notes">
+      <div class="note"><strong>优点</strong>构图更紧凑，更有“设计稿”感觉，视觉中心很强。</div>
+      <div class="note"><strong>不足</strong>Path B 信息密度更高，正式投稿时略容易显得挤。</div>
+      <div class="note"><strong>适用</strong>如果你想让 Fig 1 更有展示感，这版值得继续细化。</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:18px">
+  <h3>我建议</h3>
+  <p class="subtitle">如果你的目标是 <strong>MICCAI / ICASSP 论文终稿观感</strong>，我建议基于 <strong>A 版</strong> 继续细化。它更稳、更清楚，也更容易后续导出成最终矢量图。</p>
+</div>
